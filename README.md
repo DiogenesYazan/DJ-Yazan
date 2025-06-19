@@ -1,23 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>🎧 Discord Music Bot</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
-    h1, h2, h3 { color: #4A90E2; }
-    code { background: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
-    pre { background: #f9f9f9; padding: 10px; overflow-x: auto; }
-    .bar { font-family: monospace; font-size: 1.1em; }
-    img { max-width: 100%; height: auto; border: 1px solid #ddd; margin: 20px 0; }
-  </style>
-</head>
 <body>
 
   <h1>🎧 Discord Music Bot</h1>
   <p>Bot de música para Discord usando <strong>DisTube v5</strong>. Toca músicas do YouTube por nome ou link, com barra de progresso em ASCII — estilo Rythm!</p>
 
-  <h2>🖼️ Exemplo visual:</h2>
+  <h2>🖼️ Visual:</h2>
   <img src="https://i.imgur.com/vMKyYzv.png" alt="Exemplo embed com barra de progresso">
 
   <h2>⚙️ Recursos</h2>
@@ -87,14 +73,6 @@ cd discord-music-bot</code></pre>
     <li>Erros são enviados ao canal ou exibidos no console</li>
   </ul>
 
-  <h2>✨ Personalização</h2>
-  <ul>
-    <li>🔸 Ajuste tamanho ou símbolos da barra no código (`makeBar`)</li>
-    <li>🔸 Altere frequência de atualização</li>
-    <li>🔸 Adicione GIF ou imagem no embed</li>
-    <li>🔸 Edite emojis ou cores conforme o estilo do seu servidor</li>
-  </ul>
-
   <h2>🤝 Contribuições</h2>
   <ol>
     <li>Faça um <em>fork</em></li>
@@ -102,8 +80,4 @@ cd discord-music-bot</code></pre>
     <li>Implemente suas melhorias</li>
     <li>Abra um Pull Request</li>
   </ol>
-
-  <p>Feito com ❤️ por você! Se quiser ajuda com a pasta <code>commands/</code> ou adicionar GIF no embed, é só me chamar 😄</p>
-
 </body>
-</html>
