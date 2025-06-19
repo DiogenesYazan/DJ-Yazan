@@ -10,15 +10,32 @@ const commands = [
          .setDescription('Nome ou URL da música')
          .setRequired(true)
     ),
+
+  new SlashCommandBuilder()
+  .setName('playlist')
+  .setDescription('Toca até 25 músicas populares de um artista')
+  .addStringOption(opt =>
+    opt.setName('artista')
+       .setDescription('Nome do artista ou banda')
+       .setRequired(true)
+  ),
+
   new SlashCommandBuilder()
     .setName('pause')
     .setDescription('Pausa a música que está tocando'),
+
+  new SlashCommandBuilder()
+  .setName('stop')
+  .setDescription('Para a música atual e limpa a fila'),
+
   new SlashCommandBuilder()
     .setName('skip')
     .setDescription('Pula para a próxima música na fila'),
+
   new SlashCommandBuilder()
     .setName('queue')
     .setDescription('Mostra a fila de músicas'),
+
   new SlashCommandBuilder()
     .setName('volume')
     .setDescription('Define o volume (1–200%)')
