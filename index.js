@@ -29,7 +29,10 @@ for (const f of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) {
 client.distube = new DisTube(client, {
   plugins: [new YouTubePlugin()],
   emitNewSongOnly: true,
-  savePreviousSongs: true
+  savePreviousSongs: true,
+  ffmpeg: {
+    path: process.env.FFMPEG_PATH // caminho definido no Heroku
+  }
 });
 
 // Barra de progresso
