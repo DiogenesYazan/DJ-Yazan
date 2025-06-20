@@ -27,67 +27,90 @@ client.distube = new DisTube(client, {
   savePreviousSongs: true
 });
 
+// Função utilitária para formatar tempo
+function formatTime(sec) {
+  const m = Math.floor(sec / 60).toString().padStart(2, '0');
+  const s = Math.floor(sec % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
 // Barra de progresso
 function makeBar(current, total, size = 20) {
-  const filled = Math.round((current / total) * size);
+  const safeTotal = total > 0 ? total : 1;
+  const curr = Math.min(Math.max(current, 0), safeTotal);
+  const filled = Math.round((curr / safeTotal) * size);
   return '█'.repeat(filled) + '─'.repeat(size - filled);
 }
-function createEmbed(song, totalSec, currentSec) {
-  const bar = makeBar(currentSec, totalSec);
-  const fmt = s => `${String(Math.floor(s / 60)).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
+
+// Cria Embed Now Playing
+function createEmbed(song, currentSec) {
+  const bar = makeBar(currentSec, song.duration);
   return new EmbedBuilder()
     .setTitle(`🎶 ${song.name}`)
-    .setDescription(`${bar}\n\`${fmt(Math.floor(currentSec))}/${song.formattedDuration}\``)
+    .setDescription(`${bar}\n\`${formatTime(currentSec)}/${song.formattedDuration}\``)
     .setThumbnail(song.thumbnail)
     .setColor('Purple');
 }
 
-const idleTimeouts = new Map(); // 🔹 track timeouts per guild
+// Guarda mensagem de progresso por fila
+const nowPlayingMsg = new Map();
+const idleTimeouts = new Map();
 
-// Eventos DisTube
+// Eventos do DisTube
 client.distube
   .on('playSong', (queue, song) => {
-    // Cancela qualquer timeout pendente
-    clearTimeout(idleTimeouts.get(queue.id));
-    idleTimeouts.delete(queue.id);
+    const prev = nowPlayingMsg.get(queue.id);
+    if (prev) {
+      clearInterval(prev.iv);
+      prev.msg.delete().catch(() => {});
+      nowPlayingMsg.delete(queue.id);
+    }
 
-    const totalSec = song.duration;
-    const embed = createEmbed(song, totalSec, queue.currentTime);
-    queue.textChannel?.send({ embeds: [embed] }).then(msg => {
-      const iv = setInterval(() => {
-        msg.edit({ embeds: [createEmbed(song, totalSec, queue.currentTime)] })
-           .catch(() => clearInterval(iv));
-      }, 5000);
-    });
+    queue.textChannel?.send({ embeds: [createEmbed(song, queue.currentTime)] })
+      .then(msg => {
+        const iv = setInterval(() => {
+          const q = client.distube.getQueue(queue.id);
+          if (!q || !msg.editable) return clearInterval(iv);
+          msg.edit({ embeds: [createEmbed(song, q.currentTime)] })
+             .catch(() => clearInterval(iv));
+        }, 5000);
+
+        nowPlayingMsg.set(queue.id, { msg, iv });
+      });
   })
-  .on('addSong', (queue, song) => {
-    queue.textChannel?.send(`➕ Adicionada à fila: **${song.name}**`);
-  })
+  .on('addSong', (queue, song) =>
+    queue.textChannel?.send(`➕ Adicionada à fila: **${song.name}**`)
+  )
   .on('finish', queue => {
+    const prev = nowPlayingMsg.get(queue.id);
+    if (prev) {
+      clearInterval(prev.iv);
+      prev.msg.delete().catch(() => {});
+      nowPlayingMsg.delete(queue.id);
+    }
     queue.textChannel?.send('✅ Fim da fila!');
     scheduleLeave(queue);
   })
   .on('error', (queue, e) => {
-    if (queue?.textChannel) queue.textChannel.send(`❌ Erro: ${e.message}`);
-    else console.error('❌ Erro sem canal:', e);
+    queue?.textChannel
+      ? queue.textChannel.send(`❌ Erro: ${e.message}`)
+      : console.error(e);
   });
 
-// 🚪 Sai se todos sairem: verifica voz e agenda saída
-client.on('voiceStateUpdate', (oldState, newState) => {
-  const queue = client.distube.getQueue(oldState.guild.id) || client.distube.getQueue(newState.guild.id);
-  if (!queue?.voice.channel) return;
+// Se todos saírem, agenda desconexão
+client.on('voiceStateUpdate', (oldS, newS) => {
+  const q = client.distube.getQueue(oldS.guild.id) || client.distube.getQueue(newS.guild.id);
+  if (!q?.voice.channel) return;
 
-  const vc = queue.voice.channel;
-  const nonBots = vc.members.filter(m => !m.user.bot);
-  if (nonBots.size === 0) {
-    scheduleLeave(queue);
-  } else {
-    clearTimeout(idleTimeouts.get(queue.id));
-    idleTimeouts.delete(queue.id);
+  const humanCount = q.voice.channel.members.filter(m => !m.user.bot).size;
+  if (humanCount === 0) scheduleLeave(q);
+  else {
+    clearTimeout(idleTimeouts.get(q.id));
+    idleTimeouts.delete(q.id);
   }
 });
 
-// Agenda saída após 30s sem usuários humanos
+// Desconectar após 30s sem humanos
 function scheduleLeave(queue) {
   clearTimeout(idleTimeouts.get(queue.id));
   const to = setTimeout(() => {
@@ -100,16 +123,16 @@ function scheduleLeave(queue) {
 
 // Eventos do bot
 client.on('ready', () => console.log(`✅ Bot online: ${client.user.tag}`));
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-  const cmd = client.commands.get(interaction.commandName);
+client.on('interactionCreate', async i => {
+  if (!i.isCommand()) return;
+  const cmd = client.commands.get(i.commandName);
   if (!cmd) return;
   try {
-    await cmd.execute(interaction);
+    await cmd.execute(i);
   } catch (err) {
-    console.error('❌ Erro no comando:', err);
-    const rep = { content: '❌ Ocorreu um erro.', ephemeral: true };
-    interaction.replied ? await interaction.followUp(rep) : await interaction.reply(rep);
+    console.error(err);
+    const rep = { content: '❌ Erro ao executar o comando.', ephemeral: true };
+    i.replied ? await i.followUp(rep) : await i.reply(rep);
   }
 });
 

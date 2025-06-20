@@ -21,6 +21,10 @@ const commands = [
   ),
 
   new SlashCommandBuilder()
+  .setName('nowplayed')
+  .setDescription('Mostra a música atual e o volume'),
+
+  new SlashCommandBuilder()
     .setName('pause')
     .setDescription('Pausa a música que está tocando'),
 
