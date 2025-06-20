@@ -1,6 +1,11 @@
 // index.js
 require('dotenv').config();
-const { Client, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
+const {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  EmbedBuilder
+} = require('discord.js');
 const { DisTube } = require('distube');
 const { YouTubePlugin } = require('@distube/youtube');
 const fs = require('fs');
@@ -20,105 +25,101 @@ for (const f of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) {
   client.commands.set(cmd.data.name, cmd);
 }
 
-// Instância DisTube
+// Instancia DisTube
 client.distube = new DisTube(client, {
   plugins: [new YouTubePlugin()],
   emitNewSongOnly: true,
   savePreviousSongs: true
 });
 
-// Função utilitária para formatar tempo
-function formatTime(sec) {
-  const m = Math.floor(sec / 60).toString().padStart(2, '0');
-  const s = Math.floor(sec % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
-
 // Barra de progresso
 function makeBar(current, total, size = 20) {
-  const safeTotal = total > 0 ? total : 1;
-  const curr = Math.min(Math.max(current, 0), safeTotal);
-  const filled = Math.round((curr / safeTotal) * size);
+  const pct = Math.max(0, Math.min(current / total, 1));
+  const filled = Math.round(pct * size);
   return '█'.repeat(filled) + '─'.repeat(size - filled);
 }
 
-// Cria Embed Now Playing
-function createEmbed(song, currentSec) {
-  const bar = makeBar(currentSec, song.duration);
+function createEmbed(song, totalSec, currentSec, volume) {
+  const bar = makeBar(currentSec, totalSec);
+  const fmt = s => `${String(Math.floor(s / 60)).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
   return new EmbedBuilder()
     .setTitle(`🎶 ${song.name}`)
-    .setDescription(`${bar}\n\`${formatTime(currentSec)}/${song.formattedDuration}\``)
+    .setDescription(`${bar}\n\`${fmt(Math.floor(currentSec))}/${song.formattedDuration}\``)
+    .addFields({ name:'🔊 Volume', value:`${volume}%`, inline:true })
     .setThumbnail(song.thumbnail)
     .setColor('Purple');
 }
 
-// Guarda mensagem de progresso por fila
-const nowPlayingMsg = new Map();
 const idleTimeouts = new Map();
 
-// Eventos do DisTube
+// Eventos DisTube
 client.distube
   .on('playSong', (queue, song) => {
-    const prev = nowPlayingMsg.get(queue.id);
-    if (prev) {
-      clearInterval(prev.iv);
-      prev.msg.delete().catch(() => {});
-      nowPlayingMsg.delete(queue.id);
-    }
+    clearTimeout(idleTimeouts.get(queue.id));
+    idleTimeouts.delete(queue.id);
 
-    queue.textChannel?.send({ embeds: [createEmbed(song, queue.currentTime)] })
-      .then(msg => {
-        const iv = setInterval(() => {
-          const q = client.distube.getQueue(queue.id);
-          if (!q || !msg.editable) return clearInterval(iv);
-          msg.edit({ embeds: [createEmbed(song, q.currentTime)] })
-             .catch(() => clearInterval(iv));
-        }, 5000);
+    if (!queue.textChannel) return;
+    const embed = createEmbed(song, queue.duration, queue.currentTime, queue.volume);
+    queue.textChannel.send({ embeds: [embed] }).then(msg => {
+      const iv = setInterval(() => {
+        msg.edit({
+          embeds: [
+            createEmbed(song, queue.duration, queue.currentTime, queue.volume)
+          ]
+        }).catch(() => clearInterval(iv));
+      }, 5000);
 
-        nowPlayingMsg.set(queue.id, { msg, iv });
-      });
+      // Mantém referência para limpar depois
+      idleTimeouts.set(queue.id, { iv, msg });
+    });
   })
-  .on('addSong', (queue, song) =>
-    queue.textChannel?.send(`➕ Adicionada à fila: **${song.name}**`)
-  )
   .on('finish', queue => {
-    const prev = nowPlayingMsg.get(queue.id);
-    if (prev) {
-      clearInterval(prev.iv);
-      prev.msg.delete().catch(() => {});
-      nowPlayingMsg.delete(queue.id);
+    const ref = idleTimeouts.get(queue.id);
+    if (ref) {
+      clearInterval(ref.iv);
+      ref.msg.delete().catch(()=>{});
+      idleTimeouts.delete(queue.id);
     }
     queue.textChannel?.send('✅ Fim da fila!');
     scheduleLeave(queue);
   })
+  .on('addSong', (queue, song) => {
+    queue.textChannel?.send(`➕ Adicionada à fila: **${song.name}**`);
+  })
   .on('error', (queue, e) => {
-    queue?.textChannel
-      ? queue.textChannel.send(`❌ Erro: ${e.message}`)
-      : console.error(e);
+    if (queue?.textChannel) queue.textChannel.send(`❌ Erro: ${e.message}`);
+    else console.error(e);
   });
 
-// Se todos saírem, agenda desconexão
-client.on('voiceStateUpdate', (oldS, newS) => {
-  const q = client.distube.getQueue(oldS.guild.id) || client.distube.getQueue(newS.guild.id);
-  if (!q?.voice.channel) return;
-
-  const humanCount = q.voice.channel.members.filter(m => !m.user.bot).size;
-  if (humanCount === 0) scheduleLeave(q);
+// Sai se a voz esvaziar
+client.on('voiceStateUpdate', (oldState, newState) => {
+  const queue = client.distube.getQueue(
+    oldState.guild.id ?? newState.guild.id
+  );
+  if (!queue) return;
+  const vc = queue.voice.channel;
+  const humans = vc.members.filter(m => !m.user.bot);
+  if (humans.size === 0) scheduleLeave(queue);
   else {
-    clearTimeout(idleTimeouts.get(q.id));
-    idleTimeouts.delete(q.id);
+    const ref = idleTimeouts.get(queue.id);
+    if (ref) {
+      clearTimeout(ref.timeout);
+      idleTimeouts.delete(queue.id);
+    }
   }
 });
 
-// Desconectar após 30s sem humanos
 function scheduleLeave(queue) {
-  clearTimeout(idleTimeouts.get(queue.id));
-  const to = setTimeout(() => {
-    queue.voice.disconnect();
+  const ref = idleTimeouts.get(queue.id);
+  if (ref) clearTimeout(ref.timeout);
+
+  const timeout = setTimeout(() => {
+    client.distube.voices.leave(queue.voice.channel);
     queue.textChannel?.send('🔚 Saindo por ausência de usuários.');
     idleTimeouts.delete(queue.id);
   }, 30000);
-  idleTimeouts.set(queue.id, to);
+
+  idleTimeouts.set(queue.id, { timeout });
 }
 
 // Eventos do bot
@@ -130,9 +131,12 @@ client.on('interactionCreate', async i => {
   try {
     await cmd.execute(i);
   } catch (err) {
-    console.error(err);
-    const rep = { content: '❌ Erro ao executar o comando.', ephemeral: true };
-    i.replied ? await i.followUp(rep) : await i.reply(rep);
+    console.error('❌ Erro no comando:', err);
+    const rep = {
+      content: '❌ Ocorreu um erro',
+      flags: 1 << 6
+    };
+    i.replied ? i.followUp(rep) : i.reply(rep);
   }
 });
 
