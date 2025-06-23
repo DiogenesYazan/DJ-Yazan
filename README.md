@@ -1,83 +1,93 @@
-<body>
+# 🎧 DJ-Yazan-Lavalink Bot
 
-  <h1>🎧 Discord Music Bot</h1>
-  <p>Bot de música para Discord usando <strong>DisTube v5</strong>. Toca músicas do YouTube por nome ou link, com barra de progresso em ASCII — estilo Rythm!</p>
+Este projeto é um **bot de música para Discord** escrito em Node.js, que utiliza a arquitetura **Lavalink** para reprodução de áudio ao invés de depender do FFmpeg local.
 
-  <h2>🖼️ Visual:</h2>
-  <img src="https://i.imgur.com/vMKyYzv.png" alt="Exemplo embed com barra de progresso">
+<img src="https://i.imgur.com/vMKyYzv.png" alt="Exemplo embed com barra de progresso" />
 
-  <h2>⚙️ Recursos</h2>
-  <ul>
-    <li>🎶 Tocar músicas por nome ou link</li>
-    <li>🔁 Barra de progresso atualizada a cada 5 segundos</li>
-    <li>➕ Adição à fila com notificações</li>
-    <li>✅ Mensagens no início e fim da música/fila</li>
-    <li>❌ Tratamento de erros visível no chat</li>
-    <li>🔧 Suporte para comandos slash na pasta <code>commands/</code></li>
-  </ul>
+## 🖼️ Descrição
 
-  <h2>📦 Requisitos</h2>
-  <ul>
-    <li>Node.js v16+</li>
-    <li><code>ffmpeg</code> instalado (ou <code>npm install ffmpeg-static</code>)</li>
-    <li>Token do bot em arquivo <code>.env</code>:
-      <pre><code>TOKEN=SEU_TOKEN_AQUI</code></pre>
-    </li>
-  </ul>
+> Bot de música para Discord usando **Lavalink**. Toca músicas do YouTube por nome ou link, com barra de progresso em blocos (▇) atualizada a cada 15 segundos.
 
-  <h2>🛠️ Instalação</h2>
-  <ol>
-    <li>Clone o repositório e acesse:
-      <pre><code>git clone https://github.com/seuusuario/discord-music-bot.git
-cd discord-music-bot</code></pre>
-    </li>
-    <li>Instale dependências:
-      <pre><code>npm install</code></pre>
-    </li>
-    <li>Configure seu token no <code>.env</code></li>
-    <li>Garanta que o <code>ffmpeg</code> esteja acessível:
-      <pre><code>ffmpeg -version</code></pre>
-    </li>
-  </ol>
+## ⚙️ Recursos
 
-  <h2>🕹️ Uso</h2>
-  <ol>
-    <li>Inicie o bot:
-      <pre><code>node index.js</code></pre>
-    </li>
-    <li>No Discord, use comandos slash, por exemplo:
-      <pre><code>/play Shape of You</code></pre>
-    </li>
-    <li>O bot tocará e mostrará o embed com a barra:
-      <pre class="bar"><code>█████──────────────  
-`01:15/04:30`</code></pre>
-    </li>
-    <li>Outros comandos: <code>/skip</code>, <code>/pause</code>, <code>/queue</code>, etc.</li>
-  </ol>
+* 🎶 **Reproduzir músicas** por nome ou link (YouTube).
+* ➕ **Adicionar à fila** sem interromper a música atual.
+* 📜 **Playlist**: busca e toca até 25 faixas de um artista em sequência.
+* ⏭️ **Skip** e 🛑 **Stop** para gerenciar a reprodução.
+* 📊 **Barra de progresso** em blocos (▇) simples e funcional.
+* ❌ **Tratamento de erros** com mensagens claras no canal.
+* 💬 **Comandos slash** organizados na pasta `commands/`.
 
-  <h2>📁 Estrutura do projeto</h2>
-  <pre><code>/
-├── commands/       ← comandos slash (ex: play.js, skip.js)
-├── index.js        ← código principal
-├── .env            ← token do bot
-├── package.json
-└── README.html     ← este arquivo</code></pre>
+## 📦 Pré-requisitos
 
-  <h2>✅ Fluxo interno</h2>
-  <ul>
-    <li>Inicializa o bot e carrega comandos</li>
-    <li>Comando <code>/play</code> busca e reproduz música</li>
-    <li>Envia embed com barra manual ASCII</li>
-    <li>Atualiza barra com <code>setInterval</code></li>
-    <li>Limpa o temporizador quando a música termina</li>
-    <li>Erros são enviados ao canal ou exibidos no console</li>
-  </ul>
+* Node.js **v16+**
+* Instância de **Lavalink** (self-host ou serviço terceirizado)
+* Token de bot do Discord e variáveis em `.env`
 
-  <h2>🤝 Contribuições</h2>
-  <ol>
-    <li>Faça um <em>fork</em></li>
-    <li>Crie uma branch <code>feature/xyz</code></li>
-    <li>Implemente suas melhorias</li>
-    <li>Abra um Pull Request</li>
-  </ol>
-</body>
+## ⚙️ Instalação & Configuração
+
+1. **Clone** o repositório:
+
+   ```bash
+   git clone https://github.com/seu-usuario/dj-yazan-lavalink.git
+   cd dj-yazan-lavalink
+   ```
+2. **Instale** dependências:
+
+   ```bash
+   npm install
+   ```
+3. **Configure** o arquivo `.env` (baseie-se no `.env.example`):
+
+   ```env
+   TOKEN=<seu_token_discord>
+   CLIENT_ID=<seu_client_id>
+   LAVA_HOST=<host_do_lavalink>
+   LAVA_PORT=<porta_do_lavalink>
+   LAVA_PASSWORD=<senha_do_lavalink>
+   LAVA_SECURE=true
+   ```
+4. **Inicie** seu bot:
+
+   ```bash
+   npm start
+   ```
+
+## 🕹️ Uso dos Comandos
+
+| Comando              | Descrição                                                      |
+| -------------------- | -------------------------------------------------------------- |
+| `/play <query>`      | Adiciona música à fila e inicia a reprodução se necessário     |
+| `/playlist <artist>` | Busca 25 músicas mais populares do artista e toca em sequência |
+| `/skip`              | Pula para a próxima faixa                                      |
+| `/stop`              | Interrompe a reprodução e limpa a fila                         |
+
+## 🔄 Fluxo Interno
+
+1. Bot inicializa e **carrega comandos**.
+2. `/play` ou `/playlist` busca faixas no YouTube.
+3. Faixas são **enfileiradas** no player Lavalink.
+4. Envia **embed** com barra de blocos (▇) atualizada a cada 15 s.
+5. Limpa temporizadores no fim da música/fila.
+6. Exibe mensagens de erro e status no canal.
+
+## 📁 Estrutura do Projeto
+
+```
+├── commands/       # Comandos slash (play.js, playlist.js, skip.js, stop.js)
+├── index.js        # Entry-point do bot
+├── .env.example    # Variáveis de ambiente modelo
+├── package.json    # Dependências e scripts
+└── README.md       # Documentação desse projeto
+```
+
+## 🤝 Contribuições
+
+1. Faça um **fork** deste repositório.
+2. Crie uma branch `feature/nome-da-feature`.
+3. Implemente suas mudanças e **commit**.
+4. Abra um **Pull Request**.
+
+---
+
+> Projeto desenvolvido por **Yazan**. 👨‍💻
