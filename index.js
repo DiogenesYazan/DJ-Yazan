@@ -127,3 +127,4 @@ client.on('interactionCreate', async interaction => {
 
 /* ─── Inicia sessão ─── */
 client.login(process.env.TOKEN);
+
