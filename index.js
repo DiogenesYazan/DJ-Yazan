@@ -67,7 +67,7 @@ function mkEmbedBlocks(track, player) {
     .setDescription(`${makeBlockBar(currentTime, duration)}\n\`${timeDisplay}\``)
     .addFields({ name: '🔊 Volume', value: `${player.volume}%`, inline: true })
     .setThumbnail(track.info.artworkUrl || null)
-    .setImage('attachment://disc.gif') // GIF do disco girando
+    .setImage('https://i.imgur.com/DvyUJKA.gif') // GIF do disco girando
     .setColor('Purple');
 }
 
@@ -122,24 +122,12 @@ client.lavalink.on('trackStart', async (player, track) => {
   const ch = client.channels.cache.get(player.textChannelId);
   if (!ch) return;
 
-  const msg = await ch.send({ 
-    embeds: [mkEmbedBlocks(track, player)],
-    files: [{ 
-      attachment: './assets/disc.gif', 
-      name: 'disc.gif' 
-    }] 
-  });
+  const msg = await ch.send({ embeds: [mkEmbedBlocks(track, player)] });
   
   const iv = setInterval(async () => {
     if (!player.queue.current) return clearInterval(iv);
     try { 
-      await msg.edit({ 
-        embeds: [mkEmbedBlocks(track, player)],
-        files: [{ 
-          attachment: './assets/disc.gif', 
-          name: 'disc.gif' 
-        }] 
-      }); 
+      await msg.edit({ embeds: [mkEmbedBlocks(track, player)] }); 
     } catch {}
   }, BLOCK_INTERVAL);
 
