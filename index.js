@@ -67,7 +67,6 @@ function mkEmbedBlocks(track, player) {
     .setDescription(`${makeBlockBar(currentTime, duration)}\n\`${timeDisplay}\``)
     .addFields({ name: '🔊 Volume', value: `${player.volume}%`, inline: true })
     .setThumbnail(track.info.artworkUrl || null)
-    .setImage('https://i.imgur.com/DvyUJKA.gif') // GIF do disco girando
     .setColor('Purple');
 }
 

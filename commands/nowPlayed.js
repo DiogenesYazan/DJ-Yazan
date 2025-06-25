@@ -47,7 +47,6 @@ module.exports = {
       .setDescription(`${bar}\n\`${timeDisplay}\`\n**${track.info.title}**\n🎨 **Artista:** ${track.info.author}\n🔊 **Volume:** ${vol}%`)
       .setURL(track.info.uri)
       .setThumbnail(track.info.artworkUrl || null) // Thumbnail da música
-      .setImage('https://i.imgur.com/DvyUJKA.gif') // GIF do disco girando
       .setColor('Purple');
 
     return interaction.editReply({ embeds: [embed] });
