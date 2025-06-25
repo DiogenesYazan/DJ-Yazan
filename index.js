@@ -28,18 +28,46 @@ for (const file of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) 
 client.loopModes = new Map();
 
 // Funções de barra de progresso
-const BAR_SIZE = 13;
-const BLOCK_INTERVAL = 15_000;
-function makeBlockBar(blocks) {
-  const filled = Math.min(blocks, BAR_SIZE);
+const BAR_SIZE = 25; // Tamanho da barra de progresso
+const BLOCK_INTERVAL = 5_000;
+
+// Função para formatar tempo em mm:ss
+function formatTime(ms) {
+  if (!ms || ms <= 0 || isNaN(ms)) return '00:00';
+  
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function makeBlockBar(currentTime, totalTime) {
+  if (!totalTime || totalTime <= 0 || isNaN(totalTime)) {
+    return '▇'.repeat(BAR_SIZE); // Barra cheia se não tiver duração
+  }
+  
+  const progress = Math.min(currentTime / totalTime, 1);
+  const filled = Math.floor(progress * BAR_SIZE);
   return '▇'.repeat(filled) + '─'.repeat(BAR_SIZE - filled);
 }
-function mkEmbedBlocks(track, blocks, vol) {
+
+function mkEmbedBlocks(track, player) {
+  const currentTime = player ? player.position : 0;
+  const totalTime = track.info.length || track.info.duration || 0;
+  
+  // Se não conseguir obter duração, tenta outras propriedades
+  const duration = totalTime || player?.queue?.current?.info?.length || 0;
+  
+  const timeDisplay = duration > 0 
+    ? `${formatTime(currentTime)} / ${formatTime(duration)}`
+    : `${formatTime(currentTime)} / ∞`; // Para streams ao vivo
+  
   return new EmbedBuilder()
     .setTitle(`🎶 ${track.info.title} — ${track.info.author}`)
-    .setDescription(makeBlockBar(blocks))
-    .addFields({ name: '🔊 Volume', value: `${vol}%`, inline: true })
+    .setDescription(`${makeBlockBar(currentTime, duration)}\n\`${timeDisplay}\``)
+    .addFields({ name: '🔊 Volume', value: `${player.volume}%`, inline: true })
     .setThumbnail(track.info.artworkUrl || null)
+    .setImage('attachment://disc.gif') // GIF do disco girando
     .setColor('Purple');
 }
 
@@ -94,12 +122,25 @@ client.lavalink.on('trackStart', async (player, track) => {
   const ch = client.channels.cache.get(player.textChannelId);
   if (!ch) return;
 
-  const msg = await ch.send({ embeds: [mkEmbedBlocks(track, 0, player.volume)] });
-  let blocks = 0;
+  const msg = await ch.send({ 
+    embeds: [mkEmbedBlocks(track, player)],
+    files: [{ 
+      attachment: './assets/disc.gif', 
+      name: 'disc.gif' 
+    }] 
+  });
+  
   const iv = setInterval(async () => {
     if (!player.queue.current) return clearInterval(iv);
-    blocks++;
-    try { await msg.edit({ embeds: [mkEmbedBlocks(track, blocks, player.volume)] }); } catch {}
+    try { 
+      await msg.edit({ 
+        embeds: [mkEmbedBlocks(track, player)],
+        files: [{ 
+          attachment: './assets/disc.gif', 
+          name: 'disc.gif' 
+        }] 
+      }); 
+    } catch {}
   }, BLOCK_INTERVAL);
 
   ivMap.set(player.guildId, iv);

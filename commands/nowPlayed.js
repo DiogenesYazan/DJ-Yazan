@@ -1,10 +1,15 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 function makeBar(current, total, size = 20) {
+  if (!total || total <= 0 || isNaN(total)) {
+    return '█'.repeat(size); // Barra cheia se não tiver duração
+  }
   const filled = Math.round((current / total) * size);
   return '█'.repeat(filled) + '─'.repeat(size - filled);
 }
+
 function fmt(ms) {
+  if (!ms || ms <= 0 || isNaN(ms)) return '00:00';
   const s = Math.floor(ms / 1000);
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
@@ -27,16 +32,30 @@ module.exports = {
     const track = player.queue.current;
     const vol = player.volume;
     const current = player.position;
-    const total = track.info.length;
-    const bar = makeBar(current, total);
+    const total = track.info.length || track.info.duration || 0;
+    
+    // Se não conseguir obter duração, tenta outras propriedades
+    const duration = total || player?.queue?.current?.info?.length || 0;
+    
+    const bar = makeBar(current, duration);
+    const timeDisplay = duration > 0 
+      ? `${fmt(current)}/${fmt(duration)}`
+      : `${fmt(current)}/∞`; // Para streams ao vivo
 
     const embed = new EmbedBuilder()
       .setTitle('🎵 Now Playing')
-      .setDescription(`${bar}\n\`${fmt(current)}/${fmt(total)}\`\n**${track.info.title}**\nVolume: **${vol}%**`)
+      .setDescription(`${bar}\n\`${timeDisplay}\`\n**${track.info.title}**\n🎨 **Artista:** ${track.info.author}\n🔊 **Volume:** ${vol}%`)
       .setURL(track.info.uri)
-      .setThumbnail(track.info.artworkUrl || null)
+      .setThumbnail(track.info.artworkUrl || null) // Thumbnail da música
+      .setImage('attachment://disc.gif') // GIF do disco ao lado da barra
       .setColor('Purple');
 
-    return interaction.editReply({ embeds: [embed] });
+    return interaction.editReply({ 
+      embeds: [embed], 
+      files: [{ 
+        attachment: './assets/disc.gif', 
+        name: 'disc.gif' 
+      }] 
+    });
   }
 };
