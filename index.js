@@ -1,30 +1,39 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
+const {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  EmbedBuilder,
+  ActivityType
+} = require('discord.js');
 const { LavalinkManager } = require('lavalink-client');
 const fs = require('fs');
 
-/* ─── Discord client & comandos ─── */
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
+  presence: {
+    status: 'online',
+    activities: [{ name: 'iniciando...', type: ActivityType.Playing }]
+  }
 });
+
+// Carrega comandos
 client.commands = new Collection();
 for (const file of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) {
   const cmd = require(`./commands/${file}`);
   client.commands.set(cmd.data.name, cmd);
 }
 
-/* ─── Helpers de barra ─── */
-const BAR_SIZE = 13;              // total de blocos na barra
-const BLOCK_INTERVAL = 15_000;    // 15 segundos por bloco
-const EMPTY_BAR = '─'.repeat(BAR_SIZE);
+// Map para armazenar modo de loop por guilda
+client.loopModes = new Map();
 
-// Gera a barra com N blocos preenchidos
+// Funções de barra de progresso
+const BAR_SIZE = 13;
+const BLOCK_INTERVAL = 15_000;
 function makeBlockBar(blocks) {
   const filled = Math.min(blocks, BAR_SIZE);
   return '▇'.repeat(filled) + '─'.repeat(BAR_SIZE - filled);
 }
-
-/* ─── Cria Embed sem timestamps ─── */
 function mkEmbedBlocks(track, blocks, vol) {
   return new EmbedBuilder()
     .setTitle(`🎶 ${track.info.title} — ${track.info.author}`)
@@ -34,7 +43,7 @@ function mkEmbedBlocks(track, blocks, vol) {
     .setColor('Purple');
 }
 
-/* ─── Configuração do Lavalink ─── */
+// Configuração do Lavalink
 client.lavalink = new LavalinkManager({
   nodes: [{
     host: process.env.LAVA_HOST,
@@ -51,80 +60,95 @@ client.lavalink = new LavalinkManager({
   autoSkip: true
 });
 
-/* ─── Controle de intervalos ─── */
-const ivMap = new Map();
-
-/* ─── Eventos do Bot ─── */
 client.on('ready', () => {
   client.lavalink.init({ id: client.user.id, username: client.user.username });
   console.log(`✅ Online: ${client.user.tag}`);
+
+  // Rotação de status
+  const statuses = [
+    '♬ tocando música',
+    '🎵 use /play para ouvir',
+    `${client.guilds.cache.size} servidores`,
+    '🎶 música é vida',
+    '🔁 use /loop para loop',
+    '🎧 ouvindo você',
+    '📻 música 24/7',
+    '🎤 solicite uma música',
+    '🎼 música é arte',
+    '🎹 música para todos',
+    '🎷 relaxe com música',
+    '🎺 música é felicidade' 
+  ];
+  let idx = 0;
+  setInterval(() => {
+    client.user.setActivity(statuses[idx]);
+    idx = (idx + 1) % statuses.length;
+  }, 30_000);
 });
+
 client.on('raw', data => client.lavalink.sendRawData(data));
 
+// Barra de progresso ao iniciar faixa
+const ivMap = new Map();
 client.lavalink.on('trackStart', async (player, track) => {
-  const channel = client.channels.cache.get(player.textChannelId);
-  if (!channel) return;
+  const ch = client.channels.cache.get(player.textChannelId);
+  if (!ch) return;
 
-  // Envia embed inicial com zero blocos
-  const msg = await channel.send({
-    embeds: [mkEmbedBlocks(track, 0, player.volume)]
-  });
-
-  // A cada 15s, adiciona um bloco
+  const msg = await ch.send({ embeds: [mkEmbedBlocks(track, 0, player.volume)] });
   let blocks = 0;
-  const interval = setInterval(async () => {
-    // Se a música acabou ou mudou, limpa o intervalo
-    if (!player.queue.current) {
-      clearInterval(interval);
-      return;
-    }
-
+  const iv = setInterval(async () => {
+    if (!player.queue.current) return clearInterval(iv);
     blocks++;
-    try {
-      await msg.edit({
-        embeds: [mkEmbedBlocks(track, blocks, player.volume)]
-      });
-    } catch {
-      // se falhar, apenas ignore
-    }
+    try { await msg.edit({ embeds: [mkEmbedBlocks(track, blocks, player.volume)] }); } catch {}
   }, BLOCK_INTERVAL);
 
-  ivMap.set(player.guildId, interval);
+  ivMap.set(player.guildId, iv);
 });
 
-const stopIv = guildId => {
+// Limpa barra quando necessário
+function stopIv(guildId) {
   const iv = ivMap.get(guildId);
-  if (iv) {
-    clearInterval(iv);
-    ivMap.delete(guildId);
-  }
-};
+  if (iv) clearInterval(iv), ivMap.delete(guildId);
+}
 
-client.lavalink.on('trackEnd', p => stopIv(p.guildId));
-client.lavalink.on('queueEnd', p => {
-  stopIv(p.guildId);
-  client.channels.cache.get(p.textChannelId)
-    ?.send('✅ Fim da fila! Saindo em 30 s se nada for adicionado.');
+// Loop manual ao finalizar faixa
+client.lavalink.on('trackEnd', (player, track) => {
+  const mode = client.loopModes.get(player.guildId) || 'off';
+
+  if (mode === 'track') {
+    player.queue.unshift(track);
+    player.play();
+  } else if (mode === 'queue') {
+    player.queue.add(track);
+  } else {
+    stopIv(player.guildId);
+  }
 });
 
-/* ─── Comandos Slash ─── */
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isChatInputCommand()) return;
-  const cmd = client.commands.get(interaction.commandName);
+
+// Ações ao terminar a fila
+client.lavalink.on('queueEnd', player => {
+  const mode = client.loopModes.get(player.guildId) || 'off';
+  client.channels.cache.get(player.textChannelId)
+    ?.send(`✅ Fim da fila${mode === 'off' ? '' : ` (loop: ${mode})`}`);
+  if (mode === 'off') stopIv(player.guildId);
+});
+
+// Handler de comandos
+client.on('interactionCreate', async i => {
+  if (!i.isChatInputCommand()) return;
+  const cmd = client.commands.get(i.commandName);
   if (!cmd) return;
+
   try {
-    await cmd.execute(interaction);
-  } catch (error) {
-    console.error('Erro ao executar comando:', error);
-    const reply = { content: '❌ Erro interno', ephemeral: true };
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp(reply);
-    } else {
-      await interaction.reply(reply);
-    }
+    await cmd.execute(i);
+  } catch (e) {
+    console.error('Erro:', e);
+    const r = { content: '❌ Erro interno', ephemeral: true };
+    i.replied || i.deferred
+      ? await i.followUp(r)
+      : await i.reply(r);
   }
 });
 
-/* ─── Inicia sessão ─── */
 client.login(process.env.TOKEN);
-
