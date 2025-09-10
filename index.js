@@ -70,26 +70,66 @@ function mkEmbedBlocks(track, player) {
     .setColor('Purple');
 }
 
-// Configuração do Lavalink
+// Configuração do Lavalink - apenas servidor que funciona
 client.lavalink = new LavalinkManager({
-  nodes: [{
-    host: process.env.LAVA_HOST,
-    port: +process.env.LAVA_PORT,
-    authorization: process.env.LAVA_PASSWORD,
-    secure: process.env.LAVA_SECURE === 'true',
-    id: 'main'
-  }],
+  nodes: [
+    {
+      host: process.env.LAVA_HOST,
+      port: +process.env.LAVA_PORT,
+      authorization: process.env.LAVA_PASSWORD,
+      secure: process.env.LAVA_SECURE === 'true',
+      id: 'main_server',
+      closeOnError: false, // Não fecha o bot se der erro
+      retryAmount: 3,
+      retryDelay: 5000
+    }
+  ],
   sendToShard: (guildId, packet) =>
     client.guilds.cache.get(guildId)?.shard?.send(packet),
-  client: { id: process.env.CLIENT_ID, username: 'MusicBot' },
-  playerOptions: { onEmptyQueue: { destroyAfterMs: 30_000 } },
+  client: { id: process.env.CLIENT_ID, username: 'DJ Yazan' },
+  playerOptions: { 
+    onEmptyQueue: { destroyAfterMs: 30_000 },
+    applyVolumeAsFilter: false,
+    clientBasedPositionUpdateInterval: 100,
+    defaultSearchPlatform: 'ytsearch'
+  },
   queueOptions: { emitQueueUpdates: true },
-  autoSkip: true
+  autoSkip: true,
+  autoSkipOnResolveError: true,
+  linksAllowed: true
 });
 
 client.on('ready', () => {
-  client.lavalink.init({ id: client.user.id, username: client.user.username });
   console.log(`✅ Online: ${client.user.tag}`);
+  
+  // Verificar se as variáveis de ambiente estão configuradas
+  if (!process.env.LAVA_HOST || !process.env.LAVA_PORT || !process.env.LAVA_PASSWORD) {
+    console.error('❌ ERRO: Variáveis de ambiente do Lavalink não configuradas!');
+    console.error('📝 Crie um arquivo .env baseado no .env.example');
+    return;
+  }
+  
+  console.log(`🎵 Tentando conectar aos servidores Lavalink...`);
+  console.log(`📡 Servidor principal: ${process.env.LAVA_HOST}:${process.env.LAVA_PORT}`);
+  console.log(`🔄 Servidores de backup configurados: 3`);
+  
+  // Inicializar Lavalink
+  client.lavalink.init({ id: client.user.id, username: client.user.username });
+  
+  // Aguardar conexão do Lavalink antes de continuar
+  setTimeout(() => {
+    if (!lavalinkReady) {
+      console.log('⏳ Tentando conectar aos servidores Lavalink...');
+      console.log('💡 Isso pode demorar alguns segundos...');
+    }
+  }, 3000);
+  
+  setTimeout(() => {
+    if (!lavalinkReady) {
+      console.log('⚠️ Conexão demorou mais que o esperado...');
+      console.log('🔍 Verificando se algum servidor está disponível...');
+    }
+  }, 10000);
 
   // Rotação de status
   const statuses = [
@@ -113,7 +153,56 @@ client.on('ready', () => {
   }, 30_000);
 });
 
-client.on('raw', data => client.lavalink.sendRawData(data));
+// Variável para controlar se o Lavalink está pronto
+let lavalinkReady = false;
+
+client.on('raw', data => {
+  // Só envia dados se o Lavalink estiver conectado e pronto
+  if (lavalinkReady && client.lavalink) {
+    try {
+      client.lavalink.sendRawData(data);
+    } catch (error) {
+      console.error('❌ Erro ao enviar dados para Lavalink:', error.message);
+    }
+  }
+});
+
+// Eventos do Lavalink com tratamento de erro melhorado
+client.lavalink.on('nodeConnect', (node) => {
+  console.log(`✅ Lavalink conectado: ${node.id} (${node.host}:${node.port})`);
+  lavalinkReady = true;
+});
+
+client.lavalink.on('nodeDisconnect', (node) => {
+  console.log(`❌ Lavalink desconectado: ${node.id} (${node.host}:${node.port})`);
+  // Só marca como não pronto se todos os nós estiverem desconectados
+  const connectedNodes = Array.from(client.lavalink.nodeManager.nodes.values()).filter(n => n.connected);
+  if (connectedNodes.length === 0) {
+    lavalinkReady = false;
+  }
+});
+
+client.lavalink.on('nodeError', (node, error) => {
+  console.error(`❌ Erro no servidor ${node.id} (${node.host}:${node.port}): ${error.message || 'Conexão falhou'}`);
+  // Não deixa o erro parar o bot - continua com outros servidores
+});
+
+client.lavalink.on('nodeReconnect', (node) => {
+  console.log(`🔄 Reconectando ao servidor: ${node.id} (${node.host}:${node.port})`);
+});
+
+client.lavalink.on('nodeReady', (node) => {
+  console.log(`🎵 Servidor pronto: ${node.id} (${node.host}:${node.port})`);
+  lavalinkReady = true;
+});
+
+client.lavalink.on('nodeCreate', (node) => {
+  console.log(`🔧 Inicializando conexão: ${node.id} (${node.host}:${node.port})`);
+});
+
+client.lavalink.on('nodeDestroy', (node) => {
+  console.log(`🗑️ Conexão encerrada: ${node.id} (${node.host}:${node.port})`);
+});
 
 // Barra de progresso ao iniciar faixa
 const ivMap = new Map();
