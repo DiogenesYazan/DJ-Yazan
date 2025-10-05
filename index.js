@@ -70,33 +70,57 @@ function mkEmbedBlocks(track, player) {
     .setColor('Purple');
 }
 
-// Configuração do Lavalink - apenas servidor que funciona
+// Configuração do Lavalink v4 com melhores práticas
 client.lavalink = new LavalinkManager({
   nodes: [
     {
+      authorization: process.env.LAVA_PASSWORD,
       host: process.env.LAVA_HOST,
       port: +process.env.LAVA_PORT,
-      authorization: process.env.LAVA_PASSWORD,
+      id: 'main_lavalink',
       secure: process.env.LAVA_SECURE === 'true',
-      id: 'main_server',
-      closeOnError: false, // Não fecha o bot se der erro
-      retryAmount: 3,
-      retryDelay: 5000
+      // Configurações de conexão otimizadas
+      requestSignalTimeoutMS: 10000,
+      closeOnError: false,
+      heartBeatInterval: 30_000,
+      enablePingOnStatsCheck: true,
+      retryDelay: 10_000,
+      retryAmount: 5
     }
   ],
-  sendToShard: (guildId, packet) =>
-    client.guilds.cache.get(guildId)?.shard?.send(packet),
-  client: { id: process.env.CLIENT_ID, username: 'DJ Yazan' },
-  playerOptions: { 
-    onEmptyQueue: { destroyAfterMs: 30_000 },
-    applyVolumeAsFilter: false,
-    clientBasedPositionUpdateInterval: 100,
-    defaultSearchPlatform: 'ytsearch'
+  sendToShard: (guildId, payload) => 
+    client.guilds.cache.get(guildId)?.shard?.send(payload),
+  client: {
+    id: process.env.CLIENT_ID,
+    username: 'DJ Yazan'
   },
-  queueOptions: { emitQueueUpdates: true },
   autoSkip: true,
   autoSkipOnResolveError: true,
-  linksAllowed: true
+  emitNewSongsOnly: false, // Emite eventos para músicas em loop
+  playerOptions: {
+    applyVolumeAsFilter: false,
+    clientBasedPositionUpdateInterval: 100,
+    defaultSearchPlatform: 'ytsearch',
+    volumeDecrementer: 1, // 100% no cliente = 100% no lavalink
+    onDisconnect: {
+      autoReconnect: true,
+      destroyPlayer: false
+    },
+    onEmptyQueue: {
+      destroyAfterMs: 30_000
+    },
+    useUnresolvedData: true,
+    maxErrorsPerTime: {
+      threshold: 10_000,
+      maxAmount: 3
+    }
+  },
+  queueOptions: {
+    maxPreviousTracks: 25
+  },
+  linksAllowed: true,
+  linksBlacklist: [],
+  linksWhitelist: []
 });
 
 client.on('ready', () => {
@@ -105,31 +129,19 @@ client.on('ready', () => {
   // Verificar se as variáveis de ambiente estão configuradas
   if (!process.env.LAVA_HOST || !process.env.LAVA_PORT || !process.env.LAVA_PASSWORD) {
     console.error('❌ ERRO: Variáveis de ambiente do Lavalink não configuradas!');
-    console.error('📝 Crie um arquivo .env baseado no .env.example');
+    console.error('📝 Verifique o arquivo .env');
     return;
   }
   
-  console.log(`🎵 Tentando conectar aos servidores Lavalink...`);
-  console.log(`📡 Servidor principal: ${process.env.LAVA_HOST}:${process.env.LAVA_PORT}`);
-  console.log(`🔄 Servidores de backup configurados: 3`);
+  console.log(`🎵 Inicializando Lavalink Manager...`);
+  console.log(`📡 Servidor: ${process.env.LAVA_HOST}:${process.env.LAVA_PORT}`);
+  console.log(`� Secure: ${process.env.LAVA_SECURE === 'true' ? 'SSL/TLS' : 'HTTP'}`);
   
-  // Inicializar Lavalink
-  client.lavalink.init({ id: client.user.id, username: client.user.username });
-  
-  // Aguardar conexão do Lavalink antes de continuar
-  setTimeout(() => {
-    if (!lavalinkReady) {
-      console.log('⏳ Tentando conectar aos servidores Lavalink...');
-      console.log('💡 Isso pode demorar alguns segundos...');
-    }
-  }, 3000);
-  
-  setTimeout(() => {
-    if (!lavalinkReady) {
-      console.log('⚠️ Conexão demorou mais que o esperado...');
-      console.log('🔍 Verificando se algum servidor está disponível...');
-    }
-  }, 10000);
+  // Inicializar Lavalink com o usuário do bot
+  client.lavalink.init({
+    id: client.user.id,
+    username: client.user.username
+  });
 
   // Rotação de status
   const statuses = [
@@ -156,53 +168,55 @@ client.on('ready', () => {
 // Variável para controlar se o Lavalink está pronto
 let lavalinkReady = false;
 
-client.on('raw', data => {
-  // Só envia dados se o Lavalink estiver conectado e pronto
-  if (lavalinkReady && client.lavalink) {
-    try {
-      client.lavalink.sendRawData(data);
-    } catch (error) {
-      console.error('❌ Erro ao enviar dados para Lavalink:', error.message);
-    }
-  }
+// Evento RAW do Discord - IMPORTANTE: enviar dados para o Lavalink
+client.on('raw', (data) => {
+  client.lavalink.sendRawData(data);
 });
 
-// Eventos do Lavalink com tratamento de erro melhorado
-client.lavalink.on('nodeConnect', (node) => {
-  console.log(`✅ Lavalink conectado: ${node.id} (${node.host}:${node.port})`);
+// === Eventos do Node Manager (conexão com Lavalink) ===
+client.lavalink.nodeManager.on('create', (node) => {
+  console.log(`🔧 Criando nó Lavalink: ${node.id} (${node.options.host}:${node.options.port})`);
+});
+
+client.lavalink.nodeManager.on('connect', (node) => {
+  console.log(`✅ Conectado ao Lavalink: ${node.id}`);
+  console.log(`   Host: ${node.options.host}:${node.options.port}`);
+  console.log(`   Versão: Lavalink v4`);
+  console.log(`   Secure: ${node.options.secure ? 'SSL/TLS' : 'HTTP'}`);
   lavalinkReady = true;
 });
 
-client.lavalink.on('nodeDisconnect', (node) => {
-  console.log(`❌ Lavalink desconectado: ${node.id} (${node.host}:${node.port})`);
+client.lavalink.nodeManager.on('reconnecting', (node) => {
+  console.log(`🔄 Reconectando ao Lavalink: ${node.id}...`);
+});
+
+client.lavalink.nodeManager.on('disconnect', (node, reason) => {
+  console.log(`❌ Desconectado do Lavalink: ${node.id}`);
+  console.log(`   Motivo: ${reason?.code || 'Desconhecido'} - ${reason?.reason || 'N/A'}`);
+  
   // Só marca como não pronto se todos os nós estiverem desconectados
-  const connectedNodes = Array.from(client.lavalink.nodeManager.nodes.values()).filter(n => n.connected);
+  const connectedNodes = Array.from(client.lavalink.nodeManager.nodes.values())
+    .filter(n => n.connected);
+  
   if (connectedNodes.length === 0) {
     lavalinkReady = false;
+    console.log('⚠️ Nenhum servidor Lavalink disponível!');
   }
 });
 
-client.lavalink.on('nodeError', (node, error) => {
-  console.error(`❌ Erro no servidor ${node.id} (${node.host}:${node.port}): ${error.message || 'Conexão falhou'}`);
-  // Não deixa o erro parar o bot - continua com outros servidores
+client.lavalink.nodeManager.on('error', (node, error, payload) => {
+  console.error(`❌ Erro no Lavalink ${node.id}:`);
+  console.error(`   Mensagem: ${error.message || error}`);
+  if (payload) {
+    console.error(`   Payload:`, payload);
+  }
 });
 
-client.lavalink.on('nodeReconnect', (node) => {
-  console.log(`🔄 Reconectando ao servidor: ${node.id} (${node.host}:${node.port})`);
+client.lavalink.nodeManager.on('destroy', (node) => {
+  console.log(`🗑️ Nó Lavalink destruído: ${node.id}`);
 });
 
-client.lavalink.on('nodeReady', (node) => {
-  console.log(`🎵 Servidor pronto: ${node.id} (${node.host}:${node.port})`);
-  lavalinkReady = true;
-});
-
-client.lavalink.on('nodeCreate', (node) => {
-  console.log(`🔧 Inicializando conexão: ${node.id} (${node.host}:${node.port})`);
-});
-
-client.lavalink.on('nodeDestroy', (node) => {
-  console.log(`🗑️ Conexão encerrada: ${node.id} (${node.host}:${node.port})`);
-});
+// === Eventos do Player (música) ===
 
 // Barra de progresso ao iniciar faixa
 const ivMap = new Map();
@@ -212,11 +226,19 @@ client.lavalink.on('trackStart', async (player, track) => {
 
   const msg = await ch.send({ embeds: [mkEmbedBlocks(track, player)] });
   
+  // Atualizar barra de progresso a cada 5 segundos
   const iv = setInterval(async () => {
-    if (!player.queue.current) return clearInterval(iv);
+    if (!player.queue.current) {
+      clearInterval(iv);
+      return;
+    }
+    
     try { 
       await msg.edit({ embeds: [mkEmbedBlocks(track, player)] }); 
-    } catch {}
+    } catch (err) {
+      // Mensagem foi deletada ou outro erro
+      clearInterval(iv);
+    }
   }, BLOCK_INTERVAL);
 
   ivMap.set(player.guildId, iv);
@@ -225,30 +247,43 @@ client.lavalink.on('trackStart', async (player, track) => {
 // Limpa barra quando necessário
 function stopIv(guildId) {
   const iv = ivMap.get(guildId);
-  if (iv) clearInterval(iv), ivMap.delete(guildId);
+  if (iv) {
+    clearInterval(iv);
+    ivMap.delete(guildId);
+  }
 }
 
 // Loop manual ao finalizar faixa
-client.lavalink.on('trackEnd', (player, track) => {
+client.lavalink.on('trackEnd', (player, track, payload) => {
   const mode = client.loopModes.get(player.guildId) || 'off';
 
   if (mode === 'track') {
+    // Loop na música atual
     player.queue.unshift(track);
-    player.play();
   } else if (mode === 'queue') {
+    // Loop na fila - adiciona no final
     player.queue.add(track);
   } else {
+    // Sem loop - limpa o intervalo
     stopIv(player.guildId);
   }
 });
 
-
 // Ações ao terminar a fila
-client.lavalink.on('queueEnd', player => {
+client.lavalink.on('queueEnd', (player) => {
   const mode = client.loopModes.get(player.guildId) || 'off';
-  client.channels.cache.get(player.textChannelId)
-    ?.send(`✅ Fim da fila${mode === 'off' ? '' : ` (loop: ${mode})`}`);
-  if (mode === 'off') stopIv(player.guildId);
+  
+  const ch = client.channels.cache.get(player.textChannelId);
+  if (ch) {
+    ch.send({
+      content: `✅ Fim da fila${mode === 'off' ? '' : ` (loop: ${mode})`}`,
+      ephemeral: false
+    }).catch(() => {});
+  }
+  
+  if (mode === 'off') {
+    stopIv(player.guildId);
+  }
 });
 
 // Handler de comandos
