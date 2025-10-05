@@ -157,13 +157,13 @@ client.once('clientReady', () => {
     `${client.guilds.cache.size} servidores`,
     '🎶 música é vida',
     '🔁 use /loop para loop',
-    '🎧 ouvindo você',
+    '🎧 Ariel deixe de brincadeira gostosa',
     '📻 música 24/7',
     '🎤 solicite uma música',
-    '🎼 música é arte',
-    '🎹 música para todos',
+    '🎼 OS CARA TÁ NA MALDADE',
+    '🎹 ESCONDAM A MAKITA',
     '🎷 relaxe com música',
-    '🎺 música é felicidade' 
+    '🎺 NÃO CHORAXX' 
   ];
   let idx = 0;
   setInterval(() => {
