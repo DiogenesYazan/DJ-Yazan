@@ -7,6 +7,7 @@ const {
   ActivityType
 } = require('discord.js');
 const { LavalinkManager } = require('lavalink-client');
+const { QuickDB } = require('quick.db');
 const fs = require('fs');
 
 const client = new Client({
@@ -17,6 +18,9 @@ const client = new Client({
   }
 });
 
+// Inicializa Quick.db para leaderboard
+const db = new QuickDB();
+
 // Carrega comandos
 client.commands = new Collection();
 for (const file of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) {
@@ -26,6 +30,9 @@ for (const file of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) 
 
 // Map para armazenar modo de loop por guilda
 client.loopModes = new Map();
+
+// Map para tracking de tempo de música (para leaderboard)
+const trackStartTimes = new Map();
 
 // Funções de barra de progresso
 const BAR_SIZE = 25; // Tamanho da barra de progresso
@@ -123,7 +130,7 @@ client.lavalink = new LavalinkManager({
   linksWhitelist: []
 });
 
-client.on('ready', () => {
+client.once('clientReady', () => {
   console.log(`✅ Online: ${client.user.tag}`);
   
   // Verificar se as variáveis de ambiente estão configuradas
@@ -226,6 +233,16 @@ client.lavalink.on('trackStart', async (player, track) => {
 
   const msg = await ch.send({ embeds: [mkEmbedBlocks(track, player)] });
   
+  // === LEADERBOARD TRACKING ===
+  // Registra início da música para tracking de tempo
+  if (track.requester && track.requester.id) {
+    const trackKey = `${player.guildId}_${track.requester.id}`;
+    trackStartTimes.set(trackKey, Date.now());
+    
+    // Incrementa contador de músicas
+    await updateLeaderboard(player.guildId, track.requester.id, 'song');
+  }
+  
   // Atualizar barra de progresso a cada 5 segundos
   const iv = setInterval(async () => {
     if (!player.queue.current) {
@@ -255,6 +272,19 @@ function stopIv(guildId) {
 
 // Loop manual ao finalizar faixa
 client.lavalink.on('trackEnd', (player, track, payload) => {
+  // === LEADERBOARD TRACKING ===
+  // Registra tempo ouvido quando música termina
+  if (track.requester && track.requester.id) {
+    const trackKey = `${player.guildId}_${track.requester.id}`;
+    const startTime = trackStartTimes.get(trackKey);
+    
+    if (startTime) {
+      const timeListened = Date.now() - startTime;
+      updateLeaderboard(player.guildId, track.requester.id, 'time', timeListened);
+      trackStartTimes.delete(trackKey);
+    }
+  }
+  
   const mode = client.loopModes.get(player.guildId) || 'off';
 
   if (mode === 'track') {
@@ -283,24 +313,175 @@ client.lavalink.on('queueEnd', (player) => {
   
   if (mode === 'off') {
     stopIv(player.guildId);
+    
+    // Verifica modo 24/7
+    const is247 = client.mode247?.get(player.guildId) || false;
+    
+    if (!is247) {
+      // Se não está em modo 24/7, desconecta após 30 segundos
+      setTimeout(() => {
+        const currentPlayer = client.lavalink.getPlayer(player.guildId);
+        if (currentPlayer && !currentPlayer.playing && currentPlayer.queue.tracks.length === 0) {
+          currentPlayer.destroy();
+        }
+      }, 30000);
+    }
   }
 });
 
-// Handler de comandos
+// Handler de interações (comandos e botões)
 client.on('interactionCreate', async i => {
-  if (!i.isChatInputCommand()) return;
-  const cmd = client.commands.get(i.commandName);
-  if (!cmd) return;
+  // Handler de comandos
+  if (i.isChatInputCommand()) {
+    const cmd = client.commands.get(i.commandName);
+    if (!cmd) return;
 
-  try {
-    await cmd.execute(i);
-  } catch (e) {
-    console.error('Erro:', e);
-    const r = { content: '❌ Erro interno', ephemeral: true };
-    i.replied || i.deferred
-      ? await i.followUp(r)
-      : await i.reply(r);
+    try {
+      await cmd.execute(i);
+    } catch (e) {
+      console.error('Erro:', e);
+      const r = { content: '❌ Erro interno', flags: [64] };
+      i.replied || i.deferred
+        ? await i.followUp(r)
+        : await i.reply(r);
+    }
+    return;
+  }
+
+  // Handler de botões do controller
+  if (i.isButton()) {
+    const player = client.lavalink.getPlayer(i.guild.id);
+    
+    if (!player || !player.queue.current) {
+      return i.reply({
+        content: '❌ Não há nenhuma música tocando!',
+        ephemeral: true
+      });
+    }
+
+    try {
+      switch (i.customId) {
+        case 'controller_pause':
+          if (player.paused) {
+            await player.resume();
+            await i.reply({ content: '▶️ Reprodução retomada!', ephemeral: true });
+          } else {
+            await player.pause();
+            await i.reply({ content: '⏸️ Música pausada!', ephemeral: true });
+          }
+          break;
+
+        case 'controller_skip':
+          const skipped = player.queue.current;
+          await player.skip();
+          await i.reply({ content: `⏭️ Pulada: **${skipped.info.title}**`, ephemeral: true });
+          break;
+
+        case 'controller_stop':
+          await player.stopPlaying(true, false);
+          await i.reply({ content: '⏹️ Reprodução parada e fila limpa!', ephemeral: true });
+          break;
+
+        case 'controller_shuffle':
+          if (player.queue.tracks.length < 2) {
+            return i.reply({ content: '❌ Mínimo 2 músicas na fila!', ephemeral: true });
+          }
+          const tracks = [...player.queue.tracks];
+          for (let j = tracks.length - 1; j > 0; j--) {
+            const k = Math.floor(Math.random() * (j + 1));
+            [tracks[j], tracks[k]] = [tracks[k], tracks[j]];
+          }
+          player.queue.tracks = tracks;
+          await i.reply({ content: '🔀 Fila embaralhada!', ephemeral: true });
+          break;
+
+        case 'controller_loop':
+          const currentMode = client.loopModes.get(i.guild.id) || 'off';
+          const modes = ['off', 'track', 'queue'];
+          const nextMode = modes[(modes.indexOf(currentMode) + 1) % modes.length];
+          client.loopModes.set(i.guild.id, nextMode);
+          await i.reply({ content: `🔁 Loop: **${nextMode}**`, ephemeral: true });
+          break;
+
+        case 'controller_volume_down':
+          const newVolDown = Math.max(0, player.volume - 10);
+          await player.setVolume(newVolDown);
+          await i.reply({ content: `🔉 Volume: ${newVolDown}%`, ephemeral: true });
+          break;
+
+        case 'controller_volume_up':
+          const newVolUp = Math.min(200, player.volume + 10);
+          await player.setVolume(newVolUp);
+          await i.reply({ content: `🔊 Volume: ${newVolUp}%`, ephemeral: true });
+          break;
+
+        case 'controller_queue':
+          const queue = player.queue.tracks;
+          if (queue.length === 0) {
+            return i.reply({ content: '📋 A fila está vazia!', ephemeral: true });
+          }
+          const queueList = queue.slice(0, 10).map((t, idx) => 
+            `${idx + 1}. **${t.info.title}** - ${t.info.author}`
+          ).join('\n');
+          const more = queue.length > 10 ? `\n\n*...e mais ${queue.length - 10} música(s)*` : '';
+          await i.reply({ content: `📋 **Fila (${queue.length} músicas)**\n\n${queueList}${more}`, ephemeral: true });
+          break;
+
+        default:
+          await i.reply({ content: '❌ Botão desconhecido!', ephemeral: true });
+      }
+    } catch (error) {
+      console.error('Erro no botão:', error);
+      await i.reply({ content: '❌ Erro ao executar ação!', ephemeral: true });
+    }
+  }
+
+  // Handler de menu de seleção (search)
+  if (i.isStringSelectMenu() && i.customId === 'search_select') {
+    // O handler já está no próprio comando search.js
+    return;
   }
 });
+
+// === FUNÇÃO DE ATUALIZAÇÃO DO LEADERBOARD ===
+async function updateLeaderboard(guildId, userId, type, value = 1) {
+  try {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const monthKey = `${currentYear}-${currentMonth}`;
+    
+    // Verifica e reseta se for novo mês
+    const lastMonth = await db.get(`leaderboard_${guildId}_lastMonth`);
+    if (lastMonth !== monthKey) {
+      await db.set(`leaderboard_${guildId}_lastMonth`, monthKey);
+      await db.set(`leaderboard_${guildId}_${monthKey}`, {});
+    }
+    
+    // Busca dados atuais
+    const leaderboardData = await db.get(`leaderboard_${guildId}_${monthKey}`) || {};
+    
+    // Inicializa usuário se não existir
+    if (!leaderboardData[userId]) {
+      leaderboardData[userId] = {
+        songs: 0,
+        time: 0,
+        lastPlayed: null
+      };
+    }
+    
+    // Atualiza dados
+    if (type === 'song') {
+      leaderboardData[userId].songs += 1;
+      leaderboardData[userId].lastPlayed = new Date().toISOString();
+    } else if (type === 'time') {
+      leaderboardData[userId].time += value;
+    }
+    
+    // Salva no banco
+    await db.set(`leaderboard_${guildId}_${monthKey}`, leaderboardData);
+  } catch (error) {
+    console.error('Erro ao atualizar leaderboard:', error);
+  }
+}
 
 client.login(process.env.TOKEN);
