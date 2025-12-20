@@ -190,14 +190,20 @@ async function startGameLoop(interaction, player, tracks, guildId) {
     await player.queue.add(track);
     // Calcule posição segura
     const duration = Number(track.info.duration) || 0;
-    const playOpts = {};
-    if (duration > 60000) {
-        // Só define posição se tiver certeza que é seguro
-        playOpts.position = 30000;
-    }
+    // Modificação: Toca primeiro, depois faz seek se necessário
+    await player.play();
     
-    console.log(`Debug PlayOpts:`, playOpts, `Duration: ${duration}`);
-    await player.play(playOpts);
+    if (duration > 60000) {
+        // Aguarda um pequeno delay para garantir que o player iniciou
+        // e então faz o seek
+        setTimeout(async () => {
+             try {
+                await player.seek(30000);
+             } catch(e) {
+                console.error('Error seeking:', e);
+             }
+        }, 500); 
+    }
   } catch (err) {
     console.error('Error playing quiz track:', err);
     await game.channel.send('❌ Erro ao tocar esta música. Pulando...');
