@@ -8,15 +8,9 @@ const QuizSessionSchema = new mongoose.Schema({
   maxRounds: { type: Number, required: true },
   playlistUrl: { type: String },
   scores: { type: Map, of: Number, default: {} }, // Mapa userId -> pontos
-  active: { type: Boolean, default: true },
-  startedAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
-
-// Middleware para atualizar o updatedAt
-QuizSessionSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
+  active: { type: Boolean, default: true }
+}, {
+  timestamps: true // Cria createdAt e updatedAt automaticamente
 });
 
 module.exports = mongoose.model('QuizSession', QuizSessionSchema);
