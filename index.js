@@ -236,6 +236,8 @@ const ivMap = new Map();
 client.lavalink.on('trackStart', async (player, track) => {
   const ch = client.channels.cache.get(player.textChannelId);
   if (!ch) return;
+  // --- ANTI-SPOILER QUIZ ---
+  if (track.userData && track.userData.quiz) return;
 
   const msg = await ch.send({ embeds: [mkEmbedBlocks(track, player)] });
   

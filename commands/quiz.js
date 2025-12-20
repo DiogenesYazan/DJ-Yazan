@@ -101,7 +101,12 @@ module.exports = {
     }
 
     // Embaralhar e pegar N músicas
+    // Embaralhar e pegar N músicas
     tracks = tracks.sort(() => Math.random() - 0.5).slice(0, rounds);
+
+    // Flag tracks as Quiz to avoid spoilers
+    tracks.forEach(t => { t.userData = { quiz: true }; });
+    if (countdownTrack) countdownTrack.userData = { quiz: true };
 
     // 4. Iniciar Estado do Jogo
     const game = {
@@ -116,10 +121,23 @@ module.exports = {
     };
     games.set(guildId, game);
 
-    await interaction.followUp(`🎮 **Quiz Iniciado!** Serão ${rounds} rodadas.\nA música começa em instantes...`);
+    // MEE6-style Start Embed
+    const startEmbed = new EmbedBuilder()
+      .setTitle('🎵 O Quiz de Música vai começar em breve!')
+      .setDescription(`Este jogo terá **${rounds} músicas**, 30 segundos por música.\nVocê terá que adivinhar o **nome do artista** e o **nome da música**.`)
+      .addFields({ 
+        name: 'Pontuação', 
+        value: '```diff\n+ 1 ponto por nome de artista\n+ 2 pontos pelo nome da música\n```\nVocê pode digitar **!pass** para pular a música.'
+      })
+      .setColor('#3b88c3') // MEE6 Blueish
+      .setFooter({ text: 'Sente e relaxe, o Quiz vai começar em 5 segundos!' });
+
+    await interaction.followUp({ embeds: [startEmbed] });
 
     // Iniciar loop do jogo
-    startGameLoop(interaction, player, tracks, guildId);
+    setTimeout(() => {
+        startGameLoop(interaction, player, tracks, guildId);
+    }, 5000);
   }
 };
 
@@ -167,8 +185,13 @@ async function startGameLoop(interaction, player, tracks, guildId) {
     // Vamos adicionar e forçar o play
     await player.queue.add(track);
     // Calcule posição segura
+    // Calcule posição segura para evitar crash
+    // Deve ser inteiro e menor que duração
     const duration = Number(track.info.duration) || 0;
-    const position = duration > 60000 ? 30000 : 0;
+    // Se duração > 1min, começa em 30s. Senão começa do 0.
+    // Mas garante que 30s < duration.
+    let position = (duration > 60000) ? 30000 : 0;
+    if (position >= duration) position = 0; // Fallback
 
     await player.play({
        position: position
@@ -196,19 +219,35 @@ async function startGameLoop(interaction, player, tracks, guildId) {
     console.log(`[QUIZ MATCH] Answer: "${content}" | Expected: "${cleanTitle}" OR "${cleanAuthor}"`);
 
     // Lógica de Acerto
-    // Título = 10 pts
+    let guaranteedWin = false;
+
+    // !pass command
+    if (content === '!pass' || content === 'pass') {
+        collector.stop('pass');
+        return;
+    }
+
+    // Título = 2 pts
     if (content.includes(cleanTitle) || (cleanTitle.length > 5 && content.includes(cleanTitle.substring(0, Math.floor(cleanTitle.length * 0.8))))) {
       roundWinner = m.author;
-      pointsWon = 10;
+      pointsWon = 2;
       answerType = 'Título da Música';
-      collector.stop('winner');
+      guaranteedWin = true;
     } 
-    // Artista = 5 pts
+    // Artista = 1 pt
     else if (content.includes(cleanAuthor)) {
       roundWinner = m.author;
-      pointsWon = 5;
+      pointsWon = 1;
       answerType = 'Artista';
-      collector.stop('winner');
+      guaranteedWin = true;
+    }
+
+    if (guaranteedWin) {
+        m.react('✅').catch(() => {});
+        collector.stop('winner');
+    } else {
+        // Errou: reage com X
+        m.react('❌').catch(() => {});
     }
   });
 
