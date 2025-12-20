@@ -1,11 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const Leaderboard = require('../models/Leaderboard');
+const QuizSession = require('../models/QuizSession'); // [NEW] Importar o model
 const COUNTDOWN_URL = 'https://www.youtube.com/watch?v=6nJR1Bj3_l8';
-
-// Armazena o estado do jogo por servidor
-// Armazena o estado do jogo por servidor
-// const games = new Map(); // Removido em favor de client.quizStates
-const MAX_ROUNDS = 20; // Constante auxiliar
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,7 +10,7 @@ module.exports = {
     .addSubcommand(sub => 
       sub.setName('start')
         .setDescription('Inicia um novo jogo')
-        .addIntegerOption(opt => opt.setName('rounds').setDescription('Número de rodadas').setMinValue(3).setMaxValue(20).setRequired(true))
+        .addIntegerOption(opt => opt.setName('rounds').setDescription('Número de rodadas').setMinValue(3).setMaxValue(50).setRequired(true))
         .addStringOption(opt => opt.setName('playlist').setDescription('Link da playlist (opcional)'))
     )
     .addSubcommand(sub =>
@@ -30,14 +26,19 @@ module.exports = {
     if (interaction.options.getSubcommand() === 'stop') {
       const games = interaction.client.quizStates;
       const game = games.get(guildId);
+      
+      // Remove do Banco de Dados também
+      await QuizSession.deleteOne({ guildId });
+
       if (game) {
-        clearInterval(game.timer); // Garante que timers parem
+        clearInterval(game.timer);
         const stopPlayer = interaction.client.lavalink.getPlayer(guildId);
         if (stopPlayer) stopPlayer.stopPlaying();
         games.delete(guildId);
-        return interaction.reply('🛑 Jogo parado!');
+        return interaction.reply('🛑 Jogo parado e sessão limpa!');
       } else {
-        return interaction.reply('❌ Nenhum jogo acontecendo no momento.');
+        // Tenta limpar sessão órfã no DB se houver
+        return interaction.reply('🛑 Sessão limpa (nenhum jogo ativo no momento).');
       }
     }
 
@@ -48,8 +49,14 @@ module.exports = {
     const member = await interaction.guild.members.fetch(interaction.user.id);
     if (!member.voice.channel) return interaction.editReply('🎤 Entre em um canal de voz!');
     
-    const games = interaction.client.quizStates;
-    if (games.has(guildId)) return interaction.editReply('⚠️ Já existe um jogo em andamento!');
+    // Verifica se já tem sessão no DB ou memória
+    const existingSession = await QuizSession.findOne({ guildId, active: true });
+    if (existingSession) {
+        // Opção: Poderíamos perguntar se quer retomar, mas por simplicidade vamos pedir para parar
+        return interaction.editReply('⚠️ Já existe um jogo registrado neste servidor! Use `/quiz stop` para encerrar o anterior.');
+    }
+
+    if (interaction.client.quizStates.has(guildId)) return interaction.editReply('⚠️ Já existe um jogo em andamento (memória)!');
 
     // 2. Setup do Player
     let player = interaction.client.lavalink.getPlayer(guildId);
@@ -65,7 +72,7 @@ module.exports = {
 
     // 3. Carregar Músicas e Countdown
     const rounds = interaction.options.getInteger('rounds');
-    const playlistUrl = interaction.options.getString('playlist') || 'https://www.youtube.com/playlist?list=PL4fGSI1pDJn6O1LS0XSdF3RyO0Rq_LDeI'; // Top 100 Hits default
+    const playlistUrl = interaction.options.getString('playlist') || 'https://www.youtube.com/playlist?list=PL4fGSI1pDJn6O1LS0XSdF3RyO0Rq_LDeI';
 
     await interaction.editReply(`🔄 Carregando músicas e preparando contagem...`);
 
@@ -80,7 +87,6 @@ module.exports = {
       }
 
       // Carrega Playlist
-      // Verifica se é URL direta ou busca
       const isUrl = playlistUrl.startsWith('http');
       const search = isUrl ? playlistUrl : `ytsearch:${playlistUrl}`;
       
@@ -104,25 +110,37 @@ module.exports = {
     }
 
     // Embaralhar e pegar N músicas
-    // Embaralhar e pegar N músicas
     tracks = tracks.sort(() => Math.random() - 0.5).slice(0, rounds);
 
-    // Flag tracks as Quiz to avoid spoilers
+    // Flag tracks as Quiz
     tracks.forEach(t => { t.userData = { quiz: true }; });
     if (countdownTrack) countdownTrack.userData = { quiz: true };
 
-    // 4. Iniciar Estado do Jogo
+    // 4. Salvar Sessão no MongoDB
+    const newSession = new QuizSession({
+        guildId,
+        channelId: interaction.channel.id,
+        voiceChannelId: member.voice.channel.id,
+        currentRound: 0,
+        maxRounds: rounds,
+        playlistUrl: playlistUrl,
+        active: true
+    });
+    await newSession.save();
+
+    // 5. Iniciar Estado do Jogo em Memória
     const game = {
       round: 0,
       maxRounds: rounds,
-      scores: {}, // userId: points
+      scores: {}, 
       currentTrack: null,
       countdownTrack: countdownTrack,
       active: true,
       channel: interaction.channel,
-      timer: null
+      timer: null,
+      voiceChannelId: member.voice.channel.id // Importante para reconexão
     };
-    games.set(guildId, game);
+    interaction.client.quizStates.set(guildId, game);
 
     // MEE6-style Start Embed
     const startEmbed = new EmbedBuilder()
@@ -132,12 +150,11 @@ module.exports = {
         name: 'Pontuação', 
         value: '```diff\n+ 1 ponto por nome de artista\n+ 2 pontos pelo nome da música\n```\nVocê pode digitar **!pass** para pular a música.'
       })
-      .setColor('#3b88c3') // MEE6 Blueish
+      .setColor('#3b88c3') 
       .setFooter({ text: 'Sente e relaxe, o Quiz vai começar em 5 segundos!' });
 
     await interaction.followUp({ embeds: [startEmbed] });
 
-    // Iniciar loop do jogo
     setTimeout(() => {
         startGameLoop(interaction, player, tracks, guildId);
     }, 5000);
@@ -146,8 +163,19 @@ module.exports = {
 
 async function startGameLoop(interaction, player, tracks, guildId) {
   const games = interaction.client.quizStates;
-  const game = games.get(guildId);
-  if (!game || !game.active) return;
+  let game = games.get(guildId);
+  
+  // Se não estiver em memória, tenta recuperar do DB (Robustez)
+  // Nota: Recuperar totalmente do DB exigiria salvar as tracks, o que é complexo. 
+  // Assumimos que a memória é volátil mas o DB guarda o estado geral.
+  // Se perdeu da memória (crash do bot), infelizmente perde as tracks embaralhadas atuais.
+  // Por enquanto, confiamos que se o jogo está no DB, ele deveria estar na memória se o bot não reiniciou.
+  
+  if (!game || !game.active) {
+      // Verifica DB para limpar sujeito
+      await QuizSession.deleteOne({ guildId });
+      return;
+  }
 
   // Verifica fim do jogo
   if (game.round >= game.maxRounds) {
@@ -155,59 +183,75 @@ async function startGameLoop(interaction, player, tracks, guildId) {
     return;
   }
 
+  // === FIX: RECONEXÃO ===
+  // Verifica se o player morreu ou desconectou
+  player = interaction.client.lavalink.getPlayer(guildId);
+  if (!player || !player.connected) {
+      console.log(`[QUIZ] Player desconectado no meio do jogo. Tentando reconectar em ${game.voiceChannelId}...`);
+      try {
+          player = await interaction.client.lavalink.createPlayer({
+              guildId,
+              voiceChannelId: game.voiceChannelId,
+              textChannelId: game.channel.id,
+              selfDeaf: true
+          });
+          await player.connect();
+          console.log('[QUIZ] Reconectado com sucesso!');
+      } catch (err) {
+          console.error('[QUIZ] Falha ao reconectar:', err);
+          game.channel.send('❌ Perdi a conexão com o canal de voz e não consegui voltar. O jogo foi encerrado.');
+          finishGame(game, guildId, interaction.client, true); // True para forçar fim sem vencedor
+          return;
+      }
+  }
+  // ======================
+
   // Prepara rodada
   game.round++;
   const track = tracks[game.round - 1];
   game.currentTrack = track;
 
-  // Limpa string (remove (Official Video), ft., etc para facilitar)
-  // Mas mantemos a lógica de verificação flexível no collector
-  
+  // Atualiza DB
+  try {
+      await QuizSession.updateOne(
+          { guildId }, 
+          { 
+              $set: { currentRound: game.round }, 
+              $inc: { "scores.roundsPlayed": 1 } // Exemplo de tracking
+          }
+      );
+  } catch(e) { console.error('Erro ao atualizar QuizSession:', e); }
+
   await game.channel.send(`**🎵 Rodada ${game.round}/${game.maxRounds}**\nOuvindo... Quem adivinha? (30 segundos)`);
 
   // 1. Toca Countdown (se existir)
   if (game.countdownTrack) {
     try {
-      console.log('Starting countdown track:', game.countdownTrack.info.title);
-      // Estratégia de Fila: Limpa, Adiciona e Toca
-      // player.queue.tracks = []; // Opcional: limpar fila anterior?
       await player.queue.add(game.countdownTrack);
       await player.play(); 
-      
-      // Espera ~4 segundos (duração do vídeo de contagem)
       await new Promise(resolve => setTimeout(resolve, 4000));
     } catch (err) {
       console.error('Error playing countdown:', err);
-      // Se falhar, segue o jogo
     }
   }
 
   // 2. Toca a música do Quiz
-  console.log('Playing quiz track:', track.info.title);
   try {
-    // Adiciona à fila (como prioridade ou limpando)
-    // Vamos adicionar e forçar o play
     await player.queue.add(track);
-    // Calcule posição segura
     const duration = Number(track.info.duration) || 0;
-    // Modificação: Toca primeiro, depois faz seek se necessário
     await player.play();
     
     if (duration > 60000) {
-        // Aguarda um pequeno delay para garantir que o player iniciou
-        // e então faz o seek
         setTimeout(async () => {
-             try {
-                await player.seek(30000);
-             } catch(e) {
-                console.error('Error seeking:', e);
-             }
+             try { await player.seek(30000); } catch(e) {}
         }, 500); 
     }
   } catch (err) {
     console.error('Error playing quiz track:', err);
     await game.channel.send('❌ Erro ao tocar esta música. Pulando...');
-    return; 
+    return; // Passa pra proxima (loop recursivo? não, timeout chama o collector end)
+    // Na verdade, se falhar o play, o collector vai rodar no silêncio. 
+    // Ideal seria pular a rodada.
   }
 
   // Collector de respostas
@@ -219,65 +263,43 @@ async function startGameLoop(interaction, player, tracks, guildId) {
   let answerType = '';
 
   collector.on('collect', m => {
-    if (roundWinner) return; // Já ganharam
+    if (roundWinner) return; 
 
-    // --- LIMPEZA AGRESSIVA ---
-    // Limpa input do usuário
     const content = cleanString(m.content).toLowerCase();
     
-    // Limpa Título e Autor Original
     const cleanTitle = cleanString(track.info.title).toLowerCase();
     const cleanAuthor = cleanString(track.info.author).toLowerCase();
 
-    // --- EXTRAÇÃO INTELIGENTE ---
     const possibleAnswers = [];
-
-    // 1. Título Original Limpo
     possibleAnswers.push({ text: cleanTitle, points: 2, type: 'Título' });
-
-    // 2. Autor Original Limpo
     possibleAnswers.push({ text: cleanAuthor, points: 1, type: 'Artista' });
 
-    // 3. Split por Hífen (Artist - Song)
     if (track.info.title.includes('-')) {
         const parts = track.info.title.split('-').map(p => cleanString(p).toLowerCase());
         if (parts.length >= 2) {
-            possibleAnswers.push({ text: parts[0], points: 1, type: 'Artista' }); // Antes do hifen
-            possibleAnswers.push({ text: parts[1], points: 2, type: 'Título' });  // Depois do hifen
+            possibleAnswers.push({ text: parts[0], points: 1, type: 'Artista' });
+            possibleAnswers.push({ text: parts[1], points: 2, type: 'Título' });
         }
     }
 
-    // 4. Split por Aspas (Artist "Song" ou 'Song')
     const quoteRegex = /["'](.*?)["']/;
     const quoteMatch = track.info.title.match(quoteRegex);
     if (quoteMatch && quoteMatch[1]) {
         possibleAnswers.push({ text: cleanString(quoteMatch[1]).toLowerCase(), points: 2, type: 'Título' });
     }
 
-    console.log(`[QUIZ] Input: "${content}" | Checking against: ${possibleAnswers.map(a => a.text).join(' | ')}`);
-
-    // --- LÓGICA DE MATCH (REVERSA) ---
-    // Verifica se a RESPOSTA ESPERADA (target) CONTÉM o que o usuário digitou (content)
-    // Ex: Target "Katseye Gnarly", Input "Gnarly" -> Match!
-    
-    // Filtro de segurança: Input deve ter pelo menos 3 letras para evitar falsos positivos com "a", "o", "the"
     if (content.length < 3) return; 
 
-    // !pass command
     if (content === '!pass' || content === 'pass') {
         collector.stop('pass');
         return;
     }
 
     let match = null;
-
     for (const answer of possibleAnswers) {
-        // Verifica se o Target CONTÉM o Input (Match Parcial Seguro)
-        // OU se o Input é igual ao Target
         if (answer.text.includes(content)) {
-             // Prioriza matches exatos ou maiores
              match = answer;
-             break; // Encontrou um match válido
+             break;
         }
     }
 
@@ -294,17 +316,22 @@ async function startGameLoop(interaction, player, tracks, guildId) {
   });
 
   collector.on('end', async (collected, reason) => {
-    // Para a música
     await player.stopPlaying();
 
     if (reason === 'winner' && roundWinner) {
-      // Atualiza Score Local
+      // Atualiza Memória
       game.scores[roundWinner.id] = (game.scores[roundWinner.id] || 0) + pointsWon;
 
-      // Salva no Banco (Async para não travar)
+      // Atualiza MongoDB Session Score
+      try {
+          const update = {};
+          update[`scores.${roundWinner.id}`] = pointsWon;
+          await QuizSession.updateOne({ guildId }, { $inc: update });
+      } catch(e) { console.error('Erro ao salvar score parcial:', e); }
+
+      // Atualiza Leaderboard Global
       updateDbScore(guildId, roundWinner.id, pointsWon);
 
-      // Embed de Vitória
       const winEmbed = new EmbedBuilder()
         .setTitle('🎉 ACERTOU!')
         .setDescription(`**${roundWinner.username}** foi o mais rápido!`)
@@ -318,7 +345,6 @@ async function startGameLoop(interaction, player, tracks, guildId) {
 
       await game.channel.send({ embeds: [winEmbed] });
     } else {
-      // Embed de Ninguém Acertou (Opcional, ou texto simples)
       const loseEmbed = new EmbedBuilder()
         .setTitle('❌ Tempo esgotado!')
         .setDescription('Ninguém acertou a tempo.')
@@ -332,8 +358,6 @@ async function startGameLoop(interaction, player, tracks, guildId) {
       await game.channel.send({ embeds: [loseEmbed] });
     }
 
-    // Delay para próxima rodada
-    // Se ganhou, é mais rápido (2s). Se ninguém acertou, dá tempo de ler (4s).
     const delay = (reason === 'winner') ? 2000 : 4000;
     setTimeout(() => {
       startGameLoop(interaction, player, tracks, guildId);
@@ -341,23 +365,24 @@ async function startGameLoop(interaction, player, tracks, guildId) {
   });
 }
 
-function finishGame(game, guildId, client) {
+async function finishGame(game, guildId, client, forceError = false) {
   const games = client.quizStates;
-  // Ordena vencedores
-  const sorted = Object.entries(game.scores).sort((a, b) => b[1] - a[1]);
   
-  let resultMsg = '🏆 **Fim do Jogo!**\n\n';
-  if (sorted.length === 0) {
-    resultMsg += 'Ninguém pontuou! 😢';
-  } else {
-    sorted.forEach(([userId, score], i) => {
-        // Tenta pegar username do cache, fall back pra ID
-        // Como o jogo é rápido, cache deve estar ok
-        resultMsg += `${['🥇','🥈','🥉'][i] || '🏅'} <@${userId}>: **${score}** pontos\n`;
-    });
+  if (!forceError) {
+      const sorted = Object.entries(game.scores).sort((a, b) => b[1] - a[1]);
+      let resultMsg = '🏆 **Fim do Jogo!**\n\n';
+      if (sorted.length === 0) {
+        resultMsg += 'Ninguém pontuou! 😢';
+      } else {
+        sorted.forEach(([userId, score], i) => {
+            resultMsg += `${['🥇','🥈','🥉'][i] || '🏅'} <@${userId}>: **${score}** pontos\n`;
+        });
+      }
+      game.channel.send({ content: resultMsg });
   }
 
-  game.channel.send({ content: resultMsg });
+  // Limpa DB
+  await QuizSession.deleteOne({ guildId });
   games.delete(guildId);
   client.lavalink.getPlayer(guildId)?.disconnect();
 }
@@ -365,17 +390,16 @@ function finishGame(game, guildId, client) {
 function cleanString(str) {
   if (!str) return '';
   return str
-    .replace(/\(.*?\)/g, '') // Remove parenteses
-    .replace(/\[.*?\]/g, '') // Remove colchetes
-    .replace(/ft\.|feat\.|featuring/gi, '') // Remove feats (prefixo)
-    .replace(/\b(official video|official music video|official audio|official mv|lyric video|visualizer|mv|hd|hq|4k)\b/gi, '') // Remove palavras-chave soltas
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove acentos
-    .replace(/[^a-zA-Z0-9 ]/g, '') // Remove simbolos restantes
-    .replace(/\s+/g, ' ') // Remove espaços duplicados
+    .replace(/\(.*?\)/g, '') 
+    .replace(/\[.*?\]/g, '') 
+    .replace(/ft\.|feat\.|featuring/gi, '') 
+    .replace(/\b(official video|official music video|official audio|official mv|lyric video|visualizer|mv|hd|hq|4k)\b/gi, '') 
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+    .replace(/[^a-zA-Z0-9 ]/g, '') 
+    .replace(/\s+/g, ' ') 
     .trim();
 }
 
-// Persistência DB
 async function updateDbScore(guildId, userId, points) {
   try {
     const currentMonth = new Date().getMonth();

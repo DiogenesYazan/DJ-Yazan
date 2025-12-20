@@ -26,6 +26,7 @@ const client = new Client({
 const mongoose = require('mongoose');
 const Leaderboard = require('./models/Leaderboard');
 const GuildConfig = require('./models/GuildConfig');
+const QuizSession = require('./models/QuizSession');
 
 // Conexão com MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -335,13 +336,22 @@ client.lavalink.on('queueEnd', async (player) => {
     const is247 = config ? config.alwaysOn : false;
     
     if (!is247) {
-      // Se não está em modo 24/7, desconecta após 30 segundos
-      setTimeout(() => {
-        const currentPlayer = client.lavalink.getPlayer(player.guildId);
-        if (currentPlayer && !currentPlayer.playing && currentPlayer.queue.tracks.length === 0) {
-          currentPlayer.destroy();
-        }
-      }, 30000);
+      // Verifica se há Quiz Ativo (Memória ou DB)
+      // Se houver, NÃO agenda desconexão, pois o quiz limpa a fila entre rodadas
+      const isQuizActive = client.quizStates.has(player.guildId) || await QuizSession.exists({ guildId: player.guildId });
+      
+      if (!isQuizActive) {
+        // Se não está em modo 24/7 e não tem quiz, desconecta após 30 segundos
+        setTimeout(() => {
+          const currentPlayer = client.lavalink.getPlayer(player.guildId);
+          // Verifica novamente quiz (pode ter começado nesses 30s)
+          if (client.quizStates.has(player.guildId)) return;
+
+          if (currentPlayer && !currentPlayer.playing && currentPlayer.queue.tracks.length === 0) {
+            currentPlayer.destroy();
+          }
+        }, 30000);
+      }
     }
   }
 });
