@@ -12,37 +12,16 @@ module.exports = {
         .setDescription('Inicia um novo jogo')
         .addIntegerOption(opt => opt.setName('rounds').setDescription('Número de rodadas').setMinValue(3).setMaxValue(50).setRequired(true))
         .addStringOption(opt => opt.setName('playlist').setDescription('Link da playlist (opcional)'))
-    )
-    .addSubcommand(sub =>
-      sub.setName('stop')
-        .setDescription('Para o jogo atual')
     ),
 
   async execute(interaction) {
     if (!interaction.guild) return interaction.reply('❌ Somente em servidores!');
     const guildId = interaction.guild.id;
 
-    // === STOP COMMAND ===
-    if (interaction.options.getSubcommand() === 'stop') {
-      const games = interaction.client.quizStates;
-      const game = games.get(guildId);
-      
-      // Remove do Banco de Dados também
-      await QuizSession.deleteOne({ guildId });
-
-      if (game) {
-        clearInterval(game.timer);
-        const stopPlayer = interaction.client.lavalink.getPlayer(guildId);
-        if (stopPlayer) stopPlayer.stopPlaying();
-        games.delete(guildId);
-        return interaction.reply('🛑 Jogo parado e sessão limpa!');
-      } else {
-        // Tenta limpar sessão órfã no DB se houver
-        return interaction.reply('🛑 Sessão limpa (nenhum jogo ativo no momento).');
-      }
-    }
-
     // === START COMMAND ===
+    // (Lógica direta, já que só tem start agora, mas vamos manter o check do subcomando se quiser expandir dps, ou simplificar)
+    // Para simplificar e manter compatibilidade, verificamos se é start (única opção)
+    
     await interaction.deferReply();
 
     // 1. Verificações

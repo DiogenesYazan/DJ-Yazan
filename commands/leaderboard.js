@@ -12,6 +12,7 @@ module.exports = {
         .addChoices(
           { name: '🎵 Músicas Pedidas', value: 'songs' },
           { name: '⏱️ Tempo Ouvido', value: 'time' },
+          { name: '🧠 Quiz Points', value: 'quiz' },
           { name: '📊 Geral', value: 'general' }
         )),
   
@@ -42,6 +43,7 @@ module.exports = {
       userId: data.userId,
       songs: data.songs || 0,
       time: data.time || 0,
+      quizPoints: data.quizPoints || 0,
       lastPlayed: data.lastPlayed || null
     }));
     
@@ -58,6 +60,10 @@ module.exports = {
       sortedUsers = users.sort((a, b) => b.time - a.time).slice(0, 10);
       title = '⏱️ Top 10 - Tempo Ouvido';
       description = 'Usuários que mais ouviram música este mês';
+    } else if (tipo === 'quiz') {
+      sortedUsers = users.sort((a, b) => b.quizPoints - a.quizPoints).slice(0, 10);
+      title = '🧠 Top 10 - Mestres do Quiz';
+      description = 'Usuários com mais acertos no Music Quiz';
     } else {
       // Ranking geral (pontuação combinada)
       sortedUsers = users
@@ -98,6 +104,8 @@ module.exports = {
           valueText = `**${user.songs}** músicas pedidas`;
         } else if (tipo === 'time') {
           valueText = `**${formatTime(user.time)}** de audição`;
+        } else if (tipo === 'quiz') {
+          valueText = `**${user.quizPoints}** pontos no Quiz`;
         } else {
           valueText = `**${user.songs}** músicas • **${formatTime(user.time)}** ouvido\n` +
                      `Pontuação: **${Math.floor(user.score)}** pts`;
@@ -125,6 +133,8 @@ module.exports = {
             othersText += `**${position}º** ${username} - ${user.songs} músicas\n`;
           } else if (tipo === 'time') {
             othersText += `**${position}º** ${username} - ${formatTime(user.time)}\n`;
+          } else if (tipo === 'quiz') {
+            othersText += `**${position}º** ${username} - ${user.quizPoints} pts\n`;
           } else {
             othersText += `**${position}º** ${username} - ${user.songs} músicas • ${formatTime(user.time)}\n`;
           }
@@ -161,7 +171,9 @@ module.exports = {
             ? `**${userPosition + 1}º lugar** • ${userData.songs} músicas • ${formatTime(userData.time)} • ${Math.floor(userData.score)} pts`
             : tipo === 'songs'
             ? `**${userPosition + 1}º lugar** • ${userData.songs} músicas`
-            : `**${userPosition + 1}º lugar** • ${formatTime(userData.time)}`,
+            : tipo === 'time' 
+            ? `**${userPosition + 1}º lugar** • ${formatTime(userData.time)}`
+            : `**${userPosition + 1}º lugar** • ${userData.quizPoints} pts`,
           inline: false
         });
       }

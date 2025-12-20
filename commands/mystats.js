@@ -88,6 +88,13 @@ module.exports = {
             `**Média/dia:** ${avgTimePerDay}\n` +
             `**Projeção:** ${formatTime((userData.time / currentDay) * daysInMonth)}`,
           inline: true
+        },
+        {
+          name: '🧠 Quiz',
+          value:
+            `**Pontos:** ${userData.quizPoints || 0}\n` +
+            `**Média/dia:** ${(userData.quizPoints / currentDay || 0).toFixed(1)} pts`,
+          inline: true
         }
       )
       .addFields({

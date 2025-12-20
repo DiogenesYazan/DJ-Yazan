@@ -9,60 +9,55 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setColor('#9B59B6')
       .setTitle('🎧 DJ-Yazan - Comandos Profissionais')
-      .setDescription('Bot de música completo para Discord!\n\nUse `/help <comando>` para ajuda detalhada')
+      .setDescription('Bot de música e quiz completo!\nUse `/help` para ver a lista.')
       .addFields(
         {
-          name: '🎵 Reprodução',
+          name: '🎵 Música',
           value: 
-            '`/play <música>` - Adiciona música à fila\n' +
-            '`/search <música>` - Busca e escolhe música\n' +
-            '`/playlist <artista>` - Toca playlist do artista\n' +
-            '`/nowplayed` - Mostra música atual',
+            '`/play <música>` - Toca música ou playlist\n' +
+            '`/search <música>` - Pesquisa para escolher\n' +
+            '`/playlist <artista>` - Toca top músicas do artista\n' +
+            '`/stop` - Para tudo e desconecta (Música e Quiz)',
           inline: false
         },
         {
-          name: '🎛️ Controle Interativo',
+          name: '🎮 Games',
           value: 
-            '`/controller` - Painel com botões interativos\n' +
-            '`/pause` - Pausa/retoma reprodução\n' +
-            '`/skip` - Pula para próxima música\n' +
-            '`/jump <posição>` - Pula para música específica\n' +
-            '`/stop` - Para e limpa tudo',
+            '`/quiz start <rounds>` - Inicia o Music Quiz!',
           inline: false
         },
         {
-          name: '� Organização da Fila',
+          name: '🎛️ Controles',
           value: 
-            '`/queue` - Mostra fila completa\n' +
-            '`/shuffle` - Embaralha a fila\n' +
-            '`/remove <posição>` - Remove música\n' +
-            '`/clear` - Limpa toda a fila\n' +
-            '`/move <de> <para>` - Move música',
+            '`/pause` - Pausa/Resume\n' +
+            '`/skip` - Pula música\n' +
+            '`/volume <0-200>` - Ajusta volume\n' +
+            '`/loop <modo>` - Loop track/queue\n' +
+            '`/seek <tempo>` - Pula para mm:ss\n' +
+            '`/filter <tipo>` - Efeitos (8d, nightcore...)',
           inline: false
         },
         {
-          name: '�️ Efeitos e Volume',
+          name: '📋 Fila',
           value: 
-            '`/volume <1-200>` - Ajusta volume\n' +
-            '`/filter <tipo>` - 10+ efeitos de áudio\n' +
-            '`/seek <tempo>` - Pula para ponto específico\n' +
-            '`/loop <modo>` - Loop off/queue/track',
+            '`/queue` - Vê a fila\n' +
+            '`/shuffle` - Embaralha\n' +
+            '`/remove <pos>` - Remove item\n' +
+            '`/clear` - Limpa fila',
           inline: false
         },
         {
-          name: '⚙️ Configurações',
+          name: '⚙️ Outros',
           value: 
-            '`/247` - Modo 24/7 (bot permanece)\n' +
-            '`/leaderboard` - 🏆 Ranking mensal do servidor\n' +
-            '`/mystats` - 📊 Suas estatísticas pessoais\n' +
-            '`/stats` - Estatísticas do bot\n' +
-            '`/about` - Informações do bot\n' +
-            '`/ping` - Latência e status',
+            '`/247` - Alterna modo 24/7\n' +
+            '`/leaderboard` - Ranking do servidor\n' +
+            '`/mystats` - Seus stats\n' +
+            '`/ping` - Latência',
           inline: false
         }
       )
       .setThumbnail(interaction.client.user.displayAvatarURL())
-      .setFooter({ text: '4 servidores • 75 usuários • Hoje às 04:59' })
+      .setFooter({ text: 'DJ Yazan • O melhor bot de música' })
       .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
