@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const Leaderboard = require('../models/Leaderboard');
-const yts = require('yt-search');
 const COUNTDOWN_URL = 'https://www.youtube.com/watch?v=6nJR1Bj3_l8';
 
 // Armazena o estado do jogo por servidor

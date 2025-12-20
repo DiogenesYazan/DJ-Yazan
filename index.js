@@ -236,6 +236,7 @@ client.lavalink.nodeManager.on('destroy', (node) => {
 // Barra de progresso ao iniciar faixa
 const ivMap = new Map();
 client.lavalink.on('trackStart', async (player, track) => {
+  const ch = client.channels.cache.get(player.textChannelId);
   if (!ch) return;
   // --- ANTI-SPOILER QUIZ ---
   // Se houver um quiz ativo neste servidor, não mostre "Tocando Agora"
