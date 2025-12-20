@@ -6,6 +6,7 @@ const leaderboardSchema = new mongoose.Schema({
   month: { type: String, required: true, index: true }, // Format: YYYY-M
   songs: { type: Number, default: 0 },
   time: { type: Number, default: 0 },
+  quizPoints: { type: Number, default: 0 }, // New field for game points
   lastPlayed: { type: Date, default: Date.now }
 });
 
