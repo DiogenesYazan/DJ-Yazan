@@ -4,7 +4,9 @@ const yts = require('yt-search');
 const COUNTDOWN_URL = 'https://www.youtube.com/watch?v=6nJR1Bj3_l8';
 
 // Armazena o estado do jogo por servidor
-const games = new Map();
+// Armazena o estado do jogo por servidor
+// const games = new Map(); // Removido em favor de client.quizStates
+const MAX_ROUNDS = 20; // Constante auxiliar
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -27,6 +29,7 @@ module.exports = {
 
     // === STOP COMMAND ===
     if (interaction.options.getSubcommand() === 'stop') {
+      const games = interaction.client.quizStates;
       const game = games.get(guildId);
       if (game) {
         clearInterval(game.timer); // Garante que timers parem
@@ -46,6 +49,7 @@ module.exports = {
     const member = await interaction.guild.members.fetch(interaction.user.id);
     if (!member.voice.channel) return interaction.editReply('🎤 Entre em um canal de voz!');
     
+    const games = interaction.client.quizStates;
     if (games.has(guildId)) return interaction.editReply('⚠️ Já existe um jogo em andamento!');
 
     // 2. Setup do Player
@@ -142,6 +146,7 @@ module.exports = {
 };
 
 async function startGameLoop(interaction, player, tracks, guildId) {
+  const games = interaction.client.quizStates;
   const game = games.get(guildId);
   if (!game || !game.active) return;
 
@@ -185,17 +190,15 @@ async function startGameLoop(interaction, player, tracks, guildId) {
     // Vamos adicionar e forçar o play
     await player.queue.add(track);
     // Calcule posição segura
-    // Calcule posição segura para evitar crash
-    // Deve ser inteiro e menor que duração
     const duration = Number(track.info.duration) || 0;
-    // Se duração > 1min, começa em 30s. Senão começa do 0.
-    // Mas garante que 30s < duration.
-    let position = (duration > 60000) ? 30000 : 0;
-    if (position >= duration) position = 0; // Fallback
-
-    await player.play({
-       position: position
-    });
+    const playOpts = {};
+    if (duration > 60000) {
+        // Só define posição se tiver certeza que é seguro
+        playOpts.position = 30000;
+    }
+    
+    console.log(`Debug PlayOpts:`, playOpts, `Duration: ${duration}`);
+    await player.play(playOpts);
   } catch (err) {
     console.error('Error playing quiz track:', err);
     await game.channel.send('❌ Erro ao tocar esta música. Pulando...');
@@ -213,10 +216,10 @@ async function startGameLoop(interaction, player, tracks, guildId) {
   collector.on('collect', m => {
     if (roundWinner) return; // Já ganharam
 
+    // Limpa input do usuário para comparar banana com banana
+    const content = cleanString(m.content).toLowerCase();
     const cleanTitle = cleanString(track.info.title).toLowerCase();
     const cleanAuthor = cleanString(track.info.author).toLowerCase();
-
-    console.log(`[QUIZ MATCH] Answer: "${content}" | Expected: "${cleanTitle}" OR "${cleanAuthor}"`);
 
     // Lógica de Acerto
     let guaranteedWin = false;
@@ -262,19 +265,45 @@ async function startGameLoop(interaction, player, tracks, guildId) {
       // Salva no Banco (Async para não travar)
       updateDbScore(guildId, roundWinner.id, pointsWon);
 
-      await game.channel.send(`🎉 **${roundWinner.username}** acertou! \nResposta: **${track.info.title}** - ${track.info.author}\nGanhou **${pointsWon}** pontos (${answerType})!`);
+      // Embed de Vitória
+      const winEmbed = new EmbedBuilder()
+        .setTitle('🎉 ACERTOU!')
+        .setDescription(`**${roundWinner.username}** foi o mais rápido!`)
+        .addFields(
+          { name: 'Música', value: `[${track.info.title}](${track.info.uri})`, inline: true },
+          { name: 'Artista', value: track.info.author, inline: true },
+          { name: 'Pontos Ganhos', value: `+${pointsWon} (${answerType})`, inline: false }
+        )
+        .setThumbnail(track.info.artworkUrl || null)
+        .setColor('Green');
+
+      await game.channel.send({ embeds: [winEmbed] });
     } else {
-      await game.channel.send(`❌ Ninguém acertou!\nA música era: **${track.info.title}** - ${track.info.author}`);
+      // Embed de Ninguém Acertou (Opcional, ou texto simples)
+      const loseEmbed = new EmbedBuilder()
+        .setTitle('❌ Tempo esgotado!')
+        .setDescription('Ninguém acertou a tempo.')
+        .addFields(
+            { name: 'Música', value: `[${track.info.title}](${track.info.uri})`, inline: true },
+            { name: 'Artista', value: track.info.author, inline: true }
+        )
+        .setThumbnail(track.info.artworkUrl || null)
+        .setColor('Red');
+
+      await game.channel.send({ embeds: [loseEmbed] });
     }
 
     // Delay para próxima rodada
+    // Se ganhou, é mais rápido (2s). Se ninguém acertou, dá tempo de ler (4s).
+    const delay = (reason === 'winner') ? 2000 : 4000;
     setTimeout(() => {
       startGameLoop(interaction, player, tracks, guildId);
-    }, 4000);
+    }, delay);
   });
 }
 
 function finishGame(game, guildId, client) {
+  const games = client.quizStates;
   // Ordena vencedores
   const sorted = Object.entries(game.scores).sort((a, b) => b[1] - a[1]);
   
@@ -295,15 +324,14 @@ function finishGame(game, guildId, client) {
 }
 
 function cleanString(str) {
+  if (!str) return '';
   return str
-    .replace(/\(Official Video\)/gi, '')
-    .replace(/\(Official Audio\)/gi, '')
-    .replace(/\(Lyrics\)/gi, '')
-    .replace(/\(Visualizer\)/gi, '')
-    .replace(/ft\./gi, '')
-    .replace(/feat\./gi, '')
-    .replace(/\[.*?\]/g, '') // Remove coisas entre colchetes
-    .replace(/[^\w\s]/gi, '') // Remove caracteres especiais
+    .replace(/\(.*?\)/g, '') // Remove tudo entre parenteses
+    .replace(/\[.*?\]/g, '') // Remove tudo entre colchetes
+    .replace(/ft\.|feat\.|featuring/gi, '') // Remove feats
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove acentos
+    .replace(/[^a-zA-Z0-9 ]/g, '') // Remove tudo que não for letra numero ou espaço
+    .replace(/\s+/g, ' ') // Remove espaços duplicados
     .trim();
 }
 

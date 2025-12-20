@@ -36,6 +36,8 @@ for (const file of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) 
 
 // Map para armazenar modo de loop por guilda
 client.loopModes = new Map();
+// Map para armazenar estado do Quiz por guilda
+client.quizStates = new Map();
 
 // Map para tracking de tempo de música (para leaderboard)
 const trackStartTimes = new Map();
@@ -234,10 +236,10 @@ client.lavalink.nodeManager.on('destroy', (node) => {
 // Barra de progresso ao iniciar faixa
 const ivMap = new Map();
 client.lavalink.on('trackStart', async (player, track) => {
-  const ch = client.channels.cache.get(player.textChannelId);
   if (!ch) return;
   // --- ANTI-SPOILER QUIZ ---
-  if (track.userData && track.userData.quiz) return;
+  // Se houver um quiz ativo neste servidor, não mostre "Tocando Agora"
+  if (client.quizStates && client.quizStates.has(player.guildId)) return;
 
   const msg = await ch.send({ embeds: [mkEmbedBlocks(track, player)] });
   
