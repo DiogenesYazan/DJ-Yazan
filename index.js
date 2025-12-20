@@ -10,7 +10,12 @@ const { LavalinkManager } = require('lavalink-client');
 const fs = require('fs');
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
+  intents: [
+    GatewayIntentBits.Guilds, 
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ],
   presence: {
     status: 'online',
     activities: [{ name: 'iniciando...', type: ActivityType.Playing }]

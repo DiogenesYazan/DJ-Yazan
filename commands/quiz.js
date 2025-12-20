@@ -226,6 +226,12 @@ async function startGameLoop(interaction, player, tracks, guildId) {
     const cleanTitle = cleanString(track.info.title).toLowerCase();
     const cleanAuthor = cleanString(track.info.author).toLowerCase();
 
+    // Tenta separar Artista - Titulo (comum no YouTube)
+    const titleParts = track.info.title.split('-').map(p => cleanString(p).toLowerCase());
+    const possibleAnswers = [cleanTitle, cleanAuthor, ...titleParts];
+
+    console.log(`[QUIZ] Input: "${content}" | Expected: "${cleanTitle}" OR "${cleanAuthor}" OR Parts: ${JSON.stringify(titleParts)}`);
+
     // Lógica de Acerto
     let guaranteedWin = false;
 
@@ -235,15 +241,21 @@ async function startGameLoop(interaction, player, tracks, guildId) {
         return;
     }
 
-    // Título = 2 pts
-    if (content.includes(cleanTitle) || (cleanTitle.length > 5 && content.includes(cleanTitle.substring(0, Math.floor(cleanTitle.length * 0.8))))) {
+    // Helper de match parcial
+    const checkMatch = (target) => {
+        if (!target || target.length < 3) return false;
+        return content.includes(target) || (target.length > 5 && content.includes(target.substring(0, Math.floor(target.length * 0.8))));
+    };
+
+    // Título = 2 pts (Match no Title inteiro OU na parte do título após o hífen)
+    if (checkMatch(cleanTitle) || (titleParts.length > 1 && checkMatch(titleParts[1]))) {
       roundWinner = m.author;
       pointsWon = 2;
       answerType = 'Título da Música';
       guaranteedWin = true;
     } 
-    // Artista = 1 pt
-    else if (content.includes(cleanAuthor)) {
+    // Artista = 1 pt (Match no Author OU na primeira parte do hífen)
+    else if (checkMatch(cleanAuthor) || (titleParts.length > 1 && checkMatch(titleParts[0]))) {
       roundWinner = m.author;
       pointsWon = 1;
       answerType = 'Artista';
