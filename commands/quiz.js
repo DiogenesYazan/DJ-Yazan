@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const Leaderboard = require('../models/Leaderboard');
 const yts = require('yt-search');
+const COUNTDOWN_URL = 'https://www.youtube.com/watch?v=6nJR1Bj3_l8';
 
 // Armazena o estado do jogo por servidor
 const games = new Map();
@@ -59,31 +60,44 @@ module.exports = {
     }
     if (!player.connected) await player.connect();
 
-    // 3. Carregar Músicas
+    // 3. Carregar Músicas e Countdown
     const rounds = interaction.options.getInteger('rounds');
     const playlistUrl = interaction.options.getString('playlist') || 'https://www.youtube.com/playlist?list=PL4fGSI1pDJn6O1LS0XSdF3RyO0Rq_LDeI'; // Top 100 Hits default
 
-    await interaction.editReply(`🔄 Carregando músicas para ${rounds} rodadas...`);
+    await interaction.editReply(`🔄 Carregando músicas e preparando contagem...`);
 
     let tracks = [];
+    let countdownTrack = null;
+
     try {
-      if (playlistUrl.includes('playlist')) {
-        const res = await player.search({ query: playlistUrl, source: 'youtube' }, interaction.user);
-        tracks = res.tracks;
-      } else {
-        // Se for termo de busca
-        const res = await yts(playlistUrl);
-        // Aqui precisaria logic complexa pra converter, melhor forçar playlist link ou usar default
-        // Fallback pro default se der ruim
-        tracks = (await player.search({ query: 'https://www.youtube.com/playlist?list=PL4fGSI1pDJn6O1LS0XSdF3RyO0Rq_LDeI', source: 'youtube' }, interaction.user)).tracks;
+      // Carrega Countdown
+      const countdownRes = await player.search({ query: COUNTDOWN_URL, source: 'youtube' }, interaction.user);
+      if (countdownRes.tracks.length > 0) {
+        countdownTrack = countdownRes.tracks[0];
       }
+
+      // Carrega Playlist
+      // Verifica se é URL direta ou busca
+      const isUrl = playlistUrl.startsWith('http');
+      const search = isUrl ? playlistUrl : `ytsearch:${playlistUrl}`;
+      
+      const res = await player.search({ query: search, source: isUrl ? 'youtube' : 'ytsearch' }, interaction.user);
+      
+      tracks = res.tracks;
+      
+      // Fallback
+      if (!tracks || tracks.length === 0) {
+        const fallbackRes = await player.search({ query: 'https://www.youtube.com/playlist?list=PL4fGSI1pDJn6O1LS0XSdF3RyO0Rq_LDeI', source: 'youtube' }, interaction.user);
+        tracks = fallbackRes.tracks;
+      }
+
     } catch (e) {
       console.error(e);
       return interaction.editReply('❌ Erro ao carregar playlist. Tente outro link.');
     }
 
     if (tracks.length < rounds) {
-      return interaction.editReply(`❌ Playlist insuficiente! Precisa de pelo menos ${rounds} músicas.`);
+      return interaction.editReply(`❌ Playlist insuficiente! Encontrei apenas ${tracks.length} músicas (preciso de ${rounds}).`);
     }
 
     // Embaralhar e pegar N músicas
@@ -95,13 +109,14 @@ module.exports = {
       maxRounds: rounds,
       scores: {}, // userId: points
       currentTrack: null,
+      countdownTrack: countdownTrack,
       active: true,
       channel: interaction.channel,
       timer: null
     };
     games.set(guildId, game);
 
-    await interaction.followUp(`🎮 **Quiz Iniciado!** Serão ${rounds} rodadas.\nPreparem-se no chat! A música coemça em 5 segundos...`);
+    await interaction.followUp(`🎮 **Quiz Iniciado!** Serão ${rounds} rodadas.\nA música começa em instantes...`);
 
     // Iniciar loop do jogo
     startGameLoop(interaction, player, tracks, guildId);
@@ -128,11 +143,17 @@ async function startGameLoop(interaction, player, tracks, guildId) {
   
   await game.channel.send(`**🎵 Rodada ${game.round}/${game.maxRounds}**\nOuvindo... Quem adivinha? (30 segundos)`);
 
-  // Toca a música (tenta começar do meio se for longa, ou do início)
-  // Lavalink play
+  // 1. Toca Countdown (se existir)
+  if (game.countdownTrack) {
+    await player.play({ track: game.countdownTrack.encoded });
+    // Espera ~4 segundos (duração do vídeo de contagem)
+    await new Promise(resolve => setTimeout(resolve, 4000));
+  }
+
+  // 2. Toca a música do Quiz
   await player.play({
     track: track.encoded,
-    // Tentar começar em 30s se a música tiver > 60s
+    // Começa em 30s se possível para evitar introduções longas/silenciosas
     position: track.info.duration > 60000 ? 30000 : 0
   });
 
