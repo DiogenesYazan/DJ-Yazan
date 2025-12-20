@@ -221,19 +221,47 @@ async function startGameLoop(interaction, player, tracks, guildId) {
   collector.on('collect', m => {
     if (roundWinner) return; // Já ganharam
 
-    // Limpa input do usuário para comparar banana com banana
+    // --- LIMPEZA AGRESSIVA ---
+    // Limpa input do usuário
     const content = cleanString(m.content).toLowerCase();
+    
+    // Limpa Título e Autor Original
     const cleanTitle = cleanString(track.info.title).toLowerCase();
     const cleanAuthor = cleanString(track.info.author).toLowerCase();
 
-    // Tenta separar Artista - Titulo (comum no YouTube)
-    const titleParts = track.info.title.split('-').map(p => cleanString(p).toLowerCase());
-    const possibleAnswers = [cleanTitle, cleanAuthor, ...titleParts];
+    // --- EXTRAÇÃO INTELIGENTE ---
+    const possibleAnswers = [];
 
-    console.log(`[QUIZ] Input: "${content}" | Expected: "${cleanTitle}" OR "${cleanAuthor}" OR Parts: ${JSON.stringify(titleParts)}`);
+    // 1. Título Original Limpo
+    possibleAnswers.push({ text: cleanTitle, points: 2, type: 'Título' });
 
-    // Lógica de Acerto
-    let guaranteedWin = false;
+    // 2. Autor Original Limpo
+    possibleAnswers.push({ text: cleanAuthor, points: 1, type: 'Artista' });
+
+    // 3. Split por Hífen (Artist - Song)
+    if (track.info.title.includes('-')) {
+        const parts = track.info.title.split('-').map(p => cleanString(p).toLowerCase());
+        if (parts.length >= 2) {
+            possibleAnswers.push({ text: parts[0], points: 1, type: 'Artista' }); // Antes do hifen
+            possibleAnswers.push({ text: parts[1], points: 2, type: 'Título' });  // Depois do hifen
+        }
+    }
+
+    // 4. Split por Aspas (Artist "Song" ou 'Song')
+    const quoteRegex = /["'](.*?)["']/;
+    const quoteMatch = track.info.title.match(quoteRegex);
+    if (quoteMatch && quoteMatch[1]) {
+        possibleAnswers.push({ text: cleanString(quoteMatch[1]).toLowerCase(), points: 2, type: 'Título' });
+    }
+
+    console.log(`[QUIZ] Input: "${content}" | Checking against: ${possibleAnswers.map(a => a.text).join(' | ')}`);
+
+    // --- LÓGICA DE MATCH (REVERSA) ---
+    // Verifica se a RESPOSTA ESPERADA (target) CONTÉM o que o usuário digitou (content)
+    // Ex: Target "Katseye Gnarly", Input "Gnarly" -> Match!
+    
+    // Filtro de segurança: Input deve ter pelo menos 3 letras para evitar falsos positivos com "a", "o", "the"
+    if (content.length < 3) return; 
 
     // !pass command
     if (content === '!pass' || content === 'pass') {
@@ -241,32 +269,26 @@ async function startGameLoop(interaction, player, tracks, guildId) {
         return;
     }
 
-    // Helper de match parcial
-    const checkMatch = (target) => {
-        if (!target || target.length < 3) return false;
-        return content.includes(target) || (target.length > 5 && content.includes(target.substring(0, Math.floor(target.length * 0.8))));
-    };
+    let match = null;
 
-    // Título = 2 pts (Match no Title inteiro OU na parte do título após o hífen)
-    if (checkMatch(cleanTitle) || (titleParts.length > 1 && checkMatch(titleParts[1]))) {
-      roundWinner = m.author;
-      pointsWon = 2;
-      answerType = 'Título da Música';
-      guaranteedWin = true;
-    } 
-    // Artista = 1 pt (Match no Author OU na primeira parte do hífen)
-    else if (checkMatch(cleanAuthor) || (titleParts.length > 1 && checkMatch(titleParts[0]))) {
-      roundWinner = m.author;
-      pointsWon = 1;
-      answerType = 'Artista';
-      guaranteedWin = true;
+    for (const answer of possibleAnswers) {
+        // Verifica se o Target CONTÉM o Input (Match Parcial Seguro)
+        // OU se o Input é igual ao Target
+        if (answer.text.includes(content)) {
+             // Prioriza matches exatos ou maiores
+             match = answer;
+             break; // Encontrou um match válido
+        }
     }
 
-    if (guaranteedWin) {
-        m.react('✅').catch(() => {});
-        collector.stop('winner');
+    if (match) {
+      roundWinner = m.author;
+      pointsWon = match.points;
+      answerType = match.type === 'Título' ? 'Título da Música' : 'Artista';
+      
+      m.react('✅').catch(() => {});
+      collector.stop('winner');
     } else {
-        // Errou: reage com X
         m.react('❌').catch(() => {});
     }
   });
@@ -343,11 +365,12 @@ function finishGame(game, guildId, client) {
 function cleanString(str) {
   if (!str) return '';
   return str
-    .replace(/\(.*?\)/g, '') // Remove tudo entre parenteses
-    .replace(/\[.*?\]/g, '') // Remove tudo entre colchetes
-    .replace(/ft\.|feat\.|featuring/gi, '') // Remove feats
+    .replace(/\(.*?\)/g, '') // Remove parenteses
+    .replace(/\[.*?\]/g, '') // Remove colchetes
+    .replace(/ft\.|feat\.|featuring/gi, '') // Remove feats (prefixo)
+    .replace(/\b(official video|official music video|official audio|official mv|lyric video|visualizer|mv|hd|hq|4k)\b/gi, '') // Remove palavras-chave soltas
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove acentos
-    .replace(/[^a-zA-Z0-9 ]/g, '') // Remove tudo que não for letra numero ou espaço
+    .replace(/[^a-zA-Z0-9 ]/g, '') // Remove simbolos restantes
     .replace(/\s+/g, ' ') // Remove espaços duplicados
     .trim();
 }
