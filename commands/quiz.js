@@ -30,8 +30,8 @@ module.exports = {
       const game = games.get(guildId);
       if (game) {
         clearInterval(game.timer); // Garante que timers parem
-        player = interaction.client.lavalink.getPlayer(guildId);
-        if (player) player.stopPlaying();
+        const stopPlayer = interaction.client.lavalink.getPlayer(guildId);
+        if (stopPlayer) stopPlayer.stopPlaying();
         games.delete(guildId);
         return interaction.reply('🛑 Jogo parado!');
       } else {
@@ -166,11 +166,12 @@ async function startGameLoop(interaction, player, tracks, guildId) {
     // Adiciona à fila (como prioridade ou limpando)
     // Vamos adicionar e forçar o play
     await player.queue.add(track);
+    // Calcule posição segura
+    const duration = Number(track.info.duration) || 0;
+    const position = duration > 60000 ? 30000 : 0;
+
     await player.play({
-       // Se o play() vazio falhar, tentamos passar opções de start time
-       // Mas o erro anterior dizia que faltava track na fila OU playoptions
-       // Agora tem na fila.
-       position: track.info.duration > 60000 ? 30000 : 0
+       position: position
     });
   } catch (err) {
     console.error('Error playing quiz track:', err);
@@ -189,9 +190,10 @@ async function startGameLoop(interaction, player, tracks, guildId) {
   collector.on('collect', m => {
     if (roundWinner) return; // Já ganharam
 
-    const content = m.content.toLowerCase();
     const cleanTitle = cleanString(track.info.title).toLowerCase();
     const cleanAuthor = cleanString(track.info.author).toLowerCase();
+
+    console.log(`[QUIZ MATCH] Answer: "${content}" | Expected: "${cleanTitle}" OR "${cleanAuthor}"`);
 
     // Lógica de Acerto
     // Título = 10 pts
