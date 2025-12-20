@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { QuickDB } = require('quick.db');
-const db = new QuickDB();
+const Leaderboard = require('../models/Leaderboard');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -25,26 +24,22 @@ module.exports = {
     const currentYear = new Date().getFullYear();
     const monthKey = `${currentYear}-${currentMonth}`;
     
-    // Verifica se precisa resetar (novo mês)
-    const lastMonth = await db.get(`leaderboard_${guildId}_lastMonth`);
-    if (lastMonth !== monthKey) {
-      await db.set(`leaderboard_${guildId}_lastMonth`, monthKey);
-      await db.set(`leaderboard_${guildId}_${monthKey}`, {});
-    }
+    // Busca dados do mês atual no MongoDB
+    const leaderboardData = await Leaderboard.find({ 
+      guildId, 
+      month: monthKey 
+    });
     
-    // Busca dados do mês atual
-    const leaderboardData = await db.get(`leaderboard_${guildId}_${monthKey}`) || {};
-    
-    if (Object.keys(leaderboardData).length === 0) {
+    if (leaderboardData.length === 0) {
       return interaction.editReply({
         content: '📊 Nenhum dado registrado neste mês ainda! Comece a ouvir músicas para aparecer no ranking!',
         ephemeral: true
       });
     }
     
-    // Converte para array e ordena
-    const users = Object.entries(leaderboardData).map(([userId, data]) => ({
-      userId,
+    // Converte para array (formato já compatível com lógica abaixo, ajustando nomes se precisar)
+    const users = leaderboardData.map(data => ({
+      userId: data.userId,
       songs: data.songs || 0,
       time: data.time || 0,
       lastPlayed: data.lastPlayed || null

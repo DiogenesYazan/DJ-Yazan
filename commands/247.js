@@ -1,7 +1,6 @@
+// commands/247.js
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-
-// Map para armazenar servidores em modo 24/7
-const mode247 = new Map();
+const GuildConfig = require('../models/GuildConfig');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -11,15 +10,18 @@ module.exports = {
   
   async execute(interaction) {
     const guildId = interaction.guild.id;
-    const current = mode247.get(guildId) || false;
-    const newMode = !current;
     
-    mode247.set(guildId, newMode);
-    
-    // Torna o Map acessível globalmente
-    if (!interaction.client.mode247) {
-      interaction.client.mode247 = mode247;
+    // Busca ou cria a configuração
+    let config = await GuildConfig.findOne({ guildId });
+    if (!config) {
+      config = new GuildConfig({ guildId });
     }
+    
+    // Alterna o modo
+    config.alwaysOn = !config.alwaysOn;
+    await config.save();
+    
+    const newMode = config.alwaysOn;
     
     const embed = new EmbedBuilder()
       .setColor(newMode ? '#00FF00' : '#FF0000')
@@ -37,8 +39,5 @@ module.exports = {
       .setTimestamp();
     
     await interaction.reply({ embeds: [embed] });
-  },
-  
-  // Exporta o Map para ser usado em outros arquivos
-  mode247
+  }
 };

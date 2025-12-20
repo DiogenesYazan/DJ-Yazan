@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { QuickDB } = require('quick.db');
-const db = new QuickDB();
+const Leaderboard = require('../models/Leaderboard');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -20,9 +19,12 @@ module.exports = {
     const currentYear = new Date().getFullYear();
     const monthKey = `${currentYear}-${currentMonth}`;
     
-    // Busca dados do usuário
-    const leaderboardData = await db.get(`leaderboard_${guildId}_${monthKey}`) || {};
-    const userData = leaderboardData[targetUser.id];
+    // Busca dados do usuário específico
+    const userData = await Leaderboard.findOne({ 
+      guildId, 
+      userId: targetUser.id, 
+      month: monthKey 
+    });
     
     if (!userData || (userData.songs === 0 && userData.time === 0)) {
       return interaction.editReply({
@@ -33,10 +35,12 @@ module.exports = {
       });
     }
     
-    // Calcula posição no ranking
-    const allUsers = Object.entries(leaderboardData)
-      .map(([userId, data]) => ({
-        userId,
+    // Calcula posição no ranking (busca todos para ordenar)
+    // Nota: Em escala maior, usaríamos countDocuments com filtro maior que o score, mas aqui trazemos todos por ser servidor pequeno
+    const allDocs = await Leaderboard.find({ guildId, month: monthKey });
+    
+    const allUsers = allDocs.map(data => ({
+        userId: data.userId,
         songs: data.songs || 0,
         time: data.time || 0,
         score: (data.songs * 10) + (data.time / 60000)

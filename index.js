@@ -7,7 +7,6 @@ const {
   ActivityType
 } = require('discord.js');
 const { LavalinkManager } = require('lavalink-client');
-const { QuickDB } = require('quick.db');
 const fs = require('fs');
 
 const client = new Client({
@@ -18,8 +17,15 @@ const client = new Client({
   }
 });
 
-// Inicializa Quick.db para leaderboard
-const db = new QuickDB();
+// Inicializa Mongoose para conexão com MongoDB
+const mongoose = require('mongoose');
+const Leaderboard = require('./models/Leaderboard');
+const GuildConfig = require('./models/GuildConfig');
+
+// Conexão com MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ Conectado ao MongoDB com sucesso!'))
+  .catch((err) => console.error('❌ Erro ao conectar ao MongoDB:', err));
 
 // Carrega comandos
 client.commands = new Collection();
@@ -300,7 +306,7 @@ client.lavalink.on('trackEnd', (player, track, payload) => {
 });
 
 // Ações ao terminar a fila
-client.lavalink.on('queueEnd', (player) => {
+client.lavalink.on('queueEnd', async (player) => {
   const mode = client.loopModes.get(player.guildId) || 'off';
   
   const ch = client.channels.cache.get(player.textChannelId);
@@ -314,8 +320,9 @@ client.lavalink.on('queueEnd', (player) => {
   if (mode === 'off') {
     stopIv(player.guildId);
     
-    // Verifica modo 24/7
-    const is247 = client.mode247?.get(player.guildId) || false;
+    // Verifica modo 24/7 no Banco de Dados
+    const config = await GuildConfig.findOne({ guildId: player.guildId });
+    const is247 = config ? config.alwaysOn : false;
     
     if (!is247) {
       // Se não está em modo 24/7, desconecta após 30 segundos
@@ -444,41 +451,31 @@ client.on('interactionCreate', async i => {
 });
 
 // === FUNÇÃO DE ATUALIZAÇÃO DO LEADERBOARD ===
+// === FUNÇÃO DE ATUALIZAÇÃO DO LEADERBOARD ===
 async function updateLeaderboard(guildId, userId, type, value = 1) {
   try {
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
     const monthKey = `${currentYear}-${currentMonth}`;
     
-    // Verifica e reseta se for novo mês
-    const lastMonth = await db.get(`leaderboard_${guildId}_lastMonth`);
-    if (lastMonth !== monthKey) {
-      await db.set(`leaderboard_${guildId}_lastMonth`, monthKey);
-      await db.set(`leaderboard_${guildId}_${monthKey}`, {});
-    }
+    // Prepara o update
+    const update = { 
+      $set: { lastPlayed: new Date() } 
+    };
     
-    // Busca dados atuais
-    const leaderboardData = await db.get(`leaderboard_${guildId}_${monthKey}`) || {};
-    
-    // Inicializa usuário se não existir
-    if (!leaderboardData[userId]) {
-      leaderboardData[userId] = {
-        songs: 0,
-        time: 0,
-        lastPlayed: null
-      };
-    }
-    
-    // Atualiza dados
     if (type === 'song') {
-      leaderboardData[userId].songs += 1;
-      leaderboardData[userId].lastPlayed = new Date().toISOString();
+      update.$inc = { songs: 1 };
     } else if (type === 'time') {
-      leaderboardData[userId].time += value;
+      update.$inc = { time: value };
     }
     
-    // Salva no banco
-    await db.set(`leaderboard_${guildId}_${monthKey}`, leaderboardData);
+    // Upsert no MongoDB
+    await Leaderboard.findOneAndUpdate(
+      { guildId, userId, month: monthKey },
+      update,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    
   } catch (error) {
     console.error('Erro ao atualizar leaderboard:', error);
   }
