@@ -145,17 +145,31 @@ async function startGameLoop(interaction, player, tracks, guildId) {
 
   // 1. Toca Countdown (se existir)
   if (game.countdownTrack) {
-    await player.play({ track: game.countdownTrack.encoded });
-    // Espera ~4 segundos (duração do vídeo de contagem)
-    await new Promise(resolve => setTimeout(resolve, 4000));
+    try {
+      console.log('Starting countdown track:', game.countdownTrack.info.title);
+      await player.play({ track: game.countdownTrack.encoded });
+      // Espera ~4 segundos (duração do vídeo de contagem)
+      await new Promise(resolve => setTimeout(resolve, 4000));
+    } catch (err) {
+      console.error('Error playing countdown:', err);
+      // Se falhar, segue o jogo
+    }
   }
 
   // 2. Toca a música do Quiz
-  await player.play({
-    track: track.encoded,
-    // Começa em 30s se possível para evitar introduções longas/silenciosas
-    position: track.info.duration > 60000 ? 30000 : 0
-  });
+  console.log('Playing quiz track:', track.info.title);
+  try {
+    await player.play({
+      track: track.encoded,
+      // Começa em 30s se possível para evitar introduções longas/silenciosas
+      position: track.info.duration > 60000 ? 30000 : 0
+    });
+  } catch (err) {
+    console.error('Error playing quiz track:', err);
+    await game.channel.send('❌ Erro ao tocar esta música. Pulando...');
+    // Continua para próxima rodada ou encerra
+    return; 
+  }
 
   // Collector de respostas
   const filter = m => !m.author.bot;
