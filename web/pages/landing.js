@@ -2,7 +2,7 @@
 // 🏠 LANDING PAGE
 // ============================================
 
-const { theme, getBaseStyles, getHead, getNavbar, getFooter } = require('../styles/theme');
+const { theme, getBaseStyles, getHead, getNavbar, getFooter, getAnimationsCSS, getAnimationsJS, getParticlesHTML, getThemeToggleHTML, getThemeToggleCSS } = require('../styles/theme');
 
 function getLandingPage(stats) {
   const { uptime, servers, users, activePlayers, isOnline } = stats;
@@ -14,6 +14,8 @@ function getLandingPage(stats) {
   ${getHead('Início', 'O melhor bot de música para Discord. Ouça suas músicas favoritas com qualidade premium!')}
   <style>
     ${getBaseStyles()}
+    ${getAnimationsCSS()}
+    ${getThemeToggleCSS()}
     
     /* Hero Section */
     .hero {
@@ -118,11 +120,13 @@ function getLandingPage(stats) {
       border-radius: 16px;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: transform 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     
     .stat-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(88, 101, 242, 0.2);
+      border-color: var(--primary);
     }
     
     .stat-icon {
@@ -181,16 +185,20 @@ function getLandingPage(stats) {
     }
     
     .feature-card {
-      background: var(--surface);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       padding: 2rem;
       border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }
     
     .feature-card:hover {
       border-color: var(--primary);
-      transform: translateY(-5px);
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(88, 101, 242, 0.3);
     }
     
     .feature-card i {
@@ -257,12 +265,14 @@ function getLandingPage(stats) {
 </head>
 <body>
   <div class="bg-animation"></div>
+  ${getParticlesHTML()}
   
-  ${getNavbar()}
+  ${getNavbar('home')}
+  ${getThemeToggleHTML()}
   
   <section class="hero">
-    <div class="hero-content">
-      <img src="${theme.botIcon}" alt="${theme.botName}" class="hero-avatar">
+    <div class="hero-content reveal">
+      <img src="${theme.botIcon}" alt="${theme.botName}" class="hero-avatar glow">
       
       <div class="status-badge">
         <div class="status-dot"></div>
@@ -288,31 +298,31 @@ function getLandingPage(stats) {
   
   <section class="stats">
     <div class="stats-grid">
-      <div class="stat-card">
+      <div class="stat-card tilt-card reveal">
         <div class="stat-icon purple">
           <i class="fas fa-server"></i>
         </div>
-        <div class="stat-value">${servers.toLocaleString()}</div>
+        <div class="stat-value animated-counter" data-counter="${servers}">${servers.toLocaleString()}</div>
         <div class="stat-label">Servidores</div>
       </div>
       
-      <div class="stat-card">
+      <div class="stat-card tilt-card reveal">
         <div class="stat-icon pink">
           <i class="fas fa-users"></i>
         </div>
-        <div class="stat-value">${users.toLocaleString()}</div>
+        <div class="stat-value animated-counter" data-counter="${users}">${users.toLocaleString()}</div>
         <div class="stat-label">Usuários</div>
       </div>
       
-      <div class="stat-card">
+      <div class="stat-card tilt-card reveal">
         <div class="stat-icon green">
           <i class="fas fa-music"></i>
         </div>
-        <div class="stat-value">${activePlayers}</div>
+        <div class="stat-value animated-counter" data-counter="${activePlayers}">${activePlayers}</div>
         <div class="stat-label">Tocando Agora</div>
       </div>
       
-      <div class="stat-card">
+      <div class="stat-card tilt-card reveal">
         <div class="stat-icon yellow">
           <i class="fas fa-clock"></i>
         </div>
@@ -329,40 +339,58 @@ function getLandingPage(stats) {
     </div>
     
     <div class="features-grid">
-      <div class="feature-card">
+      <div class="feature-card tilt-card reveal">
         <i class="fas fa-headphones"></i>
         <h3>Qualidade Premium</h3>
         <p>Áudio de alta qualidade usando Lavalink v4, sem travamentos ou quedas.</p>
       </div>
       
-      <div class="feature-card">
+      <div class="feature-card tilt-card reveal">
         <i class="fas fa-search"></i>
         <h3>Busca Inteligente</h3>
         <p>Pesquise por nome ou cole links do YouTube, Spotify e mais.</p>
       </div>
       
-      <div class="feature-card">
+      <div class="feature-card tilt-card reveal">
         <i class="fas fa-list"></i>
         <h3>Sistema de Filas</h3>
         <p>Gerencie sua playlist com comandos de fila, shuffle e loop.</p>
       </div>
       
-      <div class="feature-card">
+      <div class="feature-card tilt-card reveal">
         <i class="fas fa-gamepad"></i>
         <h3>Quiz Musical</h3>
         <p>Jogue com amigos e descubra quem conhece mais músicas!</p>
       </div>
       
-      <div class="feature-card">
+      <div class="feature-card tilt-card reveal">
         <i class="fas fa-trophy"></i>
         <h3>Leaderboard</h3>
         <p>Ranking mensal dos usuários que mais ouvem música.</p>
       </div>
       
-      <div class="feature-card">
+      <div class="feature-card tilt-card reveal">
         <i class="fas fa-infinity"></i>
         <h3>Modo 24/7</h3>
         <p>Mantenha o bot no canal de voz 24 horas por dia.</p>
+      </div>
+
+      <div class="feature-card tilt-card reveal">
+        <i class="fas fa-heart"></i>
+        <h3>Favoritos</h3>
+        <p>Salve suas músicas favoritas e toque com um comando.</p>
+      </div>
+      
+      <div class="feature-card tilt-card reveal">
+        <i class="fas fa-folder-open"></i>
+        <h3>Playlists Pessoais</h3>
+        <p>Crie e gerencie suas próprias playlists personalizadas.</p>
+      </div>
+
+      <div class="feature-card tilt-card reveal">
+        <i class="fas fa-microphone-alt"></i>
+        <h3>Letras de Música</h3>
+        <p>Veja a letra da música que está tocando em tempo real.</p>
       </div>
     </div>
   </section>
@@ -374,46 +402,52 @@ function getLandingPage(stats) {
     </div>
     
     <div class="commands-list">
-      <div class="command-item">
+      <div class="command-item reveal-left">
         <span class="command-name">/play</span>
         <span class="command-desc">Toca uma música ou adiciona à fila</span>
       </div>
-      <div class="command-item">
+      <div class="command-item reveal-right">
         <span class="command-name">/queue</span>
         <span class="command-desc">Mostra a fila de músicas</span>
       </div>
-      <div class="command-item">
+      <div class="command-item reveal-left">
         <span class="command-name">/skip</span>
         <span class="command-desc">Pula para a próxima música</span>
       </div>
-      <div class="command-item">
+      <div class="command-item reveal-right">
         <span class="command-name">/loop</span>
         <span class="command-desc">Ativa loop na música ou fila</span>
       </div>
-      <div class="command-item">
-        <span class="command-name">/shuffle</span>
-        <span class="command-desc">Embaralha a fila</span>
+      <div class="command-item reveal-left">
+        <span class="command-name">/favorites</span>
+        <span class="command-desc">Gerencie suas músicas favoritas</span>
       </div>
-      <div class="command-item">
+      <div class="command-item reveal-right">
+        <span class="command-name">/lyrics</span>
+        <span class="command-desc">Mostra a letra da música atual</span>
+      </div>
+      <div class="command-item reveal-left">
         <span class="command-name">/quiz</span>
         <span class="command-desc">Inicia um quiz musical</span>
       </div>
-      <div class="command-item">
+      <div class="command-item reveal-right">
         <span class="command-name">/leaderboard</span>
         <span class="command-desc">Mostra o ranking do servidor</span>
       </div>
-      <div class="command-item">
-        <span class="command-name">/controller</span>
-        <span class="command-desc">Painel de controle com botões</span>
-      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 2rem;">
+      <a href="/commands" class="btn btn-outline ripple-btn">
+        <i class="fas fa-list"></i>
+        Ver Todos os Comandos
+      </a>
     </div>
   </section>
   
   ${getFooter()}
   
   <script>
-    // Auto-refresh stats every 60 seconds
-    setTimeout(() => location.reload(), 60000);
+    ${getAnimationsJS()}
   </script>
 </body>
 </html>

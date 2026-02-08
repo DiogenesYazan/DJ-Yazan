@@ -2,6 +2,8 @@
 // 🎨 TEMA E ESTILOS COMPARTILHADOS
 // ============================================
 
+const { getAnimationsCSS, getAnimationsJS, getParticlesHTML, getThemeToggleHTML, getThemeToggleCSS } = require('./animations');
+
 const theme = {
   colors: {
     primary: '#5865F2',
@@ -46,6 +48,15 @@ function getBaseStyles() {
       --warning: ${theme.colors.warning};
       --danger: ${theme.colors.danger};
     }
+
+    /* Light theme variables */
+    [data-theme="light"] {
+      --background: #f5f5f7;
+      --surface: #ffffff;
+      --surface-light: #e8e8ed;
+      --text: #1d1d1f;
+      --text-muted: #6e6e73;
+    }
     
     body {
       font-family: 'Inter', sans-serif;
@@ -54,6 +65,7 @@ function getBaseStyles() {
       min-height: 100vh;
       overflow-x: hidden;
       line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
     
     /* Animated Background */
@@ -251,7 +263,7 @@ function getHead(title, description = 'O melhor bot de música para Discord. Ou�
 }
 
 // Navbar compartilhada
-function getNavbar() {
+function getNavbar(activePage = '') {
   return `
     <nav>
       <a href="/" class="logo">
@@ -259,10 +271,10 @@ function getNavbar() {
         <span>${theme.botName}</span>
       </a>
       <div class="nav-links">
-        <a href="/#features">Recursos</a>
-        <a href="/#commands">Comandos</a>
-        <a href="/terms">Termos</a>
-        <a href="/privacy">Privacidade</a>
+        <a href="/#features" ${activePage === 'home' ? 'class="active"' : ''}>Recursos</a>
+        <a href="/commands" ${activePage === 'commands' ? 'class="active"' : ''}>Comandos</a>
+        <a href="/leaderboard" ${activePage === 'leaderboard' ? 'class="active"' : ''}>Ranking</a>
+        <a href="/dashboard" ${activePage === 'dashboard' ? 'class="active"' : ''}>Dashboard</a>
         <a href="/invite" class="btn-primary">Adicionar Bot</a>
       </div>
     </nav>
@@ -300,5 +312,10 @@ module.exports = {
   getBaseStyles,
   getHead,
   getNavbar,
-  getFooter
+  getFooter,
+  getAnimationsCSS,
+  getAnimationsJS,
+  getParticlesHTML,
+  getThemeToggleHTML,
+  getThemeToggleCSS
 };

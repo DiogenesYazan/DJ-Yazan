@@ -9,6 +9,7 @@ const {
 const { LavalinkManager } = require('lavalink-client');
 const fs = require('fs');
 const lavalinkServers = require('./lavalink-servers.json');
+const statusMessages = require('./status-messages.json');
 
 // Importa o servidor web modular
 const { createWebServer, botStats } = require('./web/server');
@@ -35,6 +36,8 @@ const mongoose = require('mongoose');
 const Leaderboard = require('./models/Leaderboard');
 const GuildConfig = require('./models/GuildConfig');
 const QuizSession = require('./models/QuizSession');
+const UserFavorites = require('./models/UserFavorites');
+const UserPlaylist = require('./models/UserPlaylist');
 
 // Conexão com MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -44,7 +47,7 @@ mongoose.connect(process.env.MONGO_URI)
 // ============================================
 // 🌐 INICIALIZA SERVIDOR WEB
 // ============================================
-createWebServer(client, Leaderboard);
+const { playerSocket } = createWebServer(client, Leaderboard, UserFavorites, UserPlaylist);
 
 // Carrega comandos
 client.commands = new Collection();
@@ -316,26 +319,22 @@ client.once('clientReady', () => {
     username: client.user.username
   });
 
-  // Rotação de status
-  const statuses = [
-    '♬ tocando música',
-    '🎵 use /play para ouvir',
-    `${client.guilds.cache.size} servidores`,
-    '🎶 música é vida',
-    '🔁 use /loop para loop',
-    '🎧 Ariel deixe de brincadeira gostosa',
-    '📻 música 24/7',
-    '🎤 solicite uma música',
-    '🎼 OS CARA TÁ NA MALDADE',
-    '🎹 ESCONDAM A MAKITA',
-    '🎷 relaxe com música',
-    '🎺 NÃO CHORAXX' 
-  ];
+  // Rotação de status (carrega do arquivo JSON)
+  const statuses = statusMessages.statuses.map(s => s.text);
+  // Adiciona status dinâmico de servidores
+  statuses.push(`🌐 ${client.guilds.cache.size} servidores`);
+  
+  console.log(`📋 Carregadas ${statuses.length} mensagens de status`);
+  
   let idx = 0;
   setInterval(() => {
-    client.user.setActivity(statuses[idx]);
+    // Atualiza contagem de servidores dinamicamente
+    const currentStatus = statuses[idx] === `🌐 ${client.guilds.cache.size} servidores` 
+      ? `🌐 ${client.guilds.cache.size} servidores`
+      : statuses[idx];
+    client.user.setActivity(currentStatus);
     idx = (idx + 1) % statuses.length;
-  }, 30_000);
+  }, statusMessages.rotationIntervalMs || 30_000);
 });
 
 // Variável para controlar se o Lavalink está pronto
@@ -442,6 +441,11 @@ client.lavalink.on('trackStart', async (player, track) => {
   // Se houver um quiz ativo neste servidor, não mostre "Tocando Agora"
   if (client.quizStates && client.quizStates.has(player.guildId)) return;
 
+  // === WEBSOCKET: Emite evento de track start ===
+  if (playerSocket) {
+    playerSocket.onTrackStart(player.guildId, track, player);
+  }
+
   const msg = await ch.send({ embeds: [mkEmbedBlocks(track, player)] });
   
   // === LEADERBOARD TRACKING ===
@@ -460,6 +464,11 @@ client.lavalink.on('trackStart', async (player, track) => {
     if (!player.queue.current) {
       clearInterval(iv);
       return;
+    }
+    
+    // === WEBSOCKET: Emite posição atual ===
+    if (playerSocket) {
+      playerSocket.onPositionUpdate(player.guildId, player.position, track.info.length);
     }
     
     try { 
@@ -484,6 +493,11 @@ function stopIv(guildId) {
 
 // Loop manual ao finalizar faixa
 client.lavalink.on('trackEnd', (player, track, payload) => {
+  // === WEBSOCKET: Emite evento de track end ===
+  if (playerSocket) {
+    playerSocket.onTrackEnd(player.guildId, track);
+  }
+
   // === LEADERBOARD TRACKING ===
   // Registra tempo ouvido quando música termina
   if (track.requester && track.requester.id) {
@@ -516,7 +530,47 @@ client.lavalink.on('trackEnd', (player, track, payload) => {
 client.lavalink.on('queueEnd', async (player) => {
   const mode = client.loopModes.get(player.guildId) || 'off';
   
+  // === WEBSOCKET: Emite evento de queue end ===
+  if (playerSocket) {
+    playerSocket.onQueueEnd(player.guildId);
+  }
+  
   const ch = client.channels.cache.get(player.textChannelId);
+  
+  // === AUTOPLAY: Verifica se autoplay está ativo ===
+  const config = await GuildConfig.findOne({ guildId: player.guildId });
+  const isAutoplay = config?.autoplay || false;
+  
+  if (mode === 'off' && isAutoplay) {
+    // Busca música relacionada baseada na última tocada
+    try {
+      const lastTrack = player.queue.previous?.[0];
+      if (lastTrack) {
+        const searchQuery = `${lastTrack.info.author} ${lastTrack.info.title.replace(/\(.*?\)/g, '').trim()} mix`;
+        const result = await player.search({ query: searchQuery, source: 'youtube' }, player);
+        
+        if (result.tracks.length > 0) {
+          // Pega uma música aleatória dos 5 primeiros resultados (evita repetição)
+          const randomIndex = Math.floor(Math.random() * Math.min(5, result.tracks.length));
+          const nextTrack = result.tracks[randomIndex];
+          
+          // Adiciona à fila e toca
+          player.queue.add(nextTrack);
+          await player.play();
+          
+          if (ch) {
+            ch.send({
+              content: `🔄 **Autoplay:** Adicionando **${nextTrack.info.title}**`
+            }).catch(() => {});
+          }
+          return; // Não desconecta se autoplay adicionou música
+        }
+      }
+    } catch (error) {
+      console.error('Erro no autoplay:', error);
+    }
+  }
+  
   if (ch) {
     ch.send({
       content: `✅ Fim da fila${mode === 'off' ? '' : ` (loop: ${mode})`}`,
@@ -527,8 +581,7 @@ client.lavalink.on('queueEnd', async (player) => {
   if (mode === 'off') {
     stopIv(player.guildId);
     
-    // Verifica modo 24/7 no Banco de Dados
-    const config = await GuildConfig.findOne({ guildId: player.guildId });
+    // config já foi buscado acima para autoplay
     const is247 = config ? config.alwaysOn : false;
     
     if (!is247) {
@@ -598,6 +651,8 @@ client.on('interactionCreate', async i => {
               trackStartTimes.set(trackKey, Date.now());
             }
             await player.resume();
+            // === WEBSOCKET: Emite evento de pause ===
+            if (playerSocket) playerSocket.onPlayerPause(guildIdPause, false);
             await i.reply({ content: '▶️ Reprodução retomada!', ephemeral: true });
           } else {
             // === PAUSAR - salva o tempo até agora ===
@@ -612,6 +667,8 @@ client.on('interactionCreate', async i => {
               }
             }
             await player.pause();
+            // === WEBSOCKET: Emite evento de pause ===
+            if (playerSocket) playerSocket.onPlayerPause(guildIdPause, true);
             await i.reply({ content: '⏸️ Música pausada!', ephemeral: true });
           }
           break;
@@ -680,12 +737,16 @@ client.on('interactionCreate', async i => {
         case 'controller_volume_down':
           const newVolDown = Math.max(0, player.volume - 10);
           await player.setVolume(newVolDown);
+          // === WEBSOCKET: Emite evento de volume ===
+          if (playerSocket) playerSocket.onVolumeChange(i.guild.id, newVolDown);
           await i.reply({ content: `🔉 Volume: ${newVolDown}%`, ephemeral: true });
           break;
 
         case 'controller_volume_up':
           const newVolUp = Math.min(200, player.volume + 10);
           await player.setVolume(newVolUp);
+          // === WEBSOCKET: Emite evento de volume ===
+          if (playerSocket) playerSocket.onVolumeChange(i.guild.id, newVolUp);
           await i.reply({ content: `🔊 Volume: ${newVolUp}%`, ephemeral: true });
           break;
 
