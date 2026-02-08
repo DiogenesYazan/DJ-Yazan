@@ -6,14 +6,15 @@
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Diógenes Yuri",
   "license": "ISC",
   "type": "commonjs",
-  "description": "",
+  "description": "Bot de música para Discord com Lavalink",
   "dependencies": {
     "axios": "^1.12.2",
     "discord.js": "^14.20.0",
     "dotenv": "^16.5.0",
+    "express": "^4.22.1",
     "lavalink-client": "^2.5.6",
     "mongoose": "^9.0.2",
     "string-progressbar": "^1.0.4",
