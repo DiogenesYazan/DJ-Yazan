@@ -48,6 +48,8 @@ client.quizStates = new Map();
 
 // Map para tracking de tempo de música (para leaderboard)
 const trackStartTimes = new Map();
+// Exporta globalmente para os comandos acessarem
+global.trackStartTimes = trackStartTimes;
 
 // Funções de barra de progresso MODERNA
 const BAR_SIZE = 12; // Tamanho da barra de progresso
@@ -435,6 +437,7 @@ client.lavalink.on('trackStart', async (player, track) => {
   if (track.requester && track.requester.id) {
     const trackKey = `${player.guildId}_${track.requester.id}`;
     trackStartTimes.set(trackKey, Date.now());
+    console.log(`📊 [Leaderboard] Iniciando tracking: ${track.requester.id} - ${track.info.title.slice(0, 30)}`);
     
     // Incrementa contador de músicas
     await updateLeaderboard(player.guildId, track.requester.id, 'song');
@@ -477,6 +480,7 @@ client.lavalink.on('trackEnd', (player, track, payload) => {
     
     if (startTime) {
       const timeListened = Date.now() - startTime;
+      console.log(`📊 [Leaderboard] Tempo registrado: ${track.requester.id} - ${Math.floor(timeListened/1000)}s`);
       updateLeaderboard(player.guildId, track.requester.id, 'time', timeListened);
       trackStartTimes.delete(trackKey);
     }
@@ -569,22 +573,70 @@ client.on('interactionCreate', async i => {
     try {
       switch (i.customId) {
         case 'controller_pause':
+          const currentTrackPause = player.queue.current;
+          const guildIdPause = i.guild.id;
+          
           if (player.paused) {
+            // === RETOMAR - reinicia o contador de tempo ===
+            if (currentTrackPause?.requester?.id) {
+              const trackKey = `${guildIdPause}_${currentTrackPause.requester.id}`;
+              trackStartTimes.set(trackKey, Date.now());
+            }
             await player.resume();
             await i.reply({ content: '▶️ Reprodução retomada!', ephemeral: true });
           } else {
+            // === PAUSAR - salva o tempo até agora ===
+            if (currentTrackPause?.requester?.id) {
+              const trackKey = `${guildIdPause}_${currentTrackPause.requester.id}`;
+              const startTime = trackStartTimes.get(trackKey);
+              
+              if (startTime) {
+                const timeListened = Date.now() - startTime;
+                await updateLeaderboard(guildIdPause, currentTrackPause.requester.id, 'time', timeListened);
+                trackStartTimes.delete(trackKey);
+              }
+            }
             await player.pause();
             await i.reply({ content: '⏸️ Música pausada!', ephemeral: true });
           }
           break;
 
         case 'controller_skip':
-          const skipped = player.queue.current;
+          const skippedTrack = player.queue.current;
+          const guildIdSkip = i.guild.id;
+          
+          // === REGISTRAR TEMPO ANTES DE PULAR ===
+          if (skippedTrack?.requester?.id) {
+            const trackKey = `${guildIdSkip}_${skippedTrack.requester.id}`;
+            const startTime = trackStartTimes.get(trackKey);
+            
+            if (startTime) {
+              const timeListened = Date.now() - startTime;
+              await updateLeaderboard(guildIdSkip, skippedTrack.requester.id, 'time', timeListened);
+              trackStartTimes.delete(trackKey);
+            }
+          }
+          
           await player.skip();
-          await i.reply({ content: `⏭️ Pulada: **${skipped.info.title}**`, ephemeral: true });
+          await i.reply({ content: `⏭️ Pulada: **${skippedTrack.info.title}**`, ephemeral: true });
           break;
 
         case 'controller_stop':
+          const stoppedTrack = player.queue.current;
+          const guildIdStop = i.guild.id;
+          
+          // === REGISTRAR TEMPO ANTES DE PARAR ===
+          if (stoppedTrack?.requester?.id) {
+            const trackKey = `${guildIdStop}_${stoppedTrack.requester.id}`;
+            const startTime = trackStartTimes.get(trackKey);
+            
+            if (startTime) {
+              const timeListened = Date.now() - startTime;
+              await updateLeaderboard(guildIdStop, stoppedTrack.requester.id, 'time', timeListened);
+              trackStartTimes.delete(trackKey);
+            }
+          }
+          
           await player.stopPlaying(true, false);
           await i.reply({ content: '⏹️ Reprodução parada e fila limpa!', ephemeral: true });
           break;
