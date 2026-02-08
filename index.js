@@ -49,47 +49,159 @@ client.quizStates = new Map();
 // Map para tracking de tempo de música (para leaderboard)
 const trackStartTimes = new Map();
 
-// Funções de barra de progresso
-const BAR_SIZE = 25; // Tamanho da barra de progresso
+// Funções de barra de progresso MODERNA
+const BAR_SIZE = 12; // Tamanho da barra de progresso
 const BLOCK_INTERVAL = 5_000;
 
-// Função para formatar tempo em mm:ss
+// Emojis para barra de progresso estilo Hydra
+const BAR_START_EMPTY = '<:ble:1337688291081334784>';
+const BAR_START_FULL = '<:blf:1337688303257280522>';
+const BAR_MIDDLE_EMPTY = '<:bme:1337688315433345044>';
+const BAR_MIDDLE_FULL = '<:bmf:1337688327030550548>';
+const BAR_END_EMPTY = '<:bee:1337688337940000778>';
+const BAR_END_FULL = '<:bef:1337688348761333770>';
+
+// Fallback com caracteres Unicode caso não tenha emojis customizados
+const USE_CUSTOM_EMOJIS = false; // Mude para true se adicionar os emojis no servidor
+
+// Função para formatar tempo em mm:ss ou hh:mm:ss
 function formatTime(ms) {
-  if (!ms || ms <= 0 || isNaN(ms)) return '00:00';
+  if (!ms || ms <= 0 || isNaN(ms)) return '0:00';
   
   const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-function makeBlockBar(currentTime, totalTime) {
-  if (!totalTime || totalTime <= 0 || isNaN(totalTime)) {
-    return '▇'.repeat(BAR_SIZE); // Barra cheia se não tiver duração
+// Barra de progresso moderna estilo Hydra/Jockie
+function makeProgressBar(current, total) {
+  if (!total || total <= 0 || isNaN(total)) {
+    // Stream ao vivo - barra animada
+    return '▬▬▬🔴▬▬▬▬▬▬▬▬ LIVE';
   }
   
-  const progress = Math.min(currentTime / totalTime, 1);
-  const filled = Math.floor(progress * BAR_SIZE);
-  return '▇'.repeat(filled) + '─'.repeat(BAR_SIZE - filled);
+  const progress = Math.min(current / total, 1);
+  const filledBars = Math.round(progress * BAR_SIZE);
+  
+  if (USE_CUSTOM_EMOJIS) {
+    // Versão com emojis customizados (mais bonita)
+    let bar = '';
+    for (let i = 0; i < BAR_SIZE; i++) {
+      if (i === 0) {
+        bar += i < filledBars ? BAR_START_FULL : BAR_START_EMPTY;
+      } else if (i === BAR_SIZE - 1) {
+        bar += i < filledBars ? BAR_END_FULL : BAR_END_EMPTY;
+      } else {
+        bar += i < filledBars ? BAR_MIDDLE_FULL : BAR_MIDDLE_EMPTY;
+      }
+    }
+    return bar;
+  } else {
+    // Versão Unicode moderna
+    let bar = '';
+    for (let i = 0; i < BAR_SIZE; i++) {
+      if (i === filledBars) {
+        bar += '🔘'; // Indicador de posição
+      } else if (i < filledBars) {
+        bar += '▬';
+      } else {
+        bar += '▬';
+      }
+    }
+    // Adiciona cor visual com ▰▱ alternativo
+    const filled = '▰'.repeat(filledBars);
+    const empty = '▱'.repeat(BAR_SIZE - filledBars);
+    return filled + '⚪' + empty;
+  }
 }
 
+// Status icons
+const STATUS_ICONS = {
+  playing: '▶️',
+  paused: '⏸️',
+  stopped: '⏹️'
+};
+
+// Embed moderno estilo Hydra
 function mkEmbedBlocks(track, player) {
   const currentTime = player ? player.position : 0;
   const totalTime = track.info.length || track.info.duration || 0;
-  
-  // Se não conseguir obter duração, tenta outras propriedades
   const duration = totalTime || player?.queue?.current?.info?.length || 0;
   
-  const timeDisplay = duration > 0 
-    ? `${formatTime(currentTime)} / ${formatTime(duration)}`
-    : `${formatTime(currentTime)} / ∞`; // Para streams ao vivo
+  // Status atual
+  const status = player.paused ? 'paused' : 'playing';
+  const statusIcon = STATUS_ICONS[status];
+  const statusText = player.paused ? 'Pausado' : 'Tocando';
   
-  return new EmbedBuilder()
-    .setTitle(`🎶 ${track.info.title} — ${track.info.author}`)
-    .setDescription(`${makeBlockBar(currentTime, duration)}\n\`${timeDisplay}\``)
-    .addFields({ name: '🔊 Volume', value: `${player.volume}%`, inline: true })
+  // Barra de progresso
+  const progressBar = makeProgressBar(currentTime, duration);
+  
+  // Tempo formatado
+  const timeDisplay = duration > 0 
+    ? `\`${formatTime(currentTime)}\` ${progressBar} \`${formatTime(duration)}\``
+    : `\`${formatTime(currentTime)}\` ${progressBar}`;
+  
+  // Informações do requester
+  const requester = track.requester;
+  const requesterText = requester ? `<@${requester.id}>` : 'Autoplay';
+  
+  // Próxima música na fila
+  const nextTrack = player.queue.tracks[0];
+  const nextText = nextTrack 
+    ? `[${nextTrack.info.title.slice(0, 40)}${nextTrack.info.title.length > 40 ? '...' : ''}](${nextTrack.info.uri})`
+    : 'Nenhuma';
+  
+  // Loop mode
+  const loopMode = player.guildId ? (client.loopModes?.get(player.guildId) || 'off') : 'off';
+  const loopIcons = { off: '➡️', track: '🔂', queue: '🔁' };
+  const loopText = { off: 'Desativado', track: 'Música', queue: 'Fila' };
+  
+  // Volume icon dinâmico
+  const vol = player.volume;
+  const volIcon = vol === 0 ? '🔇' : vol < 30 ? '🔈' : vol < 70 ? '🔉' : '🔊';
+  
+  // Cor do embed baseada no status
+  const embedColor = player.paused ? 0xFFA500 : 0x5865F2; // Laranja se pausado, Discord Blurple se tocando
+  
+  const embed = new EmbedBuilder()
+    .setAuthor({ 
+      name: `${statusIcon} ${statusText}`, 
+      iconURL: 'https://cdn.discordapp.com/emojis/1055188868453359616.gif' // Ícone animado opcional
+    })
+    .setTitle(track.info.title)
+    .setURL(track.info.uri)
+    .setDescription(timeDisplay)
+    .addFields(
+      { name: '👤 Artista', value: track.info.author || 'Desconhecido', inline: true },
+      { name: '🎧 Pedido por', value: requesterText, inline: true },
+      { name: `${volIcon} Volume`, value: `${vol}%`, inline: true },
+      { name: `${loopIcons[loopMode]} Loop`, value: loopText[loopMode], inline: true },
+      { name: '📋 Na Fila', value: `${player.queue.tracks.length} música(s)`, inline: true },
+      { name: '⏭️ Próxima', value: nextText, inline: true }
+    )
     .setThumbnail(track.info.artworkUrl || null)
-    .setColor('Purple');
+    .setColor(embedColor)
+    .setFooter({ 
+      text: `🎵 DJ Yazan • Qualidade: Alta`, 
+      iconURL: player.node?.options?.host ? undefined : undefined 
+    })
+    .setTimestamp();
+  
+  // Adiciona imagem grande se for do YouTube
+  if (track.info.artworkUrl && track.info.sourceName === 'youtube') {
+    // Usa thumbnail maior do YouTube
+    const videoId = track.info.identifier;
+    const highResThumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    embed.setImage(highResThumbnail);
+  }
+  
+  return embed;
 }
 
 // Configuração do Lavalink v4 com múltiplos servidores e fallback automático
