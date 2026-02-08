@@ -71,6 +71,9 @@ async function startStandaloneServer() {
   // Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  
+  // Trust proxy para Heroku (necessário para cookies secure)
+  app.set('trust proxy', 1);
 
   // ========== SESSÃO E AUTH ==========
   
@@ -84,8 +87,9 @@ async function startStandaloneServer() {
     }),
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true
+      secure: true, // Heroku usa HTTPS
+      httpOnly: true,
+      sameSite: 'lax' // Permite redirecionamento OAuth
     }
   }));
 
@@ -151,7 +155,10 @@ async function startStandaloneServer() {
 
   app.get('/auth/discord/callback',
     passport.authenticate('discord', { failureRedirect: '/' }),
-    (req, res) => res.redirect('/dashboard')
+    (req, res) => {
+      console.log('✅ Login realizado:', req.user?.username || 'unknown');
+      res.redirect('/dashboard');
+    }
   );
 
   app.get('/auth/logout', (req, res) => {
