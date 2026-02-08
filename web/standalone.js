@@ -25,6 +25,7 @@ const Leaderboard = require('../models/Leaderboard');
 const UserFavorites = require('../models/UserFavorites');
 const UserPlaylist = require('../models/UserPlaylist');
 const UserSession = require('../models/UserSession');
+const BotStats = require('../models/BotStats');
 
 // Middleware
 const { addUserToLocals, isAuthenticated } = require('./middleware/auth');
@@ -179,15 +180,28 @@ async function startStandaloneServer() {
 
   // Landing Page
   app.get('/', async (req, res) => {
-    // Em modo standalone, buscar stats do banco ou usar valores padrão
-    const stats = {
-      uptime: formatUptime(Date.now() - botStartTime),
-      servers: '50+', // Placeholder - atualiza quando o bot envia dados
-      users: '10,000+',
-      activePlayers: 0,
-      isOnline: true // Assume online
-    };
-    res.send(getLandingPage(stats));
+    try {
+      // Busca stats reais do banco (atualizados pelo bot)
+      const botStats = await BotStats.getStats();
+      
+      // Calcula uptime baseado no botStartTime salvo
+      const uptimeMs = botStats.botStartTime 
+        ? Date.now() - new Date(botStats.botStartTime).getTime()
+        : Date.now() - botStartTime;
+      
+      const stats = {
+        uptime: formatUptime(uptimeMs),
+        servers: botStats.guildCount || 0,
+        users: botStats.userCount || 0,
+        activePlayers: botStats.activePlayers || 0,
+        isOnline: botStats.isOnline && (Date.now() - new Date(botStats.lastUpdated).getTime() < 2 * 60 * 1000) // Online se atualizou nos últimos 2 min
+      };
+      
+      res.send(getLandingPage(stats));
+    } catch (err) {
+      console.error('Erro ao buscar stats:', err);
+      res.send(getLandingPage({ uptime: '0s', servers: 0, users: 0, activePlayers: 0, isOnline: false }));
+    }
   });
 
   // Commands Page

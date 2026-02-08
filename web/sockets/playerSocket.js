@@ -110,33 +110,34 @@ function createPlayerSocket(server, client) {
     io,
     playerNamespace,
     
-    // Emitir quando música começa
-    onTrackStart: (player, track) => {
-      emitToGuild(player.guildId, 'trackStart', getPlayerState(player));
+    // Emitir quando música começa (guildId, track, player)
+    onTrackStart: (guildId, track, player) => {
+      if (!player) return;
+      emitToGuild(guildId, 'trackStart', getPlayerState(player));
     },
     
-    // Emitir quando música termina
-    onTrackEnd: (player, track) => {
-      emitToGuild(player.guildId, 'trackEnd', { title: track.info.title });
+    // Emitir quando música termina (guildId, track)
+    onTrackEnd: (guildId, track) => {
+      emitToGuild(guildId, 'trackEnd', { title: track?.info?.title || 'Unknown' });
     },
     
-    // Emitir quando player é pausado/resumido
-    onPlayerPause: (player, paused) => {
-      emitToGuild(player.guildId, 'playerPause', { paused, state: getPlayerState(player) });
+    // Emitir quando player é pausado/resumido (guildId, paused)
+    onPlayerPause: (guildId, paused) => {
+      const player = client.lavalink?.getPlayer(guildId);
+      emitToGuild(guildId, 'playerPause', { paused, state: player ? getPlayerState(player) : null });
     },
     
-    // Emitir atualização de posição (chamar periodicamente)
-    onPositionUpdate: (player) => {
-      if (!player || !player.queue.current) return;
-      emitToGuild(player.guildId, 'positionUpdate', {
-        position: player.position,
-        duration: player.queue.current.info.length || player.queue.current.info.duration
-      });
+    // Emitir atualização de posição (guildId, position, duration)
+    onPositionUpdate: (guildId, position, duration) => {
+      emitToGuild(guildId, 'positionUpdate', { position, duration });
     },
     
-    // Emitir quando fila é atualizada
-    onQueueUpdate: (player) => {
-      emitToGuild(player.guildId, 'queueUpdate', getPlayerState(player));
+    // Emitir quando fila é atualizada (guildId)
+    onQueueUpdate: (guildId) => {
+      const player = client.lavalink?.getPlayer(guildId);
+      if (player) {
+        emitToGuild(guildId, 'queueUpdate', getPlayerState(player));
+      }
     },
     
     // Emitir quando fila acaba
@@ -144,9 +145,9 @@ function createPlayerSocket(server, client) {
       emitToGuild(guildId, 'queueEnd', null);
     },
     
-    // Emitir quando volume muda
-    onVolumeChange: (player, volume) => {
-      emitToGuild(player.guildId, 'volumeChange', { volume });
+    // Emitir quando volume muda (guildId, volume)
+    onVolumeChange: (guildId, volume) => {
+      emitToGuild(guildId, 'volumeChange', { volume });
     },
     
     // Verificar se há conexões ativas para um guild

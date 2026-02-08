@@ -4,6 +4,23 @@
 
 const { theme, getBaseStyles, getHead, getNavbar, getFooter, getAnimationsCSS, getAnimationsJS, getParticlesHTML, getThemeToggleHTML, getThemeToggleCSS } = require('../styles/theme');
 
+// Helper para gerar URL do avatar do Discord
+function getAvatarUrl(user, size = 128) {
+  if (!user) return 'https://cdn.discordapp.com/embed/avatars/0.png';
+  
+  const discordId = user.discordId || user.id;
+  const avatar = user.avatar;
+  
+  if (avatar) {
+    const extension = avatar.startsWith('a_') ? 'gif' : 'png';
+    return `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.${extension}?size=${size}`;
+  }
+  
+  // Avatar padrão baseado no discriminator ou ID
+  const defaultIndex = (parseInt(discordId) >> 22) % 6;
+  return `https://cdn.discordapp.com/embed/avatars/${defaultIndex}.png`;
+}
+
 function getDashboardPage(user, stats, favorites = [], playlists = []) {
   const isLoggedIn = !!user;
   
@@ -328,7 +345,7 @@ function getDashboardPage(user, stats, favorites = [], playlists = []) {
   
   <main class="dashboard">
     <header class="dashboard-header reveal">
-      <img src="${user.getAvatarUrl(128)}" alt="${user.username}" class="user-avatar glow">
+      <img src="${getAvatarUrl(user, 128)}" alt="${user.username}" class="user-avatar glow">
       <div class="user-info">
         <h1>${user.globalName || user.username}</h1>
         <p>@${user.username} • ${botGuilds.length} servidor(es) com DJ Yazan</p>

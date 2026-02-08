@@ -94,6 +94,22 @@ function createAuthRouter(client) {
     });
   });
   
+  // Helper para gerar URL do avatar
+  function getAvatarUrl(user, size = 128) {
+    if (!user) return 'https://cdn.discordapp.com/embed/avatars/0.png';
+    
+    const discordId = user.discordId || user.id;
+    const avatar = user.avatar;
+    
+    if (avatar) {
+      const extension = avatar.startsWith('a_') ? 'gif' : 'png';
+      return `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.${extension}?size=${size}`;
+    }
+    
+    const defaultIndex = (parseInt(discordId) >> 22) % 6;
+    return `https://cdn.discordapp.com/embed/avatars/${defaultIndex}.png`;
+  }
+  
   // API: Dados do usuário logado
   router.get('/me', (req, res) => {
     if (!req.user) {
@@ -104,7 +120,7 @@ function createAuthRouter(client) {
       id: req.user.discordId,
       username: req.user.username,
       globalName: req.user.globalName,
-      avatar: req.user.getAvatarUrl(),
+      avatar: getAvatarUrl(req.user),
       email: req.user.email,
       guilds: req.user.guilds?.filter(g => g.hasBot) || []
     });

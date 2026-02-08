@@ -56,6 +56,37 @@ function getBaseStyles() {
       --surface-light: #e8e8ed;
       --text: #1d1d1f;
       --text-muted: #6e6e73;
+      --primary: #5865F2;
+      --primary-dark: #4752C4;
+    }
+    
+    /* Light theme specific styles */
+    [data-theme="light"] .bg-animation {
+      background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 50%, #dcdce2 100%);
+    }
+    
+    [data-theme="light"] .bg-animation::before {
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(88, 101, 242, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(235, 69, 158, 0.08) 0%, transparent 50%);
+    }
+    
+    [data-theme="light"] nav {
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    [data-theme="light"] .glass-card,
+    [data-theme="light"] .feature-card,
+    [data-theme="light"] .stat-card,
+    [data-theme="light"] .command-item {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    [data-theme="light"] .particles-container .particle {
+      opacity: 0.3;
     }
     
     body {

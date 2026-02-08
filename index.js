@@ -38,6 +38,7 @@ const GuildConfig = require('./models/GuildConfig');
 const QuizSession = require('./models/QuizSession');
 const UserFavorites = require('./models/UserFavorites');
 const UserPlaylist = require('./models/UserPlaylist');
+const BotStats = require('./models/BotStats');
 
 // Conexão com MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -318,6 +319,31 @@ client.once('clientReady', () => {
     id: client.user.id,
     username: client.user.username
   });
+
+  // ============================================
+  // 📊 ATUALIZAÇÃO DE STATS PARA O SITE
+  // ============================================
+  async function updateBotStats() {
+    try {
+      const guildCount = client.guilds.cache.size;
+      const userCount = client.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0);
+      const activePlayers = client.lavalink?.players?.size || 0;
+      
+      await BotStats.updateStats({
+        guildCount,
+        userCount,
+        activePlayers,
+        isOnline: true,
+        botStartTime: client.readyAt
+      });
+    } catch (err) {
+      console.error('Erro ao atualizar stats:', err.message);
+    }
+  }
+  
+  // Atualiza stats imediatamente e depois a cada 30 segundos
+  updateBotStats();
+  setInterval(updateBotStats, 30_000);
 
   // Rotação de status (carrega do arquivo JSON)
   const statuses = statusMessages.statuses.map(s => s.text);

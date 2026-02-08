@@ -5,7 +5,10 @@
 const { theme, getBaseStyles, getHead, getNavbar, getFooter, getAnimationsCSS, getAnimationsJS, getParticlesHTML, getThemeToggleHTML, getThemeToggleCSS } = require('../styles/theme');
 
 function getLandingPage(stats) {
-  const { uptime, servers, users, activePlayers, isOnline } = stats;
+  const { uptime, activePlayers, isOnline } = stats;
+  // Garante que servers e users sejam números
+  const servers = typeof stats.servers === 'number' ? stats.servers : parseInt(stats.servers) || 0;
+  const users = typeof stats.users === 'number' ? stats.users : parseInt(stats.users) || 0;
   
   return `
 <!DOCTYPE html>
