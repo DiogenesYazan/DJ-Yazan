@@ -8,6 +8,7 @@ const {
 } = require('discord.js');
 const { LavalinkManager } = require('lavalink-client');
 const fs = require('fs');
+const lavalinkServers = require('./lavalink-servers.json');
 
 const client = new Client({
   intents: [
@@ -91,24 +92,29 @@ function mkEmbedBlocks(track, player) {
     .setColor('Purple');
 }
 
-// Configuração do Lavalink v4 com melhores práticas
+// Configuração do Lavalink v4 com múltiplos servidores e fallback automático
+// Carrega servidores do arquivo lavalink-servers.json
+const lavalinkNodes = lavalinkServers.nodes
+  .sort((a, b) => a.priority - b.priority) // Ordena por prioridade
+  .map(server => ({
+    id: server.id,
+    host: server.host,
+    port: server.port,
+    authorization: server.password,
+    secure: server.secure,
+    // Configurações de conexão otimizadas
+    requestSignalTimeoutMS: 10000,
+    closeOnError: false,
+    heartBeatInterval: 30_000,
+    enablePingOnStatsCheck: true,
+    retryDelay: 10_000,
+    retryAmount: 5
+  }));
+
+console.log(`📋 Carregados ${lavalinkNodes.length} servidores Lavalink do arquivo de configuração`);
+
 client.lavalink = new LavalinkManager({
-  nodes: [
-    {
-      authorization: process.env.LAVA_PASSWORD,
-      host: process.env.LAVA_HOST,
-      port: +process.env.LAVA_PORT,
-      id: 'main_lavalink',
-      secure: process.env.LAVA_SECURE === 'true',
-      // Configurações de conexão otimizadas
-      requestSignalTimeoutMS: 10000,
-      closeOnError: false,
-      heartBeatInterval: 30_000,
-      enablePingOnStatsCheck: true,
-      retryDelay: 10_000,
-      retryAmount: 5
-    }
-  ],
+  nodes: lavalinkNodes,
   sendToShard: (guildId, payload) => 
     client.guilds.cache.get(guildId)?.shard?.send(payload),
   client: {
@@ -141,22 +147,42 @@ client.lavalink = new LavalinkManager({
   },
   linksAllowed: true,
   linksBlacklist: [],
-  linksWhitelist: []
+  linksWhitelist: [],
+  // Seleciona o melhor nó disponível (primeiro conectado por prioridade)
+  advancedOptions: {
+    nodeResolver: (nodes, connection) => {
+      // Filtra apenas nós conectados
+      const connectedNodes = nodes.filter(node => node.connected);
+      
+      if (connectedNodes.length === 0) {
+        console.log('⚠️ Nenhum nó Lavalink conectado para resolver!');
+        return null;
+      }
+      
+      // Retorna o primeiro nó conectado (já ordenado por prioridade)
+      const selectedNode = connectedNodes[0];
+      const serverInfo = lavalinkServers.nodes.find(s => s.id === selectedNode.id);
+      console.log(`🎯 Usando servidor: ${serverInfo?.name || selectedNode.id}`);
+      return selectedNode;
+    }
+  }
 });
 
 client.once('clientReady', () => {
   console.log(`✅ Online: ${client.user.tag}`);
   
-  // Verificar se as variáveis de ambiente estão configuradas
-  if (!process.env.LAVA_HOST || !process.env.LAVA_PORT || !process.env.LAVA_PASSWORD) {
-    console.error('❌ ERRO: Variáveis de ambiente do Lavalink não configuradas!');
-    console.error('📝 Verifique o arquivo .env');
+  // Verificar se há servidores configurados no JSON
+  if (!lavalinkServers.nodes || lavalinkServers.nodes.length === 0) {
+    console.error('❌ ERRO: Nenhum servidor Lavalink configurado!');
+    console.error('📝 Verifique o arquivo lavalink-servers.json');
     return;
   }
   
   console.log(`🎵 Inicializando Lavalink Manager...`);
-  console.log(`📡 Servidor: ${process.env.LAVA_HOST}:${process.env.LAVA_PORT}`);
-  console.log(`� Secure: ${process.env.LAVA_SECURE === 'true' ? 'SSL/TLS' : 'HTTP'}`);
+  console.log(`📡 Servidores configurados:`);
+  lavalinkServers.nodes.forEach((server, index) => {
+    console.log(`   ${index + 1}. ${server.name} (${server.host}:${server.port}) - ${server.secure ? 'SSL' : 'HTTP'}`);
+  });
   
   // Inicializar Lavalink com o usuário do bot
   client.lavalink.init({
@@ -200,41 +226,83 @@ client.lavalink.nodeManager.on('create', (node) => {
 });
 
 client.lavalink.nodeManager.on('connect', (node) => {
-  console.log(`✅ Conectado ao Lavalink: ${node.id}`);
+  const serverInfo = lavalinkServers.nodes.find(s => s.id === node.id);
+  console.log(`✅ Conectado ao Lavalink: ${serverInfo?.name || node.id}`);
   console.log(`   Host: ${node.options.host}:${node.options.port}`);
   console.log(`   Versão: Lavalink v4`);
   console.log(`   Secure: ${node.options.secure ? 'SSL/TLS' : 'HTTP'}`);
   lavalinkReady = true;
+  
+  // Log de status geral dos nós
+  const allNodes = Array.from(client.lavalink.nodeManager.nodes.values());
+  const connected = allNodes.filter(n => n.connected).length;
+  console.log(`📊 Status: ${connected}/${allNodes.length} servidores conectados`);
 });
 
 client.lavalink.nodeManager.on('reconnecting', (node) => {
-  console.log(`🔄 Reconectando ao Lavalink: ${node.id}...`);
+  const serverInfo = lavalinkServers.nodes.find(s => s.id === node.id);
+  console.log(`🔄 Reconectando ao Lavalink: ${serverInfo?.name || node.id}...`);
 });
 
 client.lavalink.nodeManager.on('disconnect', (node, reason) => {
-  console.log(`❌ Desconectado do Lavalink: ${node.id}`);
+  const serverInfo = lavalinkServers.nodes.find(s => s.id === node.id);
+  console.log(`❌ Desconectado do Lavalink: ${serverInfo?.name || node.id}`);
   console.log(`   Motivo: ${reason?.code || 'Desconhecido'} - ${reason?.reason || 'N/A'}`);
   
-  // Só marca como não pronto se todos os nós estiverem desconectados
+  // Verifica nós conectados
   const connectedNodes = Array.from(client.lavalink.nodeManager.nodes.values())
     .filter(n => n.connected);
   
   if (connectedNodes.length === 0) {
     lavalinkReady = false;
-    console.log('⚠️ Nenhum servidor Lavalink disponível!');
+    console.log('⚠️ Nenhum servidor Lavalink disponível! Tentando reconectar...');
+  } else {
+    // Ainda há nós disponíveis - informa qual será usado
+    const nextNode = connectedNodes[0];
+    const nextServerInfo = lavalinkServers.nodes.find(s => s.id === nextNode.id);
+    console.log(`🔀 Fallback ativo! Usando servidor: ${nextServerInfo?.name || nextNode.id}`);
+    console.log(`📊 Status: ${connectedNodes.length}/${lavalinkServers.nodes.length} servidores conectados`);
+    
+    // Migra players ativos para o próximo nó disponível
+    const players = Array.from(client.lavalink.players.values())
+      .filter(p => p.node?.id === node.id);
+    
+    if (players.length > 0) {
+      console.log(`🔄 Migrando ${players.length} player(s) para ${nextServerInfo?.name || nextNode.id}...`);
+      players.forEach(async (player) => {
+        try {
+          await player.changeNode(nextNode);
+          console.log(`   ✅ Player ${player.guildId} migrado com sucesso`);
+        } catch (err) {
+          console.error(`   ❌ Erro ao migrar player ${player.guildId}:`, err.message);
+        }
+      });
+    }
   }
 });
 
 client.lavalink.nodeManager.on('error', (node, error, payload) => {
-  console.error(`❌ Erro no Lavalink ${node.id}:`);
+  const serverInfo = lavalinkServers.nodes.find(s => s.id === node.id);
+  console.error(`❌ Erro no Lavalink ${serverInfo?.name || node.id}:`);
   console.error(`   Mensagem: ${error.message || error}`);
   if (payload) {
     console.error(`   Payload:`, payload);
   }
+  
+  // Verifica se há outros nós disponíveis
+  const connectedNodes = Array.from(client.lavalink.nodeManager.nodes.values())
+    .filter(n => n.connected && n.id !== node.id);
+  
+  if (connectedNodes.length > 0) {
+    const nextNode = connectedNodes[0];
+    const nextServerInfo = lavalinkServers.nodes.find(s => s.id === nextNode.id);
+    console.log(`🔀 Servidor alternativo disponível: ${nextServerInfo?.name || nextNode.id}`);
+  }
 });
 
 client.lavalink.nodeManager.on('destroy', (node) => {
-  console.log(`🗑️ Nó Lavalink destruído: ${node.id}`);
+  const serverInfo = lavalinkServers.nodes.find(s => s.id === node.id);
+  console.log(`🗑️ Nó Lavalink destruído: ${serverInfo?.name || node.id}`);
 });
 
 // === Eventos do Player (música) ===

@@ -1,0 +1,95 @@
+{
+  "description": "Lista de servidores Lavalink v4 com fallback automático. O primeiro servidor é o primário, os demais são backups.",
+  "nodes": [
+    {
+      "id": "primary",
+      "name": "Serenetia v4 SSL (Principal)",
+      "host": "lavalinkv4.serenetia.com",
+      "port": 443,
+      "password": "https://dsc.gg/ajidevserver",
+      "secure": true,
+      "priority": 1
+    },
+    {
+      "id": "backup1",
+      "name": "Serenetia SSL",
+      "host": "lavalink.serenetia.com",
+      "port": 443,
+      "password": "https://dsc.gg/ajidevserver",
+      "secure": true,
+      "priority": 2
+    },
+    {
+      "id": "backup2",
+      "name": "Jirayu.net SSL (Proxy)",
+      "host": "lavalink.jirayu.net",
+      "port": 443,
+      "password": "youshallnotpass",
+      "secure": true,
+      "priority": 3
+    },
+    {
+      "id": "backup3",
+      "name": "Serenetia v4 HTTP",
+      "host": "lavalinkv4.serenetia.com",
+      "port": 80,
+      "password": "https://dsc.gg/ajidevserver",
+      "secure": false,
+      "priority": 4
+    },
+    {
+      "id": "backup4",
+      "name": "Serenetia HTTP",
+      "host": "lavalink.serenetia.com",
+      "port": 80,
+      "password": "https://dsc.gg/ajidevserver",
+      "secure": false,
+      "priority": 5
+    },
+    {
+      "id": "backup5",
+      "name": "Aiko Project",
+      "host": "lavalink.aiko-project.xyz",
+      "port": 2333,
+      "password": "Rikka",
+      "secure": false,
+      "priority": 6
+    },
+    {
+      "id": "backup6",
+      "name": "WPCreative",
+      "host": "ll.wpcreative.my.id",
+      "port": 22233,
+      "password": "youshallnotpass",
+      "secure": false,
+      "priority": 7
+    },
+    {
+      "id": "backup7",
+      "name": "NyxBot NodeLink",
+      "host": "sg1-nodelink.nyxbot.app",
+      "port": 3000,
+      "password": "nyxbot.app/support",
+      "secure": false,
+      "priority": 8
+    },
+    {
+      "id": "backup8",
+      "name": "StageApp v4 SSL",
+      "host": "lavalink-v4.stageapp.com",
+      "port": 443,
+      "password": "stageapp.com",
+      "secure": true,
+      "priority": 9
+    },
+    {
+      "id": "backup9",
+      "name": "Lavalinknode.eu",
+      "host": "lavalinknode.eu",
+      "port": 2333,
+      "password": "lavalinknode.eu",
+      "secure": false,
+      "priority": 10
+    }
+  ]
+}

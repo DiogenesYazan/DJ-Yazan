@@ -1,114 +1,105 @@
-# 🌐 Servidores Lavalink Públicos
+# 🌐 Servidores Lavalink - Sistema de Fallback Automático
 
-## ⚠️ Servidor Atual (Funcionando)
+## 🔄 Como Funciona
 
-```env
-LAVA_HOST=lavalink.jirayu.net
-LAVA_PORT=13592
-LAVA_PASSWORD=youshallnotpass
-LAVA_SECURE=false
-```
+O bot agora usa um **sistema de fallback automático** com múltiplos servidores Lavalink. Quando o servidor primário cair, o bot automaticamente muda para o próximo servidor disponível na lista.
 
-✅ **Status:** Funcionando  
-✅ **Versão:** Lavalink v4  
-✅ **Região:** Global
+### Arquivos Importantes:
+- **`lavalink-servers.json`** - Lista de servidores com prioridade
+- **`index.js`** - Lógica de conexão e fallback
 
 ---
 
-## 🔄 Servidores Alternativos
+## 📋 Configuração Atual (lavalink-servers.json)
 
-### Opção 1: Lavalink.me
-```env
-LAVA_HOST=lavalink.me
-LAVA_PORT=443
-LAVA_PASSWORD=lavalink.me
-LAVA_SECURE=true
+```json
+{
+  "nodes": [
+    {
+      "id": "primary",
+      "name": "Serenetia (Principal)",
+      "host": "lavalinkv4.serenetia.com",
+      "port": 443,
+      "password": "https://dsc.gg/ajidevserver",
+      "secure": true,
+      "priority": 1
+    },
+    // ... mais servidores de backup
+  ]
+}
 ```
 
-### Opção 2: Lavalinknode.eu
-```env
-LAVA_HOST=lavalinknode.eu
-LAVA_PORT=2333
-LAVA_PASSWORD=lavalinknode.eu
-LAVA_SECURE=false
+### Campos:
+| Campo | Descrição |
+|-------|-----------|
+| `id` | Identificador único do servidor |
+| `name` | Nome amigável para os logs |
+| `host` | Endereço do servidor |
+| `port` | Porta do servidor |
+| `password` | Senha de autenticação |
+| `secure` | `true` para SSL/HTTPS, `false` para HTTP |
+| `priority` | Ordem de prioridade (1 = mais alta) |
+
+---
+
+## ➕ Como Adicionar um Novo Servidor
+
+1. Abra o arquivo `lavalink-servers.json`
+2. Adicione um novo objeto no array `nodes`:
+
+```json
+{
+  "id": "backup5",
+  "name": "Meu Servidor",
+  "host": "meu-lavalink.com",
+  "port": 2333,
+  "password": "minha_senha",
+  "secure": false,
+  "priority": 6
+}
 ```
 
-### Opção 3: Lavalink CloudHawk
-```env
-LAVA_HOST=lavalink.cloudhawk.xyz
-LAVA_PORT=2333
-LAVA_PASSWORD=CloudHawkLavalink
-LAVA_SECURE=false
-```
+3. Ajuste a `priority` conforme a preferência (menor número = maior prioridade)
+4. Faça redeploy no Heroku
 
-### Opção 4: Lavalink v4 SSL
-```env
-LAVA_HOST=lavalink-v4.stageapp.com
-LAVA_PORT=443
-LAVA_PASSWORD=stageapp.com
-LAVA_SECURE=true
+---
+
+## 🗑️ Como Remover um Servidor
+
+1. Abra o arquivo `lavalink-servers.json`
+2. Remova o objeto do servidor desejado
+3. Faça redeploy no Heroku
+
+---
+
+## 🔀 Como Funciona o Fallback
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Bot Inicia                                                  │
+│      ↓                                                       │
+│  Conecta a TODOS os servidores simultaneamente               │
+│      ↓                                                       │
+│  Usa servidor com menor prioridade (priority: 1) para tocar  │
+│      ↓                                                       │
+│  Se servidor primário cair:                                  │
+│      → Migra players para próximo servidor conectado         │
+│      → Continua tocando sem interrupção                      │
+│      → Tenta reconectar ao servidor que caiu                 │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🏗️ Como Usar Seu Próprio Servidor Lavalink
+## 📊 Servidores Configurados Atualmente
 
-### 1. Docker (Recomendado)
-```bash
-# Criar application.yml
-cat > application.yml << 'EOF'
-server:
-  port: 2333
-  address: 0.0.0.0
-
-lavalink:
-  server:
-    password: "youshallnotpass"
-    sources:
-      youtube: true
-      bandcamp: true
-      soundcloud: true
-      twitch: true
-      vimeo: true
-      http: true
-      local: false
-    bufferDurationMs: 400
-    frameBufferDurationMs: 5000
-    youtubePlaylistLoadLimit: 6
-    playerUpdateInterval: 5
-    youtubeSearchEnabled: true
-    soundcloudSearchEnabled: true
-    gc-warnings: true
-  plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.8.2"
-      snapshot: false
-EOF
-
-# Executar Lavalink com Docker
-docker run -d \
-  --name lavalink \
-  -p 2333:2333 \
-  -v $(pwd)/application.yml:/opt/Lavalink/application.yml \
-  --restart unless-stopped \
-  ghcr.io/lavalink-devs/lavalink:4-alpine
-```
-
-### 2. Java Local
-```bash
-# Baixar Lavalink.jar
-wget https://github.com/lavalink-devs/Lavalink/releases/download/4.0.8/Lavalink.jar
-
-# Executar
-java -jar Lavalink.jar
-```
-
-### 3. Configurar no .env
-```env
-LAVA_HOST=localhost  # ou seu IP público
-LAVA_PORT=2333
-LAVA_PASSWORD=youshallnotpass
-LAVA_SECURE=false
-```
+| # | Servidor | Host | Porta | SSL | Status |
+|---|----------|------|-------|-----|--------|
+| 1 | Serenetia (Principal) | lavalinkv4.serenetia.com | 443 | ✅ | Primário |
+| 2 | Jirayu.net | lavalink.jirayu.net | 13592 | ❌ | Backup |
+| 3 | Lavalink.me | lavalink.me | 443 | ✅ | Backup |
+| 4 | StageApp v4 | lavalink-v4.stageapp.com | 443 | ✅ | Backup |
+| 5 | Lavalinknode.eu | lavalinknode.eu | 2333 | ❌ | Backup |
 
 ---
 
@@ -116,7 +107,7 @@ LAVA_SECURE=false
 
 ### Método 1: cURL
 ```bash
-curl -H "Authorization: senha_aqui" http://host:porta/v4/info
+curl -H "Authorization: senha_aqui" https://host:porta/v4/info
 ```
 
 ### Método 2: No código
@@ -125,7 +116,7 @@ const axios = require('axios');
 
 async function testLavalink() {
   try {
-    const response = await axios.get('http://host:porta/v4/info', {
+    const response = await axios.get('https://host:porta/v4/info', {
       headers: { 'Authorization': 'senha_aqui' }
     });
     console.log('✅ Servidor funcionando:', response.data);
@@ -195,40 +186,40 @@ client.lavalink = new LavalinkManager({
 
 ### Erro: "does not provide any /v4/info"
 **Causa:** Servidor não é Lavalink v4 ou está offline  
-**Solução:** Trocar para outro servidor da lista
+**Solução:** O sistema de fallback tentará automaticamente o próximo servidor
 
 ### Erro: "ECONNREFUSED"
 **Causa:** Servidor offline ou porta bloqueada  
-**Solução:** Verificar firewall ou trocar servidor
+**Solução:** O fallback automático cuidará disso
 
 ### Erro: "401 Unauthorized"
 **Causa:** Senha incorreta  
-**Solução:** Verificar LAVA_PASSWORD no .env
+**Solução:** Verificar password no lavalink-servers.json
 
 ### Erro: "SSL/TLS handshake failed"
-**Causa:** LAVA_SECURE=true mas servidor não tem SSL  
-**Solução:** Mudar para LAVA_SECURE=false
+**Causa:** `secure: true` mas servidor não tem SSL  
+**Solução:** Mudar `secure` para `false` no servidor específico
 
 ---
 
 ## 📝 Notas Importantes
 
-1. **Servidores públicos podem ficar offline** - Sempre tenha um backup
-2. **Performance varia** - Teste diferentes servidores para sua região
-3. **Limitações de taxa** - Servidores públicos podem ter rate limits
-4. **Produção** - Recomendado usar servidor próprio
-5. **Privacidade** - Servidores públicos podem logar suas músicas
+1. **Sistema de fallback automático** - O bot tenta todos os servidores configurados
+2. **Migração de players** - Quando um servidor cai, os players são migrados automaticamente
+3. **Ordem de prioridade** - Ajuste o campo `priority` para definir preferências
+4. **Servidores públicos** - Podem ficar offline, por isso temos múltiplos backups
+5. **SSL recomendado** - Servidores com `secure: true` são mais estáveis
 
 ---
 
 ## 🔗 Links Úteis
 
-- [Lista de Servidores Lavalink](https://lavalink-list.darrennathanael.com/)
+- [Lista de Servidores Lavalink](https://lavalink-list.darrennathanael.com/SSL/Lavalink-SSL/)
 - [Lavalink GitHub](https://github.com/lavalink-devs/Lavalink)
 - [Documentação Lavalink](https://lavalink.dev/)
 - [lavalink-client Docs](https://lavalink-client.netlify.app/)
 
 ---
 
-**Última Atualização:** Outubro 2025  
-**Servidor Recomendado:** lavalink.jirayu.net (estável e confiável)
+**Última Atualização:** Fevereiro 2026  
+**Sistema:** Fallback automático com múltiplos servidores
