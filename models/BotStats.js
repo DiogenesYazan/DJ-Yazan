@@ -43,6 +43,12 @@ const botStatsSchema = new mongoose.Schema({
     default: false
   },
   
+  // Lista de IDs dos servidores onde o bot está
+  guildIds: {
+    type: [String],
+    default: []
+  },
+  
   lastUpdated: {
     type: Date,
     default: Date.now

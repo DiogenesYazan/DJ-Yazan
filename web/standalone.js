@@ -113,6 +113,21 @@ async function startStandaloneServer() {
     scope: scopes
   }, async (accessToken, refreshToken, profile, done) => {
     try {
+      // Busca lista de servidores onde o bot está
+      const botStats = await BotStats.getStats();
+      const botGuildIds = new Set(botStats.guildIds || []);
+      
+      // Mapeia guilds marcando quais têm o bot
+      const guilds = profile.guilds?.map(g => ({
+        id: g.id,
+        name: g.name,
+        icon: g.icon,
+        owner: g.owner,
+        permissions: g.permissions,
+        isAdmin: (g.permissions & 0x8) === 0x8 || (g.permissions & 0x20) === 0x20,
+        hasBot: botGuildIds.has(g.id)
+      })) || [];
+      
       // Salva sessão no banco
       await UserSession.findOneAndUpdate(
         { discordId: profile.id },
@@ -121,13 +136,7 @@ async function startStandaloneServer() {
           username: profile.username,
           discriminator: profile.discriminator || '0',
           avatar: profile.avatar,
-          guilds: profile.guilds?.map(g => ({
-            id: g.id,
-            name: g.name,
-            icon: g.icon,
-            owner: g.owner,
-            permissions: g.permissions
-          })) || [],
+          guilds: guilds,
           accessToken,
           refreshToken,
           lastLogin: new Date()
@@ -139,7 +148,7 @@ async function startStandaloneServer() {
         discordId: profile.id,
         username: profile.username,
         avatar: profile.avatar,
-        guilds: profile.guilds || []
+        guilds: guilds
       });
     } catch (err) {
       console.error('Erro ao salvar sessão:', err);

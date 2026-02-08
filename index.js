@@ -329,10 +329,14 @@ client.once('clientReady', () => {
       const userCount = client.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0);
       const activePlayers = client.lavalink?.players?.size || 0;
       
+      // Lista de IDs dos servidores onde o bot está
+      const guildIds = Array.from(client.guilds.cache.keys());
+      
       await BotStats.updateStats({
         guildCount,
         userCount,
         activePlayers,
+        guildIds,
         isOnline: true,
         botStartTime: client.readyAt
       });
@@ -341,9 +345,9 @@ client.once('clientReady', () => {
     }
   }
   
-  // Atualiza stats imediatamente e depois a cada 30 segundos
+  // Atualiza stats imediatamente e depois a cada 60 segundos
   updateBotStats();
-  setInterval(updateBotStats, 30_000);
+  setInterval(updateBotStats, 60_000);
 
   // Rotação de status (carrega do arquivo JSON)
   const statuses = statusMessages.statuses.map(s => s.text);
