@@ -110,9 +110,9 @@ async function startStandaloneServer() {
     try {
       // Salva sessão no banco
       await UserSession.findOneAndUpdate(
-        { odiscordId: profile.id },
+        { discordId: profile.id },
         {
-          odiscordId: profile.id,
+          discordId: profile.id,
           username: profile.username,
           discriminator: profile.discriminator || '0',
           avatar: profile.avatar,
@@ -131,7 +131,7 @@ async function startStandaloneServer() {
       );
 
       return done(null, {
-        odiscordId: profile.id,
+        discordId: profile.id,
         username: profile.username,
         avatar: profile.avatar,
         guilds: profile.guilds || []
