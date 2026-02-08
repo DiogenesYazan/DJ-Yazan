@@ -5,7 +5,12 @@
   "scripts": {
     "start": "node index.js"
   },
-  "keywords": ["discord", "music", "bot", "lavalink"],
+  "keywords": [
+    "discord",
+    "music",
+    "bot",
+    "lavalink"
+  ],
   "author": "Diógenes Yuri",
   "license": "ISC",
   "type": "commonjs",
@@ -17,7 +22,6 @@
     "dotenv": "^16.5.0",
     "express": "^4.22.1",
     "express-session": "^1.18.0",
-    "genius-lyrics-api": "^3.2.1",
     "lavalink-client": "^2.5.6",
     "mongoose": "^9.0.2",
     "passport": "^0.7.0",

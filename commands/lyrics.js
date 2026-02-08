@@ -1,5 +1,43 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { getLyrics, searchSong } = require('genius-lyrics-api');
+
+// APIs de letras (em ordem de prioridade)
+const LYRICS_APIS = [
+  {
+    name: 'LyricsOVH',
+    search: async (artist, title) => {
+      const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.lyrics || null;
+    }
+  },
+  {
+    name: 'Lrclib',
+    search: async (artist, title) => {
+      const query = `${artist} ${title}`.trim();
+      const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(query)}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data && data.length > 0) {
+        // Pega a primeira que tem letra
+        const track = data.find(t => t.plainLyrics) || data[0];
+        return track?.plainLyrics || null;
+      }
+      return null;
+    }
+  },
+  {
+    name: 'LyricsFinder',
+    search: async (artist, title) => {
+      // API alternativa
+      const query = `${artist} ${title}`.trim();
+      const res = await fetch(`https://some-random-api.com/lyrics?title=${encodeURIComponent(query)}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.lyrics || null;
+    }
+  }
+];
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -31,6 +69,7 @@ module.exports = {
       
       // Limpa título de coisas comuns
       title = cleanTitle(title);
+      artist = cleanArtist(artist);
     } else {
       // Usa a busca fornecida
       const parts = searchQuery.split(' - ');
@@ -43,49 +82,60 @@ module.exports = {
       }
     }
     
-    // Verificar se tem API key
-    const apiKey = process.env.GENIUS_ACCESS_TOKEN;
-    if (!apiKey) {
-      return i.editReply({ content: '❌ API do Genius não configurada. Contate o administrador.' });
-    }
-    
     try {
-      // Buscar letra
-      const options = {
-        apiKey: apiKey,
-        title: title,
-        artist: artist,
-        optimizeQuery: true
-      };
+      let lyrics = null;
+      let source = null;
       
-      const lyrics = await getLyrics(options);
-      
-      if (!lyrics) {
-        // Tentar buscar música primeiro
-        const songs = await searchSong({
-          apiKey: apiKey,
-          title: title,
-          optimizeQuery: true
-        });
-        
-        if (songs && songs.length > 0) {
-          return i.editReply({ 
-            content: `❌ Letra não encontrada para **${title}**\n\nMúsicas encontradas:\n${songs.slice(0, 5).map((s, idx) => `${idx + 1}. ${s.title} - ${s.artist.name}`).join('\n')}\n\nTente: \`/lyrics <artista> - <música>\``
-          });
+      // Tenta cada API até encontrar
+      for (const api of LYRICS_APIS) {
+        try {
+          lyrics = await api.search(artist, title);
+          if (lyrics) {
+            source = api.name;
+            break;
+          }
+        } catch (err) {
+          console.log(`[Lyrics] ${api.name} falhou:`, err.message);
         }
-        
-        return i.editReply({ content: `❌ Letra não encontrada para **${title}**. Tente ser mais específico.` });
       }
       
+      // Se não encontrou e tem artista, tenta só com título
+      if (!lyrics && artist) {
+        for (const api of LYRICS_APIS) {
+          try {
+            lyrics = await api.search('', title);
+            if (lyrics) {
+              source = api.name;
+              break;
+            }
+          } catch (err) {
+            // Ignora
+          }
+        }
+      }
+      
+      if (!lyrics) {
+        return i.editReply({ 
+          content: `❌ Letra não encontrada para **${title}**${artist ? ` - ${artist}` : ''}\n\n` +
+                   `💡 **Dicas:**\n` +
+                   `• Tente: \`/lyrics <artista> - <música>\`\n` +
+                   `• Use o nome em inglês se for música internacional\n` +
+                   `• Verifique a ortografia`
+        });
+      }
+      
+      // Limpa a letra
+      lyrics = lyrics.trim();
+      
       // Dividir letra em partes se muito longa
-      const maxLength = 4000; // Limite do embed
+      const maxLength = 4000;
       
       if (lyrics.length <= maxLength) {
         const embed = new EmbedBuilder()
-          .setColor(0xFFFF64) // Amarelo do Genius
+          .setColor(0x1DB954) // Verde Spotify
           .setTitle(`🎤 ${title}`)
           .setDescription(lyrics)
-          .setFooter({ text: `${artist ? `Artista: ${artist} • ` : ''}Powered by Genius` });
+          .setFooter({ text: `${artist ? `${artist} • ` : ''}Fonte: ${source}` });
         
         return i.editReply({ embeds: [embed] });
       } else {
@@ -93,17 +143,17 @@ module.exports = {
         const parts = splitLyrics(lyrics, 3900);
         
         const embed = new EmbedBuilder()
-          .setColor(0xFFFF64)
+          .setColor(0x1DB954)
           .setTitle(`🎤 ${title}`)
           .setDescription(parts[0] + '\n\n*[Continua...]*')
-          .setFooter({ text: `Parte 1/${parts.length} • ${artist ? `${artist} • ` : ''}Powered by Genius` });
+          .setFooter({ text: `Parte 1/${parts.length} • ${artist ? `${artist} • ` : ''}Fonte: ${source}` });
         
         await i.editReply({ embeds: [embed] });
         
         // Envia partes restantes como follow-up
         for (let idx = 1; idx < Math.min(parts.length, 3); idx++) {
           const partEmbed = new EmbedBuilder()
-            .setColor(0xFFFF64)
+            .setColor(0x1DB954)
             .setDescription(parts[idx])
             .setFooter({ text: `Parte ${idx + 1}/${parts.length}` });
           
@@ -111,13 +161,13 @@ module.exports = {
         }
         
         if (parts.length > 3) {
-          await i.followUp({ content: `⚠️ Letra muito longa. Mostrando ${3} de ${parts.length} partes.` });
+          await i.followUp({ content: `⚠️ Letra muito longa. Mostrando 3 de ${parts.length} partes.` });
         }
       }
       
     } catch (error) {
       console.error('Erro ao buscar letra:', error);
-      return i.editReply({ content: `❌ Erro ao buscar letra: ${error.message}` });
+      return i.editReply({ content: `❌ Erro ao buscar letra. Tente novamente mais tarde.` });
     }
   }
 };
@@ -126,11 +176,27 @@ module.exports = {
 function cleanTitle(title) {
   return title
     // Remove (Official Video), [Official Audio], etc.
-    .replace(/[\[\(].*?(official|video|audio|lyric|lyrics|hd|hq|4k|remaster).*?[\]\)]/gi, '')
+    .replace(/[\[\(].*?(official|video|audio|lyric|lyrics|hd|hq|4k|remaster|live|remix|version).*?[\]\)]/gi, '')
     // Remove feat., ft., etc.
-    .replace(/\s*(feat\.|ft\.|featuring)\s*.*/gi, '')
+    .replace(/\s*(feat\.|ft\.|featuring|prod\.|prod by)\s*.*/gi, '')
     // Remove "- Topic" do YouTube Music
     .replace(/\s*-\s*Topic$/gi, '')
+    // Remove "VEVO" e similares
+    .replace(/\s*vevo$/gi, '')
+    // Remove espaços extras
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Limpar nome do artista
+function cleanArtist(artist) {
+  return artist
+    // Remove "- Topic" do YouTube Music
+    .replace(/\s*-\s*Topic$/gi, '')
+    // Remove "VEVO"
+    .replace(/\s*vevo$/gi, '')
+    // Remove "Official"
+    .replace(/\s*official$/gi, '')
     // Remove espaços extras
     .replace(/\s+/g, ' ')
     .trim();
