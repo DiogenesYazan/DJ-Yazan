@@ -3,9 +3,47 @@
 // ============================================
 
 const express = require('express');
+const https = require('https');
+const http = require('http');
 const { getLandingPage } = require('./pages/landing');
 const { getTermsPage } = require('./pages/terms');
 const { getPrivacyPage } = require('./pages/privacy');
+
+// ============================================
+// 🔄 SISTEMA ANTI-IDLE (KEEP-ALIVE)
+// ============================================
+// Previne que o Heroku coloque o dyno em hibernação
+
+const PING_INTERVAL = 10 * 60 * 1000; // Ping a cada 10 minutos
+let pingInterval = null;
+
+function startKeepAlive(appUrl) {
+  if (pingInterval) clearInterval(pingInterval);
+  
+  const ping = () => {
+    const url = appUrl || process.env.APP_URL;
+    if (!url) {
+      console.log('⚠️ APP_URL não definida - keep-alive desativado');
+      return;
+    }
+    
+    const protocol = url.startsWith('https') ? https : http;
+    
+    protocol.get(url, (res) => {
+      console.log(`🏓 Keep-alive ping: ${res.statusCode} - ${new Date().toLocaleTimeString('pt-BR')}`);
+    }).on('error', (err) => {
+      console.log(`⚠️ Keep-alive erro: ${err.message}`);
+    });
+  };
+  
+  // Primeiro ping após 5 minutos
+  setTimeout(ping, 5 * 60 * 1000);
+  
+  // Pings subsequentes a cada 10 minutos
+  pingInterval = setInterval(ping, PING_INTERVAL);
+  
+  console.log('🔄 Sistema keep-alive iniciado (ping a cada 10 min)');
+}
 
 // Estatísticas globais do bot
 const botStats = {
@@ -156,6 +194,10 @@ function createWebServer(client, Leaderboard) {
   // Inicia o servidor
   app.listen(PORT, () => {
     console.log(`🌐 Landing Page rodando em http://localhost:${PORT}`);
+    
+    // Inicia sistema keep-alive para evitar idle do Heroku
+    const appUrl = process.env.APP_URL || `https://dj-yazan-841149114742.herokuapp.com`;
+    startKeepAlive(appUrl);
   });
   
   return { app, botStats, formatUptime };
@@ -165,5 +207,6 @@ module.exports = {
   createWebServer, 
   botStats,
   formatUptime,
-  botStartTime
+  botStartTime,
+  startKeepAlive
 };
