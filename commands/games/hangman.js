@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType } = require('discord.js');
 const { updateGameScore, GAME_POINTS } = require('./_gameUtils');
 
 // Carrega palavras
@@ -149,9 +149,9 @@ module.exports = {
     const message = await interaction.fetchReply();
     
     const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.Button,
+      componentType: ComponentType.StringSelect,
       time: 300000, // 5 minutos
-      filter: (i) => i.user.id === userId && i.customId.startsWith('hm_')
+      filter: (i) => i.user.id === userId && i.customId.startsWith('hm_menu')
     });
     
     collector.on('collect', async (i) => {
@@ -161,7 +161,7 @@ module.exports = {
         return;
       }
       
-      const letter = i.customId.replace('hm_', '');
+      const letter = i.values[0]; // Pega a letra selecionada do menu
       
       if (game.guessedLetters.has(letter)) {
         await i.reply({ content: '❌ Você já tentou essa letra!', ephemeral: true });
@@ -288,25 +288,52 @@ function createHangmanEmbed(game, status, user) {
 }
 
 function createAlphabetButtons(guessedLetters) {
+  // Usa StringSelectMenu para caber todas as 26 letras (máximo 25 opções por menu)
+  // Divide em 2 menus: A-M e N-Z
   const rows = [];
-  // Discord permite no máximo 5 botões por ActionRow e 5 ActionRows por mensagem
-  const alphabetRows = ['ABCDE', 'FGHIJ', 'KLMNO', 'PQRST', 'UVWXYZ'];
   
-  for (const rowLetters of alphabetRows) {
-    const row = new ActionRowBuilder();
-    
-    for (const letter of rowLetters) {
-      const button = new ButtonBuilder()
-        .setCustomId(`hm_${letter}`)
-        .setLabel(letter)
-        .setStyle(guessedLetters.has(letter) ? ButtonStyle.Secondary : ButtonStyle.Primary)
-        .setDisabled(guessedLetters.has(letter));
-      
-      row.addComponents(button);
+  // Menu 1: A-M (13 letras)
+  const options1 = [];
+  for (const letter of 'ABCDEFGHIJKLM') {
+    if (!guessedLetters.has(letter)) {
+      options1.push({
+        label: letter,
+        value: letter,
+        emoji: '🔤'
+      });
     }
-    
-    rows.push(row);
   }
   
+  // Menu 2: N-Z (13 letras)
+  const options2 = [];
+  for (const letter of 'NOPQRSTUVWXYZ') {
+    if (!guessedLetters.has(letter)) {
+      options2.push({
+        label: letter,
+        value: letter,
+        emoji: '🔤'
+      });
+    }
+  }
+  
+  // Adiciona menu 1 se tiver opções
+  if (options1.length > 0) {
+    const menu1 = new StringSelectMenuBuilder()
+      .setCustomId('hm_menu_1')
+      .setPlaceholder('📝 Escolha uma letra (A-M)')
+      .addOptions(options1);
+    rows.push(new ActionRowBuilder().addComponents(menu1));
+  }
+  
+  // Adiciona menu 2 se tiver opções
+  if (options2.length > 0) {
+    const menu2 = new StringSelectMenuBuilder()
+      .setCustomId('hm_menu_2')
+      .setPlaceholder('📝 Escolha uma letra (N-Z)')
+      .addOptions(options2);
+    rows.push(new ActionRowBuilder().addComponents(menu2));
+  }
+  
+  // Se não houver mais letras disponíveis, retorna vazio
   return rows;
 }

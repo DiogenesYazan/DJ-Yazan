@@ -719,8 +719,14 @@ client.on('interactionCreate', async i => {
     return;
   }
 
-  // Handler de botões do controller
+  // Handler de botões do controller (APENAS botões que começam com 'controller_')
   if (i.isButton()) {
+    // Ignora botões que NÃO são do controller de música
+    // Esses botões são tratados pelos collectors dos próprios comandos (games, etc.)
+    if (!i.customId.startsWith('controller_')) {
+      return; // Deixa os collectors dos comandos tratarem
+    }
+    
     const player = client.lavalink.getPlayer(i.guild.id);
     
     if (!player || !player.queue.current) {

@@ -4,47 +4,47 @@
   "wordle": {
     "5_letters": [
       "SAGAZ", "ÂMAGO", "TERMO", "NEGRO", "ÊXITO", "MEXER", "NOBRE", "SENSO", "ALGOZ",
-      "AFETO", "CERNE", "VIGOR", "ASSIM", "AQUÉM", "ETNIA", "ÍMPETO", "FORTE", "PLENO",
+      "AFETO", "CERNE", "VIGOR", "ASSIM", "AQUÉM", "ETNIA", "FORTE", "PLENO",
       "TÊNUE", "LAPSO", "PESAR", "MEIGA", "SUTIL", "CRIVO", "PUDOR", "INATO", "TERNO",
-      "GLÓRIA", "DIGNO", "GRAÇA", "HONRA", "JUSTO", "LUCRO", "MÚTUO", "ARDIL", "AUDAZ",
-      
+      "DIGNO", "GRAÇA", "HONRA", "JUSTO", "LUCRO", "MÚTUO", "ARDIL", "AUDAZ",
+
       "AMIGO", "BARCO", "CARRO", "DANÇA", "FESTA", "GRATO", "HOMEM", "IGUAL", "JARRO",
       "LEITE", "MANGA", "NOITE", "PAPEL", "RAZÃO", "SABÃO", "UNIÃO", "VENTO", "ZEBRA",
-      "ABRIR", "BEBER", "COMER", "DIZER", "FAZER", "GOSTAR", "HAVER", "IMPAR", "JOGAR",
+      "ABRIR", "BEBER", "COMER", "DIZER", "FAZER", "HAVER", "IMPAR", "JOGAR",
       "LAVAR", "MORAR", "NADAR", "OUVIR", "PAGAR", "QUERO", "ROLAR", "SABER", "TEMER",
-      
+
       "PIXEL", "GAMER", "MOUSE", "BYTES", "LINUX", "GAMES", "NINJA", "QUEST", "FINAL",
-      "SONIC", "MARIO", "ZELDA", "KRATOS", "STEAM", "CYBER", "ARENA", "SPAWN", "COMBO",
+      "SONIC", "MARIO", "ZELDA", "STEAM", "CYBER", "ARENA", "SPAWN", "COMBO",
       "SKILL", "BOOST", "LEVEL", "GUILD", "TOWER", "SWORD", "MAGIC", "FROST", "CROWN",
-      
-      "BEATS", "RITMO", "GRAVE", "AGUDO", "TIMBRE", "CORAL", "BANJO", "HARPA", "ÓRGÃO",
+
+      "BEATS", "RITMO", "GRAVE", "AGUDO", "CORAL", "BANJO", "HARPA", "ÓRGÃO",
       "SAMBA", "BOSSA", "FORRÓ", "BLUES", "METAL", "INDIE", "TANGO", "VALSA", "SWING",
-      "PIANO", "FLAUTA", "VIOLÃO", "BUMBO", "BAIXO", "TENOR", "VOCAL", "DISCO", "TRACK",
-      
-      "PIZZA", "MASSA", "QUEIJO", "FRANGO", "CARNE", "SUSHI", "MOLHO", "ALHOS", "DOCES",
-      "BOLO", "PEIXE", "ARROZ", "FEIJÃO", "SALADA", "TORTA", "BACON", "CALDO", "FRITO",
-      
+      "PIANO", "BUMBO", "BAIXO", "TENOR", "VOCAL", "DISCO", "TRACK",
+
+      "PIZZA", "MASSA", "CARNE", "SUSHI", "MOLHO", "ALHOS", "DOCES",
+      "BOLO", "PEIXE", "ARROZ", "TORTA", "BACON", "CALDO", "FRITO",
+
       "LEÃO", "TIGRE", "URSOS", "LOBO", "ONÇA", "ÁGUIA", "CORVO", "SABIÁ", "GATO",
-      "CÃES", "RATO", "COBRA", "PEIXE", "JACARÉ", "TUBARÃO", "POLVO", "ARARA", "BODE",
-      
+      "CÃES", "RATO", "COBRA", "POLVO", "ARARA", "BODE",
+
       "PRAIA", "SERRA", "CAMPO", "LAGOS", "RIOS", "MARES", "ILHAS", "DUNAS", "ROCHA",
-      "MONTE", "VALE", "GRUTA", "FAROL", "BOSQUE", "TRILHA", "AREIA", "ONDAS", "BRISA",
-      
-      "LIVRE", "FELIZ", "TRISTE", "CALMO", "LOUCO", "SÉRIO", "RÁPIDO", "LENTO", "QUENTE",
-      "FRIO", "CLARO", "ESCURO", "DOCE", "AMARGO", "SUAVE", "ÁSPERO", "MOLE", "DURO",
-      
+      "MONTE", "VALE", "GRUTA", "FAROL", "AREIA", "ONDAS", "BRISA",
+
+      "LIVRE", "FELIZ", "CALMO", "LOUCO", "SÉRIO", "LENTO",
+      "FRIO", "CLARO", "DOCE", "SUAVE", "MOLE", "DURO",
+
       "VELHO", "VERDE", "WALTZ", "XEROX", "YOGA", "ZUMBI", "ALTAR", "BRAVO", "CAMPO",
       "DUQUE", "ELFO", "FILHO", "GLOBO", "HOTEL", "ÍCONE", "JOVEM", "KARMA", "LIMÃO",
       "MUNDO", "ORDEM", "PRIMO", "QUEDA", "RISCO", "SONO", "TOURO", "ÚTERO", "VIDEO",
-      
+
       "ANDAR", "BAIXO", "CALOR", "DOIDO", "EXATO", "FRACO", "GORDO", "HERÓI", "IDEAL",
       "LARGO", "MAIOR", "ÓBVIO", "PRETO", "RUÍDO", "SURDO", "TOTAL", "ÚNICO", "ZERAR",
-      
-      "VIBE", "HYPE", "MOOD", "ROLE", "CRUSH", "SHIP", "CRINGE", "BASED", "SIGMA",
-      "MEME", "TRETA", "RANÇO", "LACRE", "MITOU", "VIBES", "BROXAR", "APELAR", "ZOAR",
-      
+
+      "VIBE", "HYPE", "MOOD", "ROLE", "CRUSH", "SHIP", "BASED", "SIGMA",
+      "MEME", "TRETA", "RANÇO", "LACRE", "MITOU", "VIBES", "ZOAR",
+
       "NEXUS", "FLASH", "BURST", "CHAOS", "TITAN", "OMEGA", "ALPHA", "DELTA", "HELIX",
-      "PRISM", "VORTEX", "STORM", "BLAZE", "GHOST", "ROGUE", "BEAST", "WRATH", "GLORY"
+      "PRISM", "STORM", "BLAZE", "GHOST", "ROGUE", "BEAST", "WRATH", "GLORY"
     ]
   },
   "hangman": {

@@ -97,8 +97,11 @@ module.exports = {
     
     await interaction.editReply({ embeds: [embed], components: [row] });
     
+    // Busca a mensagem para criar o collector nela
+    const message = await interaction.fetchReply();
+    
     // Collector para botões (30 segundos)
-    const collector = interaction.channel.createMessageComponentCollector({
+    const collector = message.createMessageComponentCollector({
       filter: i => i.customId.startsWith('coinflip_') && i.user.id === interaction.user.id,
       time: 30000,
       max: 1
@@ -106,8 +109,8 @@ module.exports = {
     
     collector.on('collect', async (i) => {
       try {
-        // Evita double-click
-        if (i.replied || i.deferred) return;
+        // Responde imediatamente para evitar timeout
+        await i.deferUpdate();
         
         const newResult = Math.random() < 0.5 ? 'cara' : 'coroa';
         const newResultEmoji = newResult === 'cara' ? '👑' : '🦅';
@@ -146,7 +149,7 @@ module.exports = {
           .setFooter({ text: `${i.user.username}` })
           .setTimestamp();
         
-        await i.update({ embeds: [newEmbed], components: [] });
+        await interaction.editReply({ embeds: [newEmbed], components: [] });
       } catch (error) {
         if (error.code !== 40060) console.error('Erro no Coinflip:', error);
       }

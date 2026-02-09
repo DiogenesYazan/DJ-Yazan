@@ -146,8 +146,11 @@ ${won ? '🎉' : '😢'} **${reward.name}**
     
     await interaction.editReply({ embeds: [finalEmbed], components: [row] });
     
+    // Busca a mensagem para criar o collector nela
+    const message = await interaction.fetchReply();
+    
     // Collector para replay
-    const collector = interaction.channel.createMessageComponentCollector({
+    const collector = message.createMessageComponentCollector({
       filter: i => i.customId === 'slots_spin' && i.user.id === interaction.user.id,
       time: 30000,
       max: 1
@@ -155,8 +158,8 @@ ${won ? '🎉' : '😢'} **${reward.name}**
     
     collector.on('collect', async (i) => {
       try {
-        // Evita double-click
-        if (i.replied || i.deferred) return;
+        // Responde imediatamente para evitar timeout
+        await i.deferUpdate();
         
         // Novo spin
         const newResult = [
@@ -210,7 +213,7 @@ ${newWon ? '🎉' : '😢'} **${newReward.name}**
           .setFooter({ text: i.user.username })
           .setTimestamp();
         
-        await i.update({ embeds: [newEmbed], components: [] });
+        await interaction.editReply({ embeds: [newEmbed], components: [] });
       } catch (error) {
         // Ignora erros de interação já processada
         if (error.code !== 40060) console.error('Erro no Slots:', error);

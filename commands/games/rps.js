@@ -200,8 +200,8 @@ module.exports = {
       
       collector.on('collect', async (i) => {
         try {
-          // Evita double-click
-          if (i.replied || i.deferred) return;
+          // Responde imediatamente para evitar timeout
+          await i.deferUpdate();
           
           const playerChoice = i.customId.replace('rps_', '');
           const botChoice = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)];
@@ -239,7 +239,7 @@ module.exports = {
             .setFooter({ text: interaction.user.username })
             .setTimestamp();
           
-          await i.update({ embeds: [resultEmbed], components: [] });
+          await interaction.editReply({ embeds: [resultEmbed], components: [] });
         } catch (error) {
           // Ignora erros de interação já processada
           if (error.code !== 40060) console.error('Erro no RPS:', error);
