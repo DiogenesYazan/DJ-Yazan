@@ -105,7 +105,11 @@ module.exports = {
     });
     
     collector.on('collect', async (i) => {
-      const newResult = Math.random() < 0.5 ? 'cara' : 'coroa';
+      try {
+        // Evita double-click
+        if (i.replied || i.deferred) return;
+        
+        const newResult = Math.random() < 0.5 ? 'cara' : 'coroa';
       const newResultEmoji = newResult === 'cara' ? '👑' : '🦅';
       const newResultText = newResult === 'cara' ? 'Cara' : 'Coroa';
       
@@ -143,6 +147,9 @@ module.exports = {
         .setTimestamp();
       
       await i.update({ embeds: [newEmbed], components: [] });
+      } catch (error) {
+        if (error.code !== 40060) console.error('Erro no Coinflip:', error);
+      }
     });
     
     collector.on('end', (collected, reason) => {

@@ -199,43 +199,51 @@ module.exports = {
       });
       
       collector.on('collect', async (i) => {
-        const playerChoice = i.customId.replace('rps_', '');
-        const botChoice = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)];
-        
-        let result, color, points, won;
-        
-        if (playerChoice === botChoice) {
-          result = `🤝 **Empate!**`;
-          color = 0xFEE75C;
-          points = GAME_POINTS.RPS_TIE;
-          won = false;
-        } else if (CHOICES[playerChoice].beats === botChoice) {
-          result = `🏆 **Você venceu!**`;
-          color = 0x57F287;
-          points = GAME_POINTS.RPS_WIN;
-          won = true;
-        } else {
-          result = `😢 **Você perdeu!**`;
-          color = 0xED4245;
-          points = GAME_POINTS.RPS_LOSE;
-          won = false;
+        try {
+          // Evita double-click
+          if (i.replied || i.deferred) return;
+          
+          const playerChoice = i.customId.replace('rps_', '');
+          const botChoice = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)];
+          
+          let result, color, points, won;
+          
+          if (playerChoice === botChoice) {
+            result = `🤝 **Empate!**`;
+            color = 0xFEE75C;
+            points = GAME_POINTS.RPS_TIE;
+            won = false;
+          } else if (CHOICES[playerChoice].beats === botChoice) {
+            result = `🏆 **Você venceu!**`;
+            color = 0x57F287;
+            points = GAME_POINTS.RPS_WIN;
+            won = true;
+          } else {
+            result = `😢 **Você perdeu!**`;
+            color = 0xED4245;
+            points = GAME_POINTS.RPS_LOSE;
+            won = false;
+          }
+          
+          await updateGameScore(interaction.guild.id, i.user.id, points, won);
+          
+          const resultEmbed = new EmbedBuilder()
+            .setColor(color)
+            .setTitle('✂️ Pedra, Papel ou Tesoura - Resultado!')
+            .addFields(
+              { name: 'Você', value: `${CHOICES[playerChoice].emoji} ${CHOICES[playerChoice].name}`, inline: true },
+              { name: 'VS', value: '⚔️', inline: true },
+              { name: 'Bot', value: `${CHOICES[botChoice].emoji} ${CHOICES[botChoice].name}`, inline: true }
+            )
+            .setDescription(`${result}\n+${points} pontos`)
+            .setFooter({ text: interaction.user.username })
+            .setTimestamp();
+          
+          await i.update({ embeds: [resultEmbed], components: [] });
+        } catch (error) {
+          // Ignora erros de interação já processada
+          if (error.code !== 40060) console.error('Erro no RPS:', error);
         }
-        
-        await updateGameScore(interaction.guild.id, i.user.id, points, won);
-        
-        const resultEmbed = new EmbedBuilder()
-          .setColor(color)
-          .setTitle('✂️ Pedra, Papel ou Tesoura - Resultado!')
-          .addFields(
-            { name: 'Você', value: `${CHOICES[playerChoice].emoji} ${CHOICES[playerChoice].name}`, inline: true },
-            { name: 'VS', value: '⚔️', inline: true },
-            { name: 'Bot', value: `${CHOICES[botChoice].emoji} ${CHOICES[botChoice].name}`, inline: true }
-          )
-          .setDescription(`${result}\n+${points} pontos`)
-          .setFooter({ text: interaction.user.username })
-          .setTimestamp();
-        
-        await i.update({ embeds: [resultEmbed], components: [] });
       });
       
       collector.on('end', (collected, reason) => {

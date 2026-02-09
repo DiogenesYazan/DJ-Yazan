@@ -149,8 +149,12 @@ module.exports = {
     });
     
     collector.on('collect', async (i) => {
-      const game = activeGames.get(gameKey);
-      if (!game) return;
+      try {
+        // Evita double-click
+        if (i.replied || i.deferred) return;
+        
+        const game = activeGames.get(gameKey);
+        if (!game) return;
       
       if (i.customId === 'bj_hit' || i.customId === 'bj_double') {
         // Comprar carta
@@ -209,6 +213,9 @@ module.exports = {
       } else if (i.customId === 'bj_stand') {
         // Parar - dealer joga
         await dealerPlay(interaction, i, game, gameKey, userId, collector);
+      }
+      } catch (error) {
+        if (error.code !== 40060) console.error('Erro no Blackjack:', error);
       }
     });
     

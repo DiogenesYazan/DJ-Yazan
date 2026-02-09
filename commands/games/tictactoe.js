@@ -90,11 +90,15 @@ module.exports = {
     });
     
     collector.on('collect', async (i) => {
-      const game = activeGames.get(gameKey);
-      if (!game) {
-        collector.stop('ended');
-        return;
-      }
+      try {
+        // Evita double-click
+        if (i.replied || i.deferred) return;
+        
+        const game = activeGames.get(gameKey);
+        if (!game) {
+          collector.stop('ended');
+          return;
+        }
       
       const position = parseInt(i.customId.replace('ttt_', ''));
       
@@ -191,6 +195,9 @@ module.exports = {
         const components = createBoardButtons(game.board);
         
         await i.update({ embeds: [embed], components });
+      }
+      } catch (error) {
+        if (error.code !== 40060) console.error('Erro no TicTacToe:', error);
       }
     });
     

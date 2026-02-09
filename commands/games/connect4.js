@@ -88,11 +88,15 @@ module.exports = {
     });
     
     collector.on('collect', async (i) => {
-      const game = activeGames.get(gameKey);
-      if (!game) {
-        collector.stop('ended');
-        return;
-      }
+      try {
+        // Evita double-click
+        if (i.replied || i.deferred) return;
+        
+        const game = activeGames.get(gameKey);
+        if (!game) {
+          collector.stop('ended');
+          return;
+        }
       
       const col = parseInt(i.customId.replace('c4_', ''));
       
@@ -148,6 +152,9 @@ module.exports = {
         const components = createColumnButtons(game.board);
         
         await i.update({ embeds: [embed], components });
+      }
+      } catch (error) {
+        if (error.code !== 40060) console.error('Erro no Connect4:', error);
       }
     });
     
@@ -253,12 +260,14 @@ function createBoardEmbed(game, status, winner = null) {
 }
 
 function createColumnButtons(board) {
-  const row = new ActionRowBuilder();
+  const rows = [];
   
-  for (let col = 0; col < COLS; col++) {
+  // Primeira linha: colunas 1-5
+  const row1 = new ActionRowBuilder();
+  for (let col = 0; col < 5; col++) {
     const isFull = isColumnFull(board, col);
     
-    row.addComponents(
+    row1.addComponents(
       new ButtonBuilder()
         .setCustomId(`c4_${col}`)
         .setLabel(`${col + 1}`)
@@ -266,6 +275,22 @@ function createColumnButtons(board) {
         .setDisabled(isFull)
     );
   }
+  rows.push(row1);
   
-  return [row];
+  // Segunda linha: colunas 6-7
+  const row2 = new ActionRowBuilder();
+  for (let col = 5; col < COLS; col++) {
+    const isFull = isColumnFull(board, col);
+    
+    row2.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`c4_${col}`)
+        .setLabel(`${col + 1}`)
+        .setStyle(isFull ? ButtonStyle.Secondary : ButtonStyle.Primary)
+        .setDisabled(isFull)
+    );
+  }
+  rows.push(row2);
+  
+  return rows;
 }

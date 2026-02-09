@@ -289,7 +289,8 @@ function createHangmanEmbed(game, status, user) {
 
 function createAlphabetButtons(guessedLetters) {
   const rows = [];
-  const alphabetRows = ['ABCDEFGHI', 'JKLMNOPQR', 'STUVWXYZ'];
+  // Discord permite no máximo 5 botões por ActionRow e 5 ActionRows por mensagem
+  const alphabetRows = ['ABCDE', 'FGHIJ', 'KLMNO', 'PQRST', 'UVWXYZ'];
   
   for (const rowLetters of alphabetRows) {
     const row = new ActionRowBuilder();

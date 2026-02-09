@@ -154,12 +154,16 @@ ${won ? '🎉' : '😢'} **${reward.name}**
     });
     
     collector.on('collect', async (i) => {
-      // Novo spin
-      const newResult = [
-        SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)],
-        SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)],
-        SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]
-      ];
+      try {
+        // Evita double-click
+        if (i.replied || i.deferred) return;
+        
+        // Novo spin
+        const newResult = [
+          SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)],
+          SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)],
+          SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]
+        ];
       
       // Calcular novo resultado
       const newResultKey = newResult.join('');
@@ -207,6 +211,10 @@ ${newWon ? '🎉' : '😢'} **${newReward.name}**
         .setTimestamp();
       
       await i.update({ embeds: [newEmbed], components: [] });
+      } catch (error) {
+        // Ignora erros de interação já processada
+        if (error.code !== 40060) console.error('Erro no Slots:', error);
+      }
     });
     
     collector.on('end', (collected, reason) => {
