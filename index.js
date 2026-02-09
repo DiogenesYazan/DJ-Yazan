@@ -8,6 +8,7 @@ const {
 } = require('discord.js');
 const { LavalinkManager } = require('lavalink-client');
 const fs = require('fs');
+const axios = require('axios');
 const lavalinkServers = require('./lavalink-servers.json');
 const statusMessages = require('./status-messages.json');
 
@@ -348,6 +349,36 @@ client.once('clientReady', () => {
   // Atualiza stats imediatamente e depois a cada 60 segundos
   updateBotStats();
   setInterval(updateBotStats, 60_000);
+
+  // ============================================
+  // 🔄 KEEP-ALIVE: Evita que Heroku coloque dynos em sleep
+  // ============================================
+  const APP_URL = process.env.APP_URL || process.env.HEROKU_APP_URL;
+  
+  if (APP_URL) {
+    console.log(`🔄 Keep-alive ativado para: ${APP_URL}`);
+    
+    // Ping a cada 25 minutos (Heroku dorme após 30 min de inatividade)
+    const KEEP_ALIVE_INTERVAL = 25 * 60 * 1000; // 25 minutos
+    
+    async function keepAlive() {
+      try {
+        const response = await axios.get(APP_URL, { timeout: 10000 });
+        console.log(`💓 Keep-alive ping: ${response.status} OK`);
+      } catch (error) {
+        console.log(`⚠️ Keep-alive ping falhou: ${error.message}`);
+      }
+    }
+    
+    // Primeiro ping após 5 minutos, depois a cada 25 minutos
+    setTimeout(() => {
+      keepAlive();
+      setInterval(keepAlive, KEEP_ALIVE_INTERVAL);
+    }, 5 * 60 * 1000);
+  } else {
+    console.log('⚠️ APP_URL não configurada - Keep-alive desativado');
+    console.log('   Configure APP_URL no Heroku para evitar sleep dos dynos');
+  }
 
   // Rotação de status (carrega do arquivo JSON)
   const statuses = statusMessages.statuses.map(s => s.text);
