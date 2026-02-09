@@ -97,62 +97,62 @@ module.exports = {
           collector.stop('ended');
           return;
         }
-      
-      const col = parseInt(i.customId.replace('c4_', ''));
-      
-      // Encontra a linha disponível na coluna
-      let row = -1;
-      for (let r = ROWS - 1; r >= 0; r--) {
-        if (game.board[r][col] === 0) {
-          row = r;
-          break;
+        
+        const col = parseInt(i.customId.replace('c4_', ''));
+        
+        // Encontra a linha disponível na coluna
+        let row = -1;
+        for (let r = ROWS - 1; r >= 0; r--) {
+          if (game.board[r][col] === 0) {
+            row = r;
+            break;
+          }
         }
-      }
-      
-      if (row === -1) {
-        await i.reply({ content: '❌ Essa coluna está cheia!', ephemeral: true });
-        return;
-      }
-      
-      // Faz a jogada
-      const currentPlayer = game.currentTurn === 1 ? game.player1 : game.player2;
-      game.board[row][col] = game.currentTurn;
-      
-      // Verifica vitória
-      const winner = checkWinner(game.board, row, col, game.currentTurn);
-      const isDraw = !winner && game.board[0].every((_, c) => isColumnFull(game.board, c));
-      
-      if (winner) {
-        activeGames.delete(gameKey);
         
-        const loserPlayer = game.currentTurn === 1 ? game.player2 : game.player1;
+        if (row === -1) {
+          await i.reply({ content: '❌ Essa coluna está cheia!', ephemeral: true });
+          return;
+        }
         
-        await updateGameScore(guildId, currentPlayer.id, GAME_POINTS.CONNECT4_WIN, true);
-        await updateGameScore(guildId, loserPlayer.id, GAME_POINTS.CONNECT4_LOSE, false);
+        // Faz a jogada
+        const currentPlayer = game.currentTurn === 1 ? game.player1 : game.player2;
+        game.board[row][col] = game.currentTurn;
         
-        const embed = createBoardEmbed(game, 'win', currentPlayer);
+        // Verifica vitória
+        const winner = checkWinner(game.board, row, col, game.currentTurn);
+        const isDraw = !winner && game.board[0].every((_, c) => isColumnFull(game.board, c));
         
-        await i.update({ embeds: [embed], components: [] });
-        collector.stop('won');
-      } else if (isDraw) {
-        activeGames.delete(gameKey);
-        
-        await updateGameScore(guildId, game.player1.id, 15, false);
-        await updateGameScore(guildId, game.player2.id, 15, false);
-        
-        const embed = createBoardEmbed(game, 'draw');
-        
-        await i.update({ embeds: [embed], components: [] });
-        collector.stop('draw');
-      } else {
-        // Próximo turno
-        game.currentTurn = game.currentTurn === 1 ? 2 : 1;
-        
-        const embed = createBoardEmbed(game, 'playing');
-        const components = createColumnButtons(game.board);
-        
-        await i.update({ embeds: [embed], components });
-      }
+        if (winner) {
+          activeGames.delete(gameKey);
+          
+          const loserPlayer = game.currentTurn === 1 ? game.player2 : game.player1;
+          
+          await updateGameScore(guildId, currentPlayer.id, GAME_POINTS.CONNECT4_WIN, true);
+          await updateGameScore(guildId, loserPlayer.id, GAME_POINTS.CONNECT4_LOSE, false);
+          
+          const embed = createBoardEmbed(game, 'win', currentPlayer);
+          
+          await i.update({ embeds: [embed], components: [] });
+          collector.stop('won');
+        } else if (isDraw) {
+          activeGames.delete(gameKey);
+          
+          await updateGameScore(guildId, game.player1.id, 15, false);
+          await updateGameScore(guildId, game.player2.id, 15, false);
+          
+          const embed = createBoardEmbed(game, 'draw');
+          
+          await i.update({ embeds: [embed], components: [] });
+          collector.stop('draw');
+        } else {
+          // Próximo turno
+          game.currentTurn = game.currentTurn === 1 ? 2 : 1;
+          
+          const embed = createBoardEmbed(game, 'playing');
+          const components = createColumnButtons(game.board);
+          
+          await i.update({ embeds: [embed], components });
+        }
       } catch (error) {
         if (error.code !== 40060) console.error('Erro no Connect4:', error);
       }

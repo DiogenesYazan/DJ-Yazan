@@ -164,53 +164,53 @@ ${won ? '🎉' : '😢'} **${reward.name}**
           SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)],
           SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]
         ];
-      
-      // Calcular novo resultado
-      const newResultKey = newResult.join('');
-      let newReward;
-      let newWon = false;
-      
-      if (REWARDS[newResultKey]) {
-        newReward = REWARDS[newResultKey];
-        newWon = true;
-      } else if (newResult[0] === newResult[1] && newResult[1] === newResult[2]) {
-        newReward = REWARDS['triple'];
-        newWon = true;
-      } else if (newResult[0] === newResult[1] || newResult[1] === newResult[2] || newResult[0] === newResult[2]) {
-        newReward = REWARDS['double'];
-        newWon = true;
-      } else {
-        newReward = REWARDS['lose'];
-      }
-      
-      await updateGameScore(i.guild.id, i.user.id, newReward.points, newWon);
-      
-      let newColor;
-      if (newReward.points >= GAME_POINTS.SLOTS_JACKPOT) {
-        newColor = 0xFFD700;
-      } else if (newReward.points >= GAME_POINTS.SLOTS_MEDIUM) {
-        newColor = 0x57F287;
-      } else if (newReward.points >= GAME_POINTS.SLOTS_SMALL) {
-        newColor = 0x5865F2;
-      } else {
-        newColor = 0x99AAB5;
-      }
-      
-      const newEmbed = new EmbedBuilder()
-        .setColor(newColor)
-        .setTitle('🎰 Caça-Níquel')
-        .setDescription(`
+        
+        // Calcular novo resultado
+        const newResultKey = newResult.join('');
+        let newReward;
+        let newWon = false;
+        
+        if (REWARDS[newResultKey]) {
+          newReward = REWARDS[newResultKey];
+          newWon = true;
+        } else if (newResult[0] === newResult[1] && newResult[1] === newResult[2]) {
+          newReward = REWARDS['triple'];
+          newWon = true;
+        } else if (newResult[0] === newResult[1] || newResult[1] === newResult[2] || newResult[0] === newResult[2]) {
+          newReward = REWARDS['double'];
+          newWon = true;
+        } else {
+          newReward = REWARDS['lose'];
+        }
+        
+        await updateGameScore(i.guild.id, i.user.id, newReward.points, newWon);
+        
+        let newColor;
+        if (newReward.points >= GAME_POINTS.SLOTS_JACKPOT) {
+          newColor = 0xFFD700;
+        } else if (newReward.points >= GAME_POINTS.SLOTS_MEDIUM) {
+          newColor = 0x57F287;
+        } else if (newReward.points >= GAME_POINTS.SLOTS_SMALL) {
+          newColor = 0x5865F2;
+        } else {
+          newColor = 0x99AAB5;
+        }
+        
+        const newEmbed = new EmbedBuilder()
+          .setColor(newColor)
+          .setTitle('🎰 Caça-Níquel')
+          .setDescription(`
 ╔═══════════════╗
 ║  ${newResult.join(' │ ')}  ║
 ╚═══════════════╝
 
 ${newWon ? '🎉' : '😢'} **${newReward.name}**
-        `)
-        .addFields({ name: '🏆 Pontos', value: `+${newReward.points}`, inline: true })
-        .setFooter({ text: i.user.username })
-        .setTimestamp();
-      
-      await i.update({ embeds: [newEmbed], components: [] });
+          `)
+          .addFields({ name: '🏆 Pontos', value: `+${newReward.points}`, inline: true })
+          .setFooter({ text: i.user.username })
+          .setTimestamp();
+        
+        await i.update({ embeds: [newEmbed], components: [] });
       } catch (error) {
         // Ignora erros de interação já processada
         if (error.code !== 40060) console.error('Erro no Slots:', error);

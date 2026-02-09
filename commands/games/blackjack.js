@@ -155,14 +155,31 @@ module.exports = {
         
         const game = activeGames.get(gameKey);
         if (!game) return;
-      
-      if (i.customId === 'bj_hit' || i.customId === 'bj_double') {
-        // Comprar carta
-        game.playerHand.push(game.deck.pop());
-        const playerTotal = calculateHand(game.playerHand);
         
-        if (i.customId === 'bj_double') {
-          // Dobrou - só pode comprar uma carta e para
+        if (i.customId === 'bj_hit' || i.customId === 'bj_double') {
+          // Comprar carta
+          game.playerHand.push(game.deck.pop());
+          const playerTotal = calculateHand(game.playerHand);
+          
+          if (i.customId === 'bj_double') {
+            // Dobrou - só pode comprar uma carta e para
+            if (playerTotal > 21) {
+              // Estourou
+              game.status = 'bust';
+              activeGames.delete(gameKey);
+              
+              await updateGameScore(interaction.guild.id, userId, GAME_POINTS.BLACKJACK_LOSE, false);
+              
+              const embed = createGameEmbed(game.playerHand, game.dealerHand, false, 'bust');
+              await i.update({ embeds: [embed], components: [] });
+              collector.stop('ended');
+            } else {
+              // Para automaticamente após dobrar
+              await dealerPlay(interaction, i, game, gameKey, userId, collector);
+            }
+            return;
+          }
+          
           if (playerTotal > 21) {
             // Estourou
             game.status = 'bust';
@@ -173,47 +190,30 @@ module.exports = {
             const embed = createGameEmbed(game.playerHand, game.dealerHand, false, 'bust');
             await i.update({ embeds: [embed], components: [] });
             collector.stop('ended');
-          } else {
-            // Para automaticamente após dobrar
+          } else if (playerTotal === 21) {
+            // 21! Dealer joga
             await dealerPlay(interaction, i, game, gameKey, userId, collector);
+          } else {
+            // Continua jogando
+            const newRow = new ActionRowBuilder()
+              .addComponents(
+                new ButtonBuilder()
+                  .setCustomId('bj_hit')
+                  .setLabel('🎴 Comprar')
+                  .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                  .setCustomId('bj_stand')
+                  .setLabel('✋ Parar')
+                  .setStyle(ButtonStyle.Secondary)
+              );
+            
+            const embed = createGameEmbed(game.playerHand, game.dealerHand, true, 'playing');
+            await i.update({ embeds: [embed], components: [newRow] });
           }
-          return;
-        }
-        
-        if (playerTotal > 21) {
-          // Estourou
-          game.status = 'bust';
-          activeGames.delete(gameKey);
-          
-          await updateGameScore(interaction.guild.id, userId, GAME_POINTS.BLACKJACK_LOSE, false);
-          
-          const embed = createGameEmbed(game.playerHand, game.dealerHand, false, 'bust');
-          await i.update({ embeds: [embed], components: [] });
-          collector.stop('ended');
-        } else if (playerTotal === 21) {
-          // 21! Dealer joga
+        } else if (i.customId === 'bj_stand') {
+          // Parar - dealer joga
           await dealerPlay(interaction, i, game, gameKey, userId, collector);
-        } else {
-          // Continua jogando
-          const newRow = new ActionRowBuilder()
-            .addComponents(
-              new ButtonBuilder()
-                .setCustomId('bj_hit')
-                .setLabel('🎴 Comprar')
-                .setStyle(ButtonStyle.Primary),
-              new ButtonBuilder()
-                .setCustomId('bj_stand')
-                .setLabel('✋ Parar')
-                .setStyle(ButtonStyle.Secondary)
-            );
-          
-          const embed = createGameEmbed(game.playerHand, game.dealerHand, true, 'playing');
-          await i.update({ embeds: [embed], components: [newRow] });
         }
-      } else if (i.customId === 'bj_stand') {
-        // Parar - dealer joga
-        await dealerPlay(interaction, i, game, gameKey, userId, collector);
-      }
       } catch (error) {
         if (error.code !== 40060) console.error('Erro no Blackjack:', error);
       }

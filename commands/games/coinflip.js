@@ -110,43 +110,43 @@ module.exports = {
         if (i.replied || i.deferred) return;
         
         const newResult = Math.random() < 0.5 ? 'cara' : 'coroa';
-      const newResultEmoji = newResult === 'cara' ? '👑' : '🦅';
-      const newResultText = newResult === 'cara' ? 'Cara' : 'Coroa';
-      
-      let newChoice = null;
-      if (i.customId === 'coinflip_cara') newChoice = 'cara';
-      else if (i.customId === 'coinflip_coroa') newChoice = 'coroa';
-      
-      let newPoints, newWon, newDesc, newColor;
-      
-      if (newChoice) {
-        newWon = newChoice === newResult;
-        newPoints = newWon ? GAME_POINTS.COINFLIP_WIN : GAME_POINTS.COINFLIP_LOSE;
-        newColor = newWon ? 0x57F287 : 0xED4245;
-        newDesc = newWon 
-          ? `✅ Você acertou! Era **${newResultText}** ${newResultEmoji}`
-          : `❌ Você errou! Era **${newResultText}** ${newResultEmoji}`;
-      } else {
-        newWon = false;
-        newPoints = GAME_POINTS.COINFLIP_LOSE;
-        newColor = 0x5865F2;
-        newDesc = `A moeda caiu em **${newResultText}** ${newResultEmoji}`;
-      }
-      
-      await updateGameScore(i.guild.id, i.user.id, newPoints, newWon);
-      
-      const newEmbed = new EmbedBuilder()
-        .setColor(newColor)
-        .setTitle(`🪙 Coin Flip - ${newResultText}!`)
-        .setDescription(newDesc)
-        .addFields(
-          { name: '🎯 Resultado', value: `${newResultEmoji} ${newResultText}`, inline: true },
-          { name: '🏆 Pontos', value: `+${newPoints}`, inline: true }
-        )
-        .setFooter({ text: `${i.user.username}` })
-        .setTimestamp();
-      
-      await i.update({ embeds: [newEmbed], components: [] });
+        const newResultEmoji = newResult === 'cara' ? '👑' : '🦅';
+        const newResultText = newResult === 'cara' ? 'Cara' : 'Coroa';
+        
+        let newChoice = null;
+        if (i.customId === 'coinflip_cara') newChoice = 'cara';
+        else if (i.customId === 'coinflip_coroa') newChoice = 'coroa';
+        
+        let newPoints, newWon, newDesc, newColor;
+        
+        if (newChoice) {
+          newWon = newChoice === newResult;
+          newPoints = newWon ? GAME_POINTS.COINFLIP_WIN : GAME_POINTS.COINFLIP_LOSE;
+          newColor = newWon ? 0x57F287 : 0xED4245;
+          newDesc = newWon 
+            ? `✅ Você acertou! Era **${newResultText}** ${newResultEmoji}`
+            : `❌ Você errou! Era **${newResultText}** ${newResultEmoji}`;
+        } else {
+          newWon = false;
+          newPoints = GAME_POINTS.COINFLIP_LOSE;
+          newColor = 0x5865F2;
+          newDesc = `A moeda caiu em **${newResultText}** ${newResultEmoji}`;
+        }
+        
+        await updateGameScore(i.guild.id, i.user.id, newPoints, newWon);
+        
+        const newEmbed = new EmbedBuilder()
+          .setColor(newColor)
+          .setTitle(`🪙 Coin Flip - ${newResultText}!`)
+          .setDescription(newDesc)
+          .addFields(
+            { name: '🎯 Resultado', value: `${newResultEmoji} ${newResultText}`, inline: true },
+            { name: '🏆 Pontos', value: `+${newPoints}`, inline: true }
+          )
+          .setFooter({ text: `${i.user.username}` })
+          .setTimestamp();
+        
+        await i.update({ embeds: [newEmbed], components: [] });
       } catch (error) {
         if (error.code !== 40060) console.error('Erro no Coinflip:', error);
       }

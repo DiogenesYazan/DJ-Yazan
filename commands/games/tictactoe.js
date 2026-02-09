@@ -99,103 +99,103 @@ module.exports = {
           collector.stop('ended');
           return;
         }
-      
-      const position = parseInt(i.customId.replace('ttt_', ''));
-      
-      if (game.board[position] !== null) {
-        await i.reply({ content: '❌ Essa posição já está ocupada!', ephemeral: true });
-        return;
-      }
-      
-      // Faz a jogada
-      const currentPlayer = game.currentTurn === game.player1.id ? game.player1 : game.player2;
-      game.board[position] = currentPlayer.symbol;
-      
-      // Verifica vitória
-      const winner = checkWinner(game.board);
-      const isDraw = !winner && game.board.every(cell => cell !== null);
-      
-      if (winner) {
-        activeGames.delete(gameKey);
         
-        const winnerPlayer = winner === game.player1.symbol ? game.player1 : game.player2;
-        const loserPlayer = winner === game.player1.symbol ? game.player2 : game.player1;
+        const position = parseInt(i.customId.replace('ttt_', ''));
         
-        // Atualiza pontuações
-        if (winnerPlayer.id !== 'bot') {
-          await updateGameScore(guildId, winnerPlayer.id, GAME_POINTS.TICTACTOE_WIN, true);
-        }
-        if (loserPlayer.id !== 'bot') {
-          await updateGameScore(guildId, loserPlayer.id, GAME_POINTS.TICTACTOE_LOSE, false);
+        if (game.board[position] !== null) {
+          await i.reply({ content: '❌ Essa posição já está ocupada!', ephemeral: true });
+          return;
         }
         
-        const embed = createBoardEmbed(game, 'win', winnerPlayer);
-        const components = createBoardButtons(game.board, true);
+        // Faz a jogada
+        const currentPlayer = game.currentTurn === game.player1.id ? game.player1 : game.player2;
+        game.board[position] = currentPlayer.symbol;
         
-        await i.update({ embeds: [embed], components });
-        collector.stop('won');
-      } else if (isDraw) {
-        activeGames.delete(gameKey);
+        // Verifica vitória
+        const winner = checkWinner(game.board);
+        const isDraw = !winner && game.board.every(cell => cell !== null);
         
-        // Ambos ganham pontos de empate
-        await updateGameScore(guildId, game.player1.id, GAME_POINTS.TICTACTOE_TIE, false);
-        if (game.player2.id !== 'bot') {
-          await updateGameScore(guildId, game.player2.id, GAME_POINTS.TICTACTOE_TIE, false);
-        }
-        
-        const embed = createBoardEmbed(game, 'draw');
-        const components = createBoardButtons(game.board, true);
-        
-        await i.update({ embeds: [embed], components });
-        collector.stop('draw');
-      } else {
-        // Próximo turno
-        game.currentTurn = game.currentTurn === game.player1.id 
-          ? (game.isVsBot ? game.player1.id : game.player2.id)
-          : game.player1.id;
-        
-        // Se for vs bot e é vez do bot
-        if (game.isVsBot && game.currentTurn === game.player1.id) {
-          // Jogada do bot
-          const botMove = getBotMove(game.board);
-          if (botMove !== -1) {
-            game.board[botMove] = game.player2.symbol;
-            
-            // Verifica vitória do bot
-            const botWinner = checkWinner(game.board);
-            const botDraw = !botWinner && game.board.every(cell => cell !== null);
-            
-            if (botWinner) {
-              activeGames.delete(gameKey);
+        if (winner) {
+          activeGames.delete(gameKey);
+          
+          const winnerPlayer = winner === game.player1.symbol ? game.player1 : game.player2;
+          const loserPlayer = winner === game.player1.symbol ? game.player2 : game.player1;
+          
+          // Atualiza pontuações
+          if (winnerPlayer.id !== 'bot') {
+            await updateGameScore(guildId, winnerPlayer.id, GAME_POINTS.TICTACTOE_WIN, true);
+          }
+          if (loserPlayer.id !== 'bot') {
+            await updateGameScore(guildId, loserPlayer.id, GAME_POINTS.TICTACTOE_LOSE, false);
+          }
+          
+          const embed = createBoardEmbed(game, 'win', winnerPlayer);
+          const components = createBoardButtons(game.board, true);
+          
+          await i.update({ embeds: [embed], components });
+          collector.stop('won');
+        } else if (isDraw) {
+          activeGames.delete(gameKey);
+          
+          // Ambos ganham pontos de empate
+          await updateGameScore(guildId, game.player1.id, GAME_POINTS.TICTACTOE_TIE, false);
+          if (game.player2.id !== 'bot') {
+            await updateGameScore(guildId, game.player2.id, GAME_POINTS.TICTACTOE_TIE, false);
+          }
+          
+          const embed = createBoardEmbed(game, 'draw');
+          const components = createBoardButtons(game.board, true);
+          
+          await i.update({ embeds: [embed], components });
+          collector.stop('draw');
+        } else {
+          // Próximo turno
+          game.currentTurn = game.currentTurn === game.player1.id 
+            ? (game.isVsBot ? game.player1.id : game.player2.id)
+            : game.player1.id;
+          
+          // Se for vs bot e é vez do bot
+          if (game.isVsBot && game.currentTurn === game.player1.id) {
+            // Jogada do bot
+            const botMove = getBotMove(game.board);
+            if (botMove !== -1) {
+              game.board[botMove] = game.player2.symbol;
               
-              await updateGameScore(guildId, game.player1.id, GAME_POINTS.TICTACTOE_LOSE, false);
+              // Verifica vitória do bot
+              const botWinner = checkWinner(game.board);
+              const botDraw = !botWinner && game.board.every(cell => cell !== null);
               
-              const embed = createBoardEmbed(game, 'win', game.player2);
-              const components = createBoardButtons(game.board, true);
-              
-              await i.update({ embeds: [embed], components });
-              collector.stop('bot_won');
-              return;
-            } else if (botDraw) {
-              activeGames.delete(gameKey);
-              
-              await updateGameScore(guildId, game.player1.id, GAME_POINTS.TICTACTOE_TIE, false);
-              
-              const embed = createBoardEmbed(game, 'draw');
-              const components = createBoardButtons(game.board, true);
-              
-              await i.update({ embeds: [embed], components });
-              collector.stop('draw');
-              return;
+              if (botWinner) {
+                activeGames.delete(gameKey);
+                
+                await updateGameScore(guildId, game.player1.id, GAME_POINTS.TICTACTOE_LOSE, false);
+                
+                const embed = createBoardEmbed(game, 'win', game.player2);
+                const components = createBoardButtons(game.board, true);
+                
+                await i.update({ embeds: [embed], components });
+                collector.stop('bot_won');
+                return;
+              } else if (botDraw) {
+                activeGames.delete(gameKey);
+                
+                await updateGameScore(guildId, game.player1.id, GAME_POINTS.TICTACTOE_TIE, false);
+                
+                const embed = createBoardEmbed(game, 'draw');
+                const components = createBoardButtons(game.board, true);
+                
+                await i.update({ embeds: [embed], components });
+                collector.stop('draw');
+                return;
+              }
             }
           }
+          
+          const embed = createBoardEmbed(game, 'playing');
+          const components = createBoardButtons(game.board);
+          
+          await i.update({ embeds: [embed], components });
         }
-        
-        const embed = createBoardEmbed(game, 'playing');
-        const components = createBoardButtons(game.board);
-        
-        await i.update({ embeds: [embed], components });
-      }
       } catch (error) {
         if (error.code !== 40060) console.error('Erro no TicTacToe:', error);
       }
