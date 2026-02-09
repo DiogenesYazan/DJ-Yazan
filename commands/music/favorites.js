@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const UserFavorites = require('../models/UserFavorites');
+const UserFavorites = require('../../models/UserFavorites');
 
 module.exports = {
   data: new SlashCommandBuilder()

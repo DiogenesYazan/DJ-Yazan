@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const Leaderboard = require('../models/Leaderboard');
-const QuizSession = require('../models/QuizSession'); // [NEW] Importar o model
+const Leaderboard = require('../../models/Leaderboard');
+const QuizSession = require('../../models/QuizSession'); // [NEW] Importar o model
 const COUNTDOWN_URL = 'https://www.youtube.com/watch?v=6nJR1Bj3_l8';
 
 module.exports = {

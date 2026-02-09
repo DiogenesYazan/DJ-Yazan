@@ -1,0 +1,3159 @@
+{
+  "version": "2.0.0",
+  "totalQuestions": 500,
+  "categories": {
+    "musica": {
+      "emoji": "🎵",
+      "name": "Música",
+      "questions": [
+        {
+          "question": "Qual banda brasileira lançou o álbum 'Dois'?",
+          "options": [
+            "Legião Urbana",
+            "Titãs",
+            "Paralamas do Sucesso",
+            "Barão Vermelho"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quem é conhecido como o 'Rei do Baião'?",
+          "options": [
+            "Dominguinhos",
+            "Luiz Gonzaga",
+            "Gilberto Gil",
+            "Alceu Valença"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual foi o primeiro álbum solo de Michael Jackson?",
+          "options": ["Thriller", "Bad", "Off the Wall", "Dangerous"],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda britânica lançou 'Bohemian Rhapsody'?",
+          "options": ["The Beatles", "Led Zeppelin", "Queen", "Pink Floyd"],
+          "correct": 2
+        },
+        {
+          "question": "Qual artista brasileiro é conhecido como 'Rainha do Rock'?",
+          "options": ["Cássia Eller", "Rita Lee", "Pitty", "Marisa Monte"],
+          "correct": 1
+        },
+        {
+          "question": "Quantas cordas tem um violão padrão?",
+          "options": ["4", "5", "6", "7"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do vocalista do Linkin Park?",
+          "options": [
+            "Chris Cornell",
+            "Chester Bennington",
+            "Kurt Cobain",
+            "Eddie Vedder"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual artista lançou o álbum '30' em 2021?",
+          "options": ["Taylor Swift", "Billie Eilish", "Adele", "Dua Lipa"],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda brasileira canta 'Ainda É Cedo'?",
+          "options": ["Legião Urbana", "Titãs", "Capital Inicial", "Ira!"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o instrumento de Slash, do Guns N' Roses?",
+          "options": ["Bateria", "Baixo", "Guitarra", "Teclado"],
+          "correct": 2
+        },
+        {
+          "question": "Qual rapper brasileiro lançou 'Negro Drama'?",
+          "options": ["Emicida", "Racionais MC's", "Sabotage", "Criolo"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome da banda que lançou 'Smells Like Teen Spirit'?",
+          "options": ["Pearl Jam", "Soundgarden", "Nirvana", "Alice in Chains"],
+          "correct": 2
+        },
+        {
+          "question": "Qual artista brasileiro é conhecido como 'Rei'?",
+          "options": [
+            "Caetano Veloso",
+            "Gilberto Gil",
+            "Roberto Carlos",
+            "Chico Buarque"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual instrumento Hermeto Pascoal toca principalmente?",
+          "options": ["Violão", "Sanfona", "Bateria", "Teclado/Piano"],
+          "correct": 3
+        },
+        {
+          "question": "Qual dupla sertaneja canta 'Evidências'?",
+          "options": [
+            "Zezé Di Camargo & Luciano",
+            "Chitãozinho & Xororó",
+            "Leandro & Leonardo",
+            "Bruno & Marrone"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Em que década surgiu o movimento Tropicália?",
+          "options": ["1950", "1960", "1970", "1980"],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda lançou 'Stairway to Heaven'?",
+          "options": [
+            "Pink Floyd",
+            "Led Zeppelin",
+            "Black Sabbath",
+            "Deep Purple"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual cantora é conhecida como 'Rainha do Pop'?",
+          "options": ["Britney Spears", "Madonna", "Lady Gaga", "Beyoncé"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o álbum mais vendido de todos os tempos?",
+          "options": [
+            "Back in Black",
+            "The Dark Side of the Moon",
+            "Thriller",
+            "Rumours"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual artista brasileiro lançou 'Aquarela do Brasil'?",
+          "options": [
+            "Tom Jobim",
+            "Ary Barroso",
+            "Vinícius de Moraes",
+            "João Gilberto"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    "games": {
+      "emoji": "🎮",
+      "name": "Games",
+      "questions": [
+        {
+          "question": "Em que ano foi lançado o primeiro jogo da série 'The Legend of Zelda'?",
+          "options": ["1984", "1986", "1988", "1990"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de 'God of War'?",
+          "options": ["Zeus", "Ares", "Kratos", "Hades"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa criou o console PlayStation?",
+          "options": ["Nintendo", "Sega", "Sony", "Microsoft"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o jogo mais vendido de todos os tempos?",
+          "options": ["GTA V", "Tetris", "Minecraft", "Wii Sports"],
+          "correct": 2
+        },
+        {
+          "question": "Em qual jogo você coleta anéis dourados?",
+          "options": ["Mario", "Sonic", "Crash Bandicoot", "Mega Man"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é a moeda do jogo Mario?",
+          "options": ["Rupee", "Coin", "Ring", "Star"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do vilão principal de Mario?",
+          "options": ["Ganondorf", "Bowser", "Dr. Eggman", "Wario"],
+          "correct": 1
+        },
+        {
+          "question": "Em que cidade se passa GTA: Vice City?",
+          "options": ["Los Angeles", "Nova York", "Miami", "Las Vegas"],
+          "correct": 2
+        },
+        {
+          "question": "Qual destes NÃO é um Pokémon inicial?",
+          "options": ["Charmander", "Pikachu", "Bulbasaur", "Squirtle"],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo popularizou o gênero Battle Royale?",
+          "options": ["Fortnite", "PUBG", "Apex Legends", "H1Z1"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de 'The Witcher'?",
+          "options": ["Geralt de Rivia", "Aragorn", "Jon Snow", "Conan"],
+          "correct": 0
+        },
+        {
+          "question": "Em 'League of Legends', quantos campeões há na equipe?",
+          "options": ["4", "5", "6", "7"],
+          "correct": 1
+        },
+        {
+          "question": "Qual empresa desenvolveu 'Valorant'?",
+          "options": ["Blizzard", "Valve", "Riot Games", "Epic Games"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do robô em 'Portal'?",
+          "options": ["HAL 9000", "GLaDOS", "WALL-E", "R2-D2"],
+          "correct": 1
+        },
+        {
+          "question": "Quantos jogadores tem uma equipe de CS:GO/CS2?",
+          "options": ["4", "5", "6", "7"],
+          "correct": 1
+        },
+        {
+          "question": "Qual destes jogos é um MMORPG?",
+          "options": [
+            "FIFA",
+            "Call of Duty",
+            "World of Warcraft",
+            "Rocket League"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual console Nintendo é portátil e híbrido?",
+          "options": ["Wii U", "3DS", "Switch", "Game Boy"],
+          "correct": 2
+        },
+        {
+          "question": "Em 'Among Us', qual é o objetivo do Impostor?",
+          "options": [
+            "Completar tarefas",
+            "Eliminar tripulantes",
+            "Reparar a nave",
+            "Encontrar itens"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo tem o personagem 'Master Chief'?",
+          "options": ["Gears of War", "Doom", "Halo", "Destiny"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a desenvolvedora de 'Fortnite'?",
+          "options": ["Activision", "Epic Games", "EA", "Ubisoft"],
+          "correct": 1
+        }
+      ]
+    },
+    "filmes": {
+      "emoji": "🎬",
+      "name": "Filmes & Séries",
+      "questions": [
+        {
+          "question": "Qual filme ganhou o Oscar de Melhor Filme em 2020?",
+          "options": [
+            "Coringa",
+            "1917",
+            "Parasita",
+            "Era Uma Vez em Hollywood"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Quem dirigiu 'Pulp Fiction'?",
+          "options": [
+            "Martin Scorsese",
+            "Quentin Tarantino",
+            "Christopher Nolan",
+            "David Fincher"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual ator interpretou o Coringa em 'O Cavaleiro das Trevas'?",
+          "options": [
+            "Joaquin Phoenix",
+            "Jack Nicholson",
+            "Heath Ledger",
+            "Jared Leto"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Em que ano foi lançado o primeiro filme do Harry Potter?",
+          "options": ["1999", "2000", "2001", "2002"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do leão em 'O Rei Leão'?",
+          "options": ["Mufasa", "Scar", "Simba", "Nala"],
+          "correct": 2
+        },
+        {
+          "question": "Quantos filmes principais tem a saga 'Star Wars'?",
+          "options": ["6", "9", "11", "12"],
+          "correct": 1
+        },
+        {
+          "question": "Qual ator interpreta Tony Stark/Homem de Ferro?",
+          "options": [
+            "Chris Evans",
+            "Chris Hemsworth",
+            "Robert Downey Jr.",
+            "Mark Ruffalo"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Em qual filme aparece a frase 'Eu sou seu pai'?",
+          "options": ["Star Trek", "Star Wars", "Alien", "Matrix"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de 'Matrix'?",
+          "options": ["Morpheus", "Neo", "Trinity", "Smith"],
+          "correct": 1
+        },
+        {
+          "question": "Quem dirigiu 'Titanic'?",
+          "options": [
+            "Steven Spielberg",
+            "James Cameron",
+            "Ridley Scott",
+            "Michael Bay"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual série da Netflix se passa nos anos 80 com crianças e monstros?",
+          "options": ["Dark", "Stranger Things", "The OA", "Black Mirror"],
+          "correct": 1
+        },
+        {
+          "question": "Qual ator brasileiro esteve em 'Velozes e Furiosos'?",
+          "options": [
+            "Rodrigo Santoro",
+            "Wagner Moura",
+            "Selton Mello",
+            "Cauã Reymond"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Em que cidade se passa 'La Casa de Papel'?",
+          "options": ["Barcelona", "Madrid", "Lisboa", "Sevilha"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do vilão em 'Os Vingadores'?",
+          "options": ["Loki", "Ultron", "Thanos", "Todos estão corretos"],
+          "correct": 3
+        },
+        {
+          "question": "Qual filme brasileiro ganhou indicação ao Oscar em 2020?",
+          "options": [
+            "Bacurau",
+            "Cidade de Deus",
+            "Tropa de Elite",
+            "Central do Brasil"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quantos Hobbits fazem parte da Sociedade do Anel?",
+          "options": ["2", "3", "4", "5"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de 'Shrek'?",
+          "options": ["Fiona", "Burro", "Shrek", "Lorde Farquaad"],
+          "correct": 2
+        },
+        {
+          "question": "Em que ano foi lançado 'Jurassic Park'?",
+          "options": ["1991", "1993", "1995", "1997"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é a duração aproximada de 'O Retorno do Rei' (versão estendida)?",
+          "options": ["3h", "3h30", "4h", "4h30"],
+          "correct": 2
+        },
+        {
+          "question": "Quem interpreta Jack Sparrow em 'Piratas do Caribe'?",
+          "options": [
+            "Orlando Bloom",
+            "Johnny Depp",
+            "Javier Bardem",
+            "Geoffrey Rush"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    "ciencia": {
+      "emoji": "🔬",
+      "name": "Ciência & Tecnologia",
+      "questions": [
+        {
+          "question": "Qual é o planeta mais próximo do Sol?",
+          "options": ["Vênus", "Terra", "Mercúrio", "Marte"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o símbolo químico do Ouro?",
+          "options": ["Ag", "Au", "Fe", "Cu"],
+          "correct": 1
+        },
+        {
+          "question": "Quantos ossos tem o corpo humano adulto?",
+          "options": ["186", "206", "226", "246"],
+          "correct": 1
+        },
+        {
+          "question": "Quem formulou a Teoria da Relatividade?",
+          "options": [
+            "Isaac Newton",
+            "Nikola Tesla",
+            "Albert Einstein",
+            "Stephen Hawking"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o maior órgão do corpo humano?",
+          "options": ["Fígado", "Cérebro", "Pele", "Intestino"],
+          "correct": 2
+        },
+        {
+          "question": "Qual gás as plantas absorvem durante a fotossíntese?",
+          "options": [
+            "Oxigênio",
+            "Nitrogênio",
+            "Dióxido de Carbono",
+            "Hidrogênio"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa foi fundada por Steve Jobs?",
+          "options": ["Microsoft", "Google", "Apple", "Amazon"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a velocidade da luz no vácuo (aproximadamente)?",
+          "options": [
+            "100.000 km/s",
+            "200.000 km/s",
+            "300.000 km/s",
+            "400.000 km/s"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o elemento mais abundante no universo?",
+          "options": ["Oxigênio", "Carbono", "Hélio", "Hidrogênio"],
+          "correct": 3
+        },
+        {
+          "question": "Em que ano foi lançado o primeiro iPhone?",
+          "options": ["2005", "2006", "2007", "2008"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a fórmula química da água?",
+          "options": ["CO2", "H2O", "NaCl", "O2"],
+          "correct": 1
+        },
+        {
+          "question": "Quantos cromossomos tem um ser humano?",
+          "options": ["23", "46", "48", "52"],
+          "correct": 1
+        },
+        {
+          "question": "Quem inventou a lâmpada elétrica?",
+          "options": [
+            "Nikola Tesla",
+            "Thomas Edison",
+            "Benjamin Franklin",
+            "Alexander Graham Bell"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual linguagem de programação foi criada por Guido van Rossum?",
+          "options": ["Java", "C++", "Python", "JavaScript"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o menor planeta do Sistema Solar?",
+          "options": ["Marte", "Mercúrio", "Vênus", "Plutão"],
+          "correct": 1
+        },
+        {
+          "question": "O que significa 'HTTP'?",
+          "options": [
+            "Home Tool Transfer Protocol",
+            "HyperText Transfer Protocol",
+            "High Tech Transfer Protocol",
+            "Hyper Transfer Text Protocol"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual cientista é conhecido pela teoria da evolução?",
+          "options": [
+            "Gregor Mendel",
+            "Charles Darwin",
+            "Louis Pasteur",
+            "Marie Curie"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do robô da NASA que explorou Marte em 2021?",
+          "options": ["Opportunity", "Curiosity", "Perseverance", "Spirit"],
+          "correct": 2
+        },
+        {
+          "question": "Quantos bits tem um byte?",
+          "options": ["4", "8", "16", "32"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o principal componente do Sol?",
+          "options": ["Hélio", "Oxigênio", "Hidrogênio", "Nitrogênio"],
+          "correct": 2
+        }
+      ]
+    },
+    "brasil": {
+      "emoji": "🇧🇷",
+      "name": "Brasil",
+      "questions": [
+        {
+          "question": "Em que ano o Brasil foi descoberto?",
+          "options": ["1498", "1500", "1502", "1504"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o maior estado do Brasil em área?",
+          "options": ["Mato Grosso", "Pará", "Amazonas", "Minas Gerais"],
+          "correct": 2
+        },
+        {
+          "question": "Quantas estrelas tem a bandeira do Brasil?",
+          "options": ["21", "23", "26", "27"],
+          "correct": 3
+        },
+        {
+          "question": "Qual foi a primeira capital do Brasil?",
+          "options": ["Rio de Janeiro", "Brasília", "Salvador", "Recife"],
+          "correct": 2
+        },
+        {
+          "question": "Quantas Copas do Mundo o Brasil ganhou?",
+          "options": ["3", "4", "5", "6"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o rio mais extenso do Brasil?",
+          "options": [
+            "Rio São Francisco",
+            "Rio Paraná",
+            "Rio Amazonas",
+            "Rio Negro"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Em que cidade fica o Cristo Redentor?",
+          "options": ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador"],
+          "correct": 1
+        },
+        {
+          "question": "Qual presidente construiu Brasília?",
+          "options": [
+            "Getúlio Vargas",
+            "Jânio Quadros",
+            "Juscelino Kubitschek",
+            "João Goulart"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a maior cidade do Brasil em população?",
+          "options": ["Rio de Janeiro", "Salvador", "São Paulo", "Brasília"],
+          "correct": 2
+        },
+        {
+          "question": "Qual comida é típica da Bahia?",
+          "options": ["Feijoada", "Acarajé", "Churrasco", "Pão de Queijo"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o bioma que cobre a maior parte do Brasil?",
+          "options": ["Cerrado", "Mata Atlântica", "Amazônia", "Caatinga"],
+          "correct": 2
+        },
+        {
+          "question": "Quantos estados tem o Brasil?",
+          "options": ["25", "26", "27", "28"],
+          "correct": 1
+        },
+        {
+          "question": "Qual seleção brasileira ganhou a Copa de 2002?",
+          "options": [
+            "Ronaldo, Rivaldo, Ronaldinho",
+            "Pelé, Garrincha, Tostão",
+            "Zico, Sócrates, Falcão",
+            "Romário, Bebeto, Dunga"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Em que estado fica as Cataratas do Iguaçu?",
+          "options": [
+            "Santa Catarina",
+            "Rio Grande do Sul",
+            "Paraná",
+            "São Paulo"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a moeda oficial do Brasil?",
+          "options": ["Cruzeiro", "Real", "Cruzado", "Réis"],
+          "correct": 1
+        },
+        {
+          "question": "Quem pintou 'Abaporu'?",
+          "options": [
+            "Portinari",
+            "Di Cavalcanti",
+            "Tarsila do Amaral",
+            "Anita Malfatti"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual festa brasileira é Patrimônio da Humanidade?",
+          "options": [
+            "São João",
+            "Carnaval do Rio",
+            "Festa Junina",
+            "Círio de Nazaré"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o pico mais alto do Brasil?",
+          "options": [
+            "Pico da Neblina",
+            "Pico da Bandeira",
+            "Pico do Jaraguá",
+            "Pico Paraná"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Em que ano o Brasil se tornou República?",
+          "options": ["1822", "1889", "1891", "1930"],
+          "correct": 1
+        },
+        {
+          "question": "Qual escritor brasileiro escreveu 'Dom Casmurro'?",
+          "options": [
+            "José de Alencar",
+            "Monteiro Lobato",
+            "Machado de Assis",
+            "Jorge Amado"
+          ],
+          "correct": 2
+        }
+      ]
+    },
+    "musica_rock": {
+      "emoji": "🎸",
+      "name": "Rock & Metal",
+      "questions": [
+        {
+          "question": "Qual banda lançou o álbum 'Nevermind' em 1991?",
+          "options": ["Pearl Jam", "Nirvana", "Soundgarden", "Alice in Chains"],
+          "correct": 1
+        },
+        {
+          "question": "Quem é o vocalista da banda The Strokes?",
+          "options": [
+            "Julian Casablancas",
+            "Jack White",
+            "Brandon Flowers",
+            "Alex Turner"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual banda britânica lançou 'The Bends' em 1995?",
+          "options": ["Oasis", "Blur", "Radiohead", "Pulp"],
+          "correct": 2
+        },
+        {
+          "question": "Quem é o líder do The Smashing Pumpkins?",
+          "options": [
+            "Eddie Vedder",
+            "Billy Corgan",
+            "Thom Yorke",
+            "Chris Cornell"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda lançou 'Daydream Nation'?",
+          "options": ["Sonic Youth", "Pixies", "The Cure", "R.E.M"],
+          "correct": 0
+        },
+        {
+          "question": "De onde é a banda Arctic Monkeys?",
+          "options": ["Londres", "Manchester", "Sheffield", "Liverpool"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome real de Bono, vocalista do U2?",
+          "options": [
+            "Paul David Hewson",
+            "David Evans",
+            "Adam Clayton",
+            "Larry Mullen"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual banda lançou 'Ten' em 1991?",
+          "options": [
+            "Nirvana",
+            "Pearl Jam",
+            "Soundgarden",
+            "Stone Temple Pilots"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem é conhecido como 'The Edge'?",
+          "options": [
+            "Guitarrista do U2",
+            "Vocalista do Radiohead",
+            "Baixista do Red Hot",
+            "Baterista do Metallica"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual banda lançou 'OK Computer'?",
+          "options": ["Muse", "Radiohead", "Coldplay", "Travis"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano morreu Kurt Cobain?",
+          "options": ["1992", "1993", "1994", "1995"],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda tem os irmãos Gallagher?",
+          "options": ["Blur", "Oasis", "The Verve", "Suede"],
+          "correct": 1
+        },
+        {
+          "question": "Quem é o guitarrista do Queens of the Stone Age?",
+          "options": [
+            "Josh Homme",
+            "Dave Grohl",
+            "Nick Oliveri",
+            "Mark Lanegan"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual banda lançou 'Is This It' em 2001?",
+          "options": [
+            "The White Stripes",
+            "The Strokes",
+            "The Killers",
+            "Franz Ferdinand"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "De onde é a banda The Cure?",
+          "options": ["Estados Unidos", "Inglaterra", "Escócia", "Irlanda"],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda tem Robert Smith como vocalista?",
+          "options": ["The Smiths", "The Cure", "Joy Division", "New Order"],
+          "correct": 1
+        },
+        {
+          "question": "Quem é o vocalista do Foo Fighters?",
+          "options": [
+            "Kurt Cobain",
+            "Dave Grohl",
+            "Taylor Hawkins",
+            "Pat Smear"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda alemã mistura folk, reggae e eletrônica?",
+          "options": ["Rammstein", "Milky Chance", "Kraftwerk", "Scorpions"],
+          "correct": 1
+        },
+        {
+          "question": "Qual álbum do Pink Floyd tem a capa com um prisma?",
+          "options": [
+            "The Wall",
+            "Animals",
+            "The Dark Side of the Moon",
+            "Wish You Were Here"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda lançou 'Blood Sugar Sex Magik'?",
+          "options": [
+            "Jane's Addiction",
+            "Red Hot Chili Peppers",
+            "Faith No More",
+            "Rage Against The Machine"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem é o baixista do Red Hot Chili Peppers?",
+          "options": [
+            "John Frusciante",
+            "Flea",
+            "Anthony Kiedis",
+            "Chad Smith"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda lançou 'Mellon Collie and the Infinite Sadness'?",
+          "options": [
+            "Nirvana",
+            "Pearl Jam",
+            "The Smashing Pumpkins",
+            "Soundgarden"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Em que cidade nasceu o movimento Grunge?",
+          "options": ["Los Angeles", "Nova York", "Seattle", "Portland"],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda tem Jared Leto como vocalista?",
+          "options": [
+            "Linkin Park",
+            "Thirty Seconds To Mars",
+            "My Chemical Romance",
+            "Fall Out Boy"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem foi o vocalista do Audioslave?",
+          "options": [
+            "Eddie Vedder",
+            "Layne Staley",
+            "Chris Cornell",
+            "Scott Weiland"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda lançou 'Hybrid Theory'?",
+          "options": ["Linkin Park", "Limp Bizkit", "Korn", "Deftones"],
+          "correct": 0
+        },
+        {
+          "question": "De onde é a banda Muse?",
+          "options": ["Estados Unidos", "Inglaterra", "França", "Austrália"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do vocalista do Iron Maiden?",
+          "options": [
+            "Rob Halford",
+            "Bruce Dickinson",
+            "Ronnie James Dio",
+            "Ozzy Osbourne"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda lançou 'Master of Puppets'?",
+          "options": ["Megadeth", "Slayer", "Metallica", "Anthrax"],
+          "correct": 2
+        },
+        {
+          "question": "Quem é o vocalista do System of a Down?",
+          "options": [
+            "Serj Tankian",
+            "Daron Malakian",
+            "Shavo Odadjian",
+            "John Dolmayan"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual banda de rock alternativo tem o hit 'Stolen Car'?",
+          "options": [
+            "Milky Chance",
+            "Alt-J",
+            "Glass Animals",
+            "Two Door Cinema Club"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "De onde é a banda AC/DC?",
+          "options": [
+            "Inglaterra",
+            "Estados Unidos",
+            "Austrália",
+            "Nova Zelândia"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual álbum dos Beatles é considerado o mais vendido?",
+          "options": [
+            "Abbey Road",
+            "Sgt. Pepper's",
+            "The White Album",
+            "Revolver"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quem foi o baterista original do The Beatles?",
+          "options": ["Ringo Starr", "Pete Best", "John Bonham", "Keith Moon"],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda tem os hits 'Mr. Brightside' e 'Somebody Told Me'?",
+          "options": [
+            "Franz Ferdinand",
+            "Kaiser Chiefs",
+            "The Killers",
+            "Bloc Party"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "De onde é o vocalista Freddie Mercury?",
+          "options": ["Inglaterra", "Tanzânia", "Índia", "África do Sul"],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda brasileira faz rock progressivo instrumental?",
+          "options": [
+            "Vespas Mandarinas",
+            "Los Hermanos",
+            "Pato Fu",
+            "O Terço"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quem é o vocalista do The Smiths?",
+          "options": ["Ian Curtis", "Robert Smith", "Morrissey", "Johnny Marr"],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda lançou 'In Utero' em 1993?",
+          "options": ["Pearl Jam", "Soundgarden", "Nirvana", "Alice in Chains"],
+          "correct": 2
+        },
+        {
+          "question": "De onde é a banda R.E.M?",
+          "options": [
+            "Seattle",
+            "Nova York",
+            "Athens (Georgia)",
+            "Los Angeles"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda tem o hit 'Seven Nation Army'?",
+          "options": [
+            "The Black Keys",
+            "The White Stripes",
+            "Queens of the Stone Age",
+            "Arctic Monkeys"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem é o guitarrista do Metallica?",
+          "options": [
+            "Kirk Hammett",
+            "Dave Mustaine",
+            "James Hetfield",
+            "Ambos A e C"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual banda lançou 'Definitely Maybe' em 1994?",
+          "options": ["Blur", "Pulp", "Oasis", "Suede"],
+          "correct": 2
+        },
+        {
+          "question": "De onde é a banda Joy Division?",
+          "options": ["Londres", "Manchester", "Liverpool", "Birmingham"],
+          "correct": 1
+        },
+        {
+          "question": "Qual o nome artístico de Paul David Hewson?",
+          "options": ["Edge", "Sting", "Bono", "Slash"],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda tem o álbum 'Californication'?",
+          "options": ["Sublime", "Red Hot Chili Peppers", "Incubus", "311"],
+          "correct": 1
+        },
+        {
+          "question": "Quem substituiu Kurt Cobain no Foo Fighters como vocalista?",
+          "options": [
+            "Ninguém, Dave Grohl é o vocalista",
+            "Pat Smear",
+            "Krist Novoselic",
+            "Taylor Hawkins"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual banda lançou 'The Queen Is Dead'?",
+          "options": ["The Cure", "Joy Division", "The Smiths", "New Order"],
+          "correct": 2
+        },
+        {
+          "question": "De onde é a banda Pixies?",
+          "options": ["Seattle", "Boston", "Nova York", "Los Angeles"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do álbum duplo do The Smashing Pumpkins lançado em 1995?",
+          "options": [
+            "Siamese Dream",
+            "Mellon Collie and the Infinite Sadness",
+            "Adore",
+            "Machina"
+          ],
+          "correct": 1
+        }
+      ]
+    },
+    "musica_brasileira": {
+      "emoji": "🇧🇷",
+      "name": "Música Brasileira",
+      "questions": [
+        {
+          "question": "Qual rapper brasileiro é mais ouvido no Spotify?",
+          "options": ["Emicida", "Matuê", "Djonga", "Xamã"],
+          "correct": 1
+        },
+        {
+          "question": "De onde é o rapper Djonga?",
+          "options": [
+            "São Paulo",
+            "Rio de Janeiro",
+            "Belo Horizonte",
+            "Salvador"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual álbum Djonga lançou em 2017?",
+          "options": [
+            "Ladrão",
+            "Heresia",
+            "O Menino que Queria Ser Deus",
+            "Histórias da Minha Área"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda brasileira é conhecida como pioneira do rock nacional?",
+          "options": [
+            "Secos & Molhados",
+            "Os Mutantes",
+            "Raul Seixas",
+            "Rita Lee"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem canta 'AmarElo'?",
+          "options": ["Criolo", "Emicida", "Racionais MC's", "Sabotage"],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda brasileira tem o hit 'Fácil'?",
+          "options": ["Jota Quest", "Skank", "O Rappa", "Charlie Brown Jr."],
+          "correct": 0
+        },
+        {
+          "question": "De onde é a banda Charlie Brown Jr.?",
+          "options": ["Rio de Janeiro", "Santos", "São Paulo", "Brasília"],
+          "correct": 1
+        },
+        {
+          "question": "Quem foi o vocalista do Charlie Brown Jr.?",
+          "options": [
+            "Samuel Rosa",
+            "Chorão",
+            "Marcelo D2",
+            "Gabriel o Pensador"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual cantora é conhecida como a 'Rainha dos Baixinhos'?",
+          "options": ["Eliana", "Angélica", "Xuxa", "Mara Maravilha"],
+          "correct": 2
+        },
+        {
+          "question": "Quem canta 'Eduardo e Mônica'?",
+          "options": [
+            "Titãs",
+            "Legião Urbana",
+            "Capital Inicial",
+            "Paralamas do Sucesso"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual rapper brasileiro faz parte do grupo Costa Gold?",
+          "options": ["Matuê", "Nog", "Teto", "L7nnon"],
+          "correct": 1
+        },
+        {
+          "question": "De onde é o grupo Racionais MC's?",
+          "options": ["Rio de Janeiro", "Brasília", "São Paulo", "Salvador"],
+          "correct": 2
+        },
+        {
+          "question": "Quem canta 'Pra Você Dar o Nome'?",
+          "options": ["Silva", "Criolo", "Marcelo Jeneci", "Tiago Iorc"],
+          "correct": 0
+        },
+        {
+          "question": "Qual banda brasileira tem o hit 'Vamos Fugir'?",
+          "options": [
+            "Paralamas do Sucesso",
+            "Skank",
+            "Jota Quest",
+            "Engenheiros do Hawaii"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem é o vocalista do Detonautas?",
+          "options": [
+            "Tico Santa Cruz",
+            "Samuel Rosa",
+            "Paulo Miklos",
+            "Sérgio Britto"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual artista brasileira lançou 'Triste, Louca ou Má'?",
+          "options": [
+            "Anitta",
+            "Pabllo Vittar",
+            "Francisco, el Hombre",
+            "Liniker"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "De onde é o cantor Silva?",
+          "options": [
+            "São Paulo",
+            "Rio de Janeiro",
+            "Belo Horizonte",
+            "Salvador"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda brasileira foi headliner no Rock in Rio 2011?",
+          "options": [
+            "Sepultura",
+            "Charlie Brown Jr.",
+            "Paralamas do Sucesso",
+            "Capital Inicial"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quem canta 'Sutilmente'?",
+          "options": ["Skank", "Jota Quest", "Los Hermanos", "O Rappa"],
+          "correct": 0
+        },
+        {
+          "question": "Qual rapper brasileira é conhecida por 'Diké'?",
+          "options": ["Drik Barbosa", "Karol Conká", "MC Carol", "Flora Matos"],
+          "correct": 0
+        },
+        {
+          "question": "De onde é a banda Los Hermanos?",
+          "options": [
+            "São Paulo",
+            "Rio de Janeiro",
+            "Belo Horizonte",
+            "Brasília"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem é o vocalista do CPM 22?",
+          "options": ["Bad", "Chorão", "Roger", "Fernando Badauí"],
+          "correct": 3
+        },
+        {
+          "question": "Qual artista brasileira canta 'Olha A Explosão'?",
+          "options": [
+            "Wesley Safadão",
+            "MC Kevinho",
+            "Nego do Borel",
+            "Dennis DJ"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem canta 'Natiruts Reggae Power'?",
+          "options": [
+            "Cidade Negra",
+            "Natiruts",
+            "Ponto de Equilíbrio",
+            "Armandinho"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "De onde é o rapper Orochi?",
+          "options": [
+            "São Paulo",
+            "Rio de Janeiro",
+            "Brasília",
+            "Porto Alegre"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda brasileira tem o hit 'Sonífera Ilha'?",
+          "options": [
+            "Nenhum de Nós",
+            "Los Hermanos",
+            "Engenheiros do Hawaii",
+            "Paralamas do Sucesso"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem é conhecida como a 'Rainha do Funk'?",
+          "options": ["Anitta", "Ludmilla", "MC Carol", "Valesca Popozuda"],
+          "correct": 3
+        },
+        {
+          "question": "Qual rapper brasileiro tem o hit 'M4'?",
+          "options": ["Matuê", "Teto", "Wiu", "Filipe Ret"],
+          "correct": 2
+        },
+        {
+          "question": "De onde é o cantor Criolo?",
+          "options": ["Rio de Janeiro", "São Paulo", "Salvador", "Recife"],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda brasileira faz trap metal?",
+          "options": [
+            "Supernada",
+            "Gatuíni",
+            "Callegari",
+            "Don't Kill The Cow"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quem canta 'Me Leva Pra Casa'?",
+          "options": ["Lagum", "Jovem Dionisio", "Atitude 67", "Melim"],
+          "correct": 0
+        },
+        {
+          "question": "Qual rapper brasileiro lançou 'QVVJFA?'?",
+          "options": ["Baco Exu do Blues", "Djonga", "BK'", "Rashid"],
+          "correct": 2
+        },
+        {
+          "question": "De onde é a banda Raimundos?",
+          "options": ["Brasília", "Goiânia", "Curitiba", "Fortaleza"],
+          "correct": 0
+        },
+        {
+          "question": "Quem é o vocalista do Sepultura?",
+          "options": [
+            "Max Cavalera",
+            "Igor Cavalera",
+            "Derrick Green",
+            "Andreas Kisser"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual artista brasileira tem o hit 'Recente'?",
+          "options": ["Iza", "Ludmilla", "Anitta", "Pabllo Vittar"],
+          "correct": 1
+        },
+        {
+          "question": "De onde é o rapper Teto?",
+          "options": ["São Paulo", "Rio de Janeiro", "Fortaleza", "Recife"],
+          "correct": 0
+        },
+        {
+          "question": "Qual banda brasileira de rock instrumental é conhecida por 'Luau MTV'?",
+          "options": ["Os Paralamas", "Ira!", "Titãs", "Ultraje a Rigor"],
+          "correct": 0
+        },
+        {
+          "question": "Quem canta 'Alagados'?",
+          "options": [
+            "Legião Urbana",
+            "Os Paralamas do Sucesso",
+            "Barão Vermelho",
+            "Titãs"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual rapper brasileiro tem tatuagem de lágrima no rosto?",
+          "options": ["Orochi", "Matuê", "MC Poze", "Bielzin"],
+          "correct": 2
+        },
+        {
+          "question": "De onde é a banda Nenhum de Nós?",
+          "options": [
+            "São Paulo",
+            "Rio de Janeiro",
+            "Porto Alegre",
+            "Curitiba"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Quem foi o vocalista original do Titãs?",
+          "options": [
+            "Arnaldo Antunes",
+            "Paulo Miklos",
+            "Sérgio Britto",
+            "Não tinha vocalista fixo"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual artista brasileira canta 'Terremoto'?",
+          "options": ["Pabllo Vittar", "Anitta", "Ludmilla", "Lexa"],
+          "correct": 1
+        },
+        {
+          "question": "De onde é o rapper Filipe Ret?",
+          "options": [
+            "São Paulo",
+            "Rio de Janeiro",
+            "Belo Horizonte",
+            "Salvador"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual banda brasileira tem o hit 'Podes Crer'?",
+          "options": ["Charlie Brown Jr.", "Raimundos", "Detonautas", "CPM 22"],
+          "correct": 0
+        },
+        {
+          "question": "Quem canta 'Pontos de Exclamação'?",
+          "options": [
+            "Marcelo D2",
+            "Gabriel o Pensador",
+            "MV Bill",
+            "Marcelo Yuka"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual rapper brasileiro faz parte do duo Recayd Mob?",
+          "options": ["Caio Passos", "Orochi", "Teto", "Wiu"],
+          "correct": 0
+        },
+        {
+          "question": "De onde é a cantora Pitty?",
+          "options": ["São Paulo", "Rio de Janeiro", "Salvador", "Recife"],
+          "correct": 2
+        },
+        {
+          "question": "Qual banda brasileira tem o hit 'Por Enquanto'?",
+          "options": [
+            "Cássia Eller",
+            "Legião Urbana",
+            "Barão Vermelho",
+            "Capital Inicial"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem é conhecido como 'Sabota'?",
+          "options": [
+            "Rapper falecido de São Paulo",
+            "MC do Rio de Janeiro",
+            "DJ de Brasília",
+            "Produtor de Salvador"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual artista brasileira canta 'Sua Cara'?",
+          "options": [
+            "Anitta",
+            "Ludmilla",
+            "Pabllo Vittar",
+            "Todas as anteriores"
+          ],
+          "correct": 0
+        }
+      ]
+    },
+    "games_modernos": {
+      "emoji": "🎮",
+      "name": "Games Modernos",
+      "questions": [
+        {
+          "question": "Qual jogo battle royale é mais jogado no mundo em 2025?",
+          "options": ["Apex Legends", "Fortnite", "PUBG", "Warzone"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Minecraft?",
+          "options": ["2009", "2010", "2011", "2012"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa desenvolveu Valorant?",
+          "options": ["Blizzard", "Valve", "Riot Games", "Epic Games"],
+          "correct": 2
+        },
+        {
+          "question": "Quantos jogadores tem uma equipe de Valorant?",
+          "options": ["4", "5", "6", "7"],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo é conhecido pelo 'Creative Mode' e construções?",
+          "options": ["Minecraft", "Fortnite", "Roblox", "Todos os anteriores"],
+          "correct": 3
+        },
+        {
+          "question": "Em que ano foi lançado Fortnite Battle Royale?",
+          "options": ["2015", "2016", "2017", "2018"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo tem o personagem 'Reyna'?",
+          "options": ["Overwatch", "Valorant", "Apex Legends", "CS:GO"],
+          "correct": 1
+        },
+        {
+          "question": "Quantos campeões existem em League of Legends? (aproximadamente)",
+          "options": ["100", "130", "160", "190"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o jogo de corrida mais popular no Roblox?",
+          "options": ["Jailbreak", "Adopt Me", "Brookhaven", "Tower of Hell"],
+          "correct": 0
+        },
+        {
+          "question": "Em qual ano GTA V foi lançado?",
+          "options": ["2011", "2012", "2013", "2014"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa desenvolveu Apex Legends?",
+          "options": ["EA", "Respawn Entertainment", "Activision", "Valve"],
+          "correct": 1
+        },
+        {
+          "question": "Quantas lendas tinha Apex Legends no lançamento?",
+          "options": ["6", "8", "10", "12"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o jogo mais vendido de todos os tempos?",
+          "options": ["GTA V", "Tetris", "Minecraft", "Wii Sports"],
+          "correct": 2
+        },
+        {
+          "question": "Em que ano foi lançado Among Us?",
+          "options": ["2016", "2017", "2018", "2019"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a moeda virtual de Fortnite?",
+          "options": ["V-Bucks", "Robux", "Riot Points", "Apex Coins"],
+          "correct": 0
+        },
+        {
+          "question": "Qual jogo tem o modo 'Ranked' com ranks de Ferro a Radiante?",
+          "options": ["CS:GO", "Valorant", "Overwatch", "Rainbow Six"],
+          "correct": 1
+        },
+        {
+          "question": "Em qual plataforma Genshin Impact NÃO está disponível?",
+          "options": ["PC", "PlayStation", "Xbox", "Mobile"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa desenvolveu Roblox?",
+          "options": ["Epic Games", "Roblox Corporation", "Microsoft", "Unity"],
+          "correct": 1
+        },
+        {
+          "question": "Quantos jogadores simultâneos Roblox tem mensalmente?",
+          "options": ["10 milhões", "20 milhões", "30 milhões", "40 milhões"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo tem 'The Island' como seu mapa principal?",
+          "options": [
+            "PUBG",
+            "Fortnite",
+            "Apex Legends",
+            "Call of Duty Warzone"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado League of Legends?",
+          "options": ["2007", "2008", "2009", "2010"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o objetivo principal em Among Us?",
+          "options": [
+            "Sobreviver",
+            "Construir",
+            "Completar tarefas ou eliminar tripulantes",
+            "Coletar recursos"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo foi desenvolvido pela miHoYo?",
+          "options": [
+            "Honkai Impact",
+            "Genshin Impact",
+            "Zenless Zone Zero",
+            "Todos os anteriores"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Em que ano foi lançado CS:GO?",
+          "options": ["2010", "2011", "2012", "2013"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o sucessor de CS:GO?",
+          "options": [
+            "CS: Source 2",
+            "Counter-Strike 2",
+            "CS: Next",
+            "CS: Remastered"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quantos jogadores pode ter um servidor de Minecraft padrão?",
+          "options": ["Ilimitado", "Depende do servidor", "100", "1000"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o modo de jogo mais popular do Fortnite?",
+          "options": [
+            "Save the World",
+            "Battle Royale",
+            "Creative",
+            "Party Royale"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Valorant?",
+          "options": ["2018", "2019", "2020", "2021"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo tem o personagem 'Wraith'?",
+          "options": ["Overwatch", "Valorant", "Apex Legends", "Destiny"],
+          "correct": 2
+        },
+        {
+          "question": "Quantas pessoas pode ter em um squad no Fortnite?",
+          "options": ["2", "3", "4", "5"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a moeda do Roblox?",
+          "options": ["R$", "Robux", "Coins", "Tickets"],
+          "correct": 1
+        },
+        {
+          "question": "Em qual plataforma Among Us foi lançado primeiro?",
+          "options": ["PC", "Mobile", "Console", "Todas simultaneamente"],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo tem 'Kings Canyon' como um de seus mapas?",
+          "options": ["Valorant", "Overwatch", "Apex Legends", "PUBG"],
+          "correct": 2
+        },
+        {
+          "question": "Quantas rodas tem cada round de Valorant em modo competitivo?",
+          "options": ["Até 13", "Até 24", "Até 25", "Até 30"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa é dona da Riot Games?",
+          "options": ["Microsoft", "Tencent", "Sony", "EA"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano Fortnite adicionou o modo Battle Royale?",
+          "options": ["2016", "2017", "2018", "2019"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do desenvolvedor de Minecraft?",
+          "options": ["Notch", "Jeb", "Dinnerbone", "Todos trabalharam"],
+          "correct": 0
+        },
+        {
+          "question": "Quantos jogadores tem uma partida completa de Among Us?",
+          "options": ["8-10", "10-15", "4-15", "5-10"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo substituiu Overwatch 1?",
+          "options": [
+            "Overwatch 2",
+            "Overwatch Remastered",
+            "Overwatch Next",
+            "Overwatch Ultimate"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Em que ano foi lançado PUBG?",
+          "options": ["2015", "2016", "2017", "2018"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o rank mais alto do Valorant?",
+          "options": ["Immortal", "Radiante", "Diamante", "Challenger"],
+          "correct": 1
+        },
+        {
+          "question": "Quantos jogadores iniciam uma partida de Fortnite Battle Royale?",
+          "options": ["50", "75", "100", "150"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo foi chamado de 'LoL de FPS'?",
+          "options": ["Overwatch", "Valorant", "Apex Legends", "Paladins"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano Roblox foi lançado oficialmente?",
+          "options": ["2004", "2005", "2006", "2007"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do criador do PUBG?",
+          "options": [
+            "Brendan Greene",
+            "Markus Persson",
+            "Gabe Newell",
+            "Tim Sweeney"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quantos elementos existem em Genshin Impact?",
+          "options": ["5", "6", "7", "8"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa comprou a Mojang (Minecraft)?",
+          "options": ["Sony", "Microsoft", "Tencent", "Amazon"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano Among Us ficou viral?",
+          "options": ["2018", "2019", "2020", "2021"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome da empresa que desenvolve Fortnite?",
+          "options": ["Epic Games", "Valve", "Activision", "EA"],
+          "correct": 0
+        },
+        {
+          "question": "Quantas habilidades tem cada agente do Valorant?",
+          "options": ["2", "3", "4", "5"],
+          "correct": 2
+        }
+      ]
+    },
+    "games_indie": {
+      "emoji": "🎨",
+      "name": "Jogos Indie",
+      "questions": [
+        {
+          "question": "Qual jogo indie de 2018 ganhou 'Melhor Jogo Independente' no TGA?",
+          "options": [
+            "Hollow Knight",
+            "Celeste",
+            "Dead Cells",
+            "Into the Breach"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Quem desenvolveu Celeste?",
+          "options": [
+            "Team Cherry",
+            "Matt Makes Games",
+            "Supergiant Games",
+            "ConcernedApe"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie tem uma protagonista escalando uma montanha?",
+          "options": ["Hollow Knight", "Celeste", "Ori", "Gris"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Hollow Knight?",
+          "options": ["2015", "2016", "2017", "2018"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa desenvolveu Hollow Knight?",
+          "options": [
+            "Team Cherry",
+            "Moon Studios",
+            "Studio MDHR",
+            "Supergiant Games"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual jogo indie é conhecido por sua arte em preto e branco?",
+          "options": ["Inside", "Limbo", "Gris", "Journey"],
+          "correct": 1
+        },
+        {
+          "question": "Quem desenvolveu Stardew Valley sozinho?",
+          "options": [
+            "Toby Fox",
+            "ConcernedApe",
+            "Eric Barone",
+            "B e C estão corretos"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual jogo indie tem mecânica de 'roguelike' no submundo grego?",
+          "options": ["Dead Cells", "Hades", "Returnal", "Rogue Legacy"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Hades?",
+          "options": ["2018", "2019", "2020", "2021"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa desenvolveu Hades?",
+          "options": [
+            "Moon Studios",
+            "Supergiant Games",
+            "Team Cherry",
+            "Motion Twin"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie de plataforma tem uma protagonista chamada Madeline?",
+          "options": ["Celeste", "Gris", "Ori", "A Hat in Time"],
+          "correct": 0
+        },
+        {
+          "question": "Quem desenvolveu Undertale?",
+          "options": [
+            "Team Cherry",
+            "Toby Fox",
+            "ConcernedApe",
+            "Matt Thorson"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie dinamarquês foi lançado pela Playdead em 2010?",
+          "options": ["Inside", "Limbo", "Little Nightmares", "Journey"],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie de sobrevivência tem 'The Forest' no título?",
+          "options": ["Don't Starve", "The Forest", "Green Hell", "Subnautica"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Cuphead?",
+          "options": ["2015", "2016", "2017", "2018"],
+          "correct": 2
+        },
+        {
+          "question": "Qual estúdio desenvolveu Cuphead?",
+          "options": [
+            "Team Cherry",
+            "Studio MDHR",
+            "Supergiant Games",
+            "Moon Studios"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie tem arte inspirada em cartoons dos anos 1930?",
+          "options": ["Bendy", "Cuphead", "Cartoon Cat", "Felix the Cat"],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie metroidvania se passa em 'Hallownest'?",
+          "options": ["Ori", "Hollow Knight", "Dead Cells", "Blasphemous"],
+          "correct": 1
+        },
+        {
+          "question": "Quantos chefes principais tem Hollow Knight?",
+          "options": ["20+", "30+", "40+", "50+"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo indie foi desenvolvido na Austrália?",
+          "options": ["Hollow Knight", "Celeste", "Hades", "Undertale"],
+          "correct": 0
+        },
+        {
+          "question": "Em que ano foi lançado Stardew Valley?",
+          "options": ["2014", "2015", "2016", "2017"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo indie tem um protagonista que é um cavaleiro oco?",
+          "options": [
+            "Dark Souls",
+            "Hollow Knight",
+            "Salt and Sanctuary",
+            "Blasphemous"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie roguelike tem células mortas no título?",
+          "options": [
+            "Dead Cells",
+            "Hades",
+            "Enter the Gungeon",
+            "Binding of Isaac"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quem desenvolveu Dead Cells?",
+          "options": [
+            "Team Cherry",
+            "Motion Twin",
+            "Supergiant Games",
+            "Evil Empire"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie de fazenda foi inspirado em Harvest Moon?",
+          "options": [
+            "Farm Together",
+            "Stardew Valley",
+            "My Time at Portia",
+            "Graveyard Keeper"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Undertale?",
+          "options": ["2013", "2014", "2015", "2016"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo indie tem o personagem 'Sans'?",
+          "options": ["Deltarune", "Undertale", "Ambos", "Nenhum"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo indie ganhou BAFTA de Melhor Jogo Britânico em 2011?",
+          "options": ["Fez", "Limbo", "Braid", "Journey"],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie tem combate de kung fu e envelhecimento único?",
+          "options": ["Sifu", "Absolver", "Sleeping Dogs", "Shenmue"],
+          "correct": 0
+        },
+        {
+          "question": "Quem desenvolveu Sifu?",
+          "options": [
+            "Team Cherry",
+            "Sloclap",
+            "Supergiant Games",
+            "Devolver Digital"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "De onde é o estúdio Sloclap?",
+          "options": ["Japão", "China", "França", "Canadá"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo indie tem exploração em 2D de cavernas e plataformas?",
+          "options": [
+            "Cave Story",
+            "Spelunky",
+            "Terraria",
+            "Todos os anteriores"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Em que ano foi lançado Terraria?",
+          "options": ["2009", "2010", "2011", "2012"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo indie mistura pixel art com sobrevivência?",
+          "options": [
+            "Don't Starve",
+            "Terraria",
+            "Starbound",
+            "Todos os anteriores"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual jogo indie da thatgamecompany ganhou GOTY em 2012?",
+          "options": ["Flower", "Journey", "Sky", "Abzu"],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie tem a protagonista em uma jornada silenciosa no deserto?",
+          "options": ["Journey", "Abzu", "Gris", "Rime"],
+          "correct": 0
+        },
+        {
+          "question": "Qual jogo indie é conhecido por ser extremamente difícil com mortes frequentes?",
+          "options": [
+            "Celeste",
+            "Super Meat Boy",
+            "Cuphead",
+            "Todos os anteriores"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Em que ano foi lançado Inside?",
+          "options": ["2014", "2015", "2016", "2017"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa desenvolveu Inside e Limbo?",
+          "options": [
+            "Team Cherry",
+            "Playdead",
+            "Supergiant Games",
+            "Moon Studios"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie tem arte aquarela e uma garota em luto?",
+          "options": ["Gris", "Celeste", "Ori", "Journey"],
+          "correct": 0
+        },
+        {
+          "question": "Qual jogo indie metroidvania tem 'Ori' no título?",
+          "options": [
+            "Ori and the Blind Forest",
+            "Ori and the Will of the Wisps",
+            "Ambos",
+            "Nenhum"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual estúdio desenvolveu a série Ori?",
+          "options": [
+            "Team Cherry",
+            "Moon Studios",
+            "Supergiant Games",
+            "Studio MDHR"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie roguelike tem armas como personagens?",
+          "options": [
+            "Enter the Gungeon",
+            "Nuclear Throne",
+            "Risk of Rain",
+            "Binding of Isaac"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual jogo indie de corrida tem carros com futebol?",
+          "options": ["TrackMania", "Rocket League", "Distance", "Wreckfest"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano Rocket League ficou free-to-play?",
+          "options": ["2018", "2019", "2020", "2021"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo indie de plataforma tem um personagem de carne?",
+          "options": [
+            "Super Meat Boy",
+            "The Binding of Isaac",
+            "Celeste",
+            "Hollow Knight"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual jogo indie tem um protagonista que é um chapéu?",
+          "options": [
+            "A Hat in Time",
+            "Super Mario Odyssey",
+            "Psychonauts",
+            "Costume Quest"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual desenvolvedor criou tanto Undertale quanto Deltarune?",
+          "options": [
+            "Matt Thorson",
+            "Toby Fox",
+            "ConcernedApe",
+            "Daisuke Amaya"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual jogo indie de quebra-cabeça tem portais azuis e laranjas?",
+          "options": [
+            "Portal 2",
+            "The Talos Principle",
+            "Q.U.B.E.",
+            "Antichamber"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual jogo indie brasileiro se passa no sertão?",
+          "options": ["Árida", "Dandara", "Momodora", "Chroma Squad"],
+          "correct": 0
+        }
+      ]
+    },
+    "games_classicos": {
+      "emoji": "👾",
+      "name": "Jogos Clássicos",
+      "questions": [
+        {
+          "question": "Em que ano foi lançado o primeiro Super Mario Bros?",
+          "options": ["1983", "1985", "1987", "1989"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome completo de Mario?",
+          "options": [
+            "Mario Mario",
+            "Mario Bros",
+            "Mario Luigi",
+            "Mario Nintendo"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Em que console foi lançado The Legend of Zelda originalmente?",
+          "options": ["NES", "SNES", "Game Boy", "N64"],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o nome do protagonista de Zelda?",
+          "options": ["Zelda", "Link", "Ganon", "Navi"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Sonic the Hedgehog?",
+          "options": ["1989", "1990", "1991", "1992"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa criou Sonic?",
+          "options": ["Nintendo", "Sega", "Sony", "Capcom"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é a cor do Sonic?",
+          "options": ["Vermelho", "Verde", "Azul", "Amarelo"],
+          "correct": 2
+        },
+        {
+          "question": "Quantos anéis Sonic perde quando é atingido?",
+          "options": ["Todos", "Metade", "10", "Nenhum se tiver pelo menos 1"],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o nome do irmão de Mario?",
+          "options": ["Wario", "Waluigi", "Luigi", "Yoshi"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o vilão principal de Mario?",
+          "options": ["Wario", "Bowser", "Donkey Kong", "King Boo"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Pac-Man?",
+          "options": ["1978", "1979", "1980", "1981"],
+          "correct": 2
+        },
+        {
+          "question": "Qual empresa criou Pac-Man?",
+          "options": ["Namco", "Capcom", "Konami", "Taito"],
+          "correct": 0
+        },
+        {
+          "question": "Quantos fantasmas perseguem Pac-Man?",
+          "options": ["3", "4", "5", "6"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado Street Fighter II?",
+          "options": ["1989", "1990", "1991", "1992"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o golpe especial de Ryu em Street Fighter?",
+          "options": [
+            "Hadouken",
+            "Shoryuken",
+            "Tatsumaki",
+            "Todos os anteriores"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual empresa desenvolveu Metal Gear?",
+          "options": ["Capcom", "Konami", "Square", "Enix"],
+          "correct": 1
+        },
+        {
+          "question": "Quem é o criador de Metal Gear?",
+          "options": [
+            "Shigeru Miyamoto",
+            "Hideo Kojima",
+            "Satoshi Tajiri",
+            "Masahiro Sakurai"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de Metal Gear?",
+          "options": [
+            "Solid Snake",
+            "Big Boss",
+            "Raiden",
+            "Todos já foram protagonistas"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Em que ano foi lançado o primeiro Pokémon?",
+          "options": ["1994", "1995", "1996", "1997"],
+          "correct": 2
+        },
+        {
+          "question": "Quantos Pokémon existiam na primeira geração?",
+          "options": ["150", "151", "152", "200"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o número do Pikachu na Pokédex Nacional?",
+          "options": ["1", "25", "50", "100"],
+          "correct": 1
+        },
+        {
+          "question": "Quem criou Pokémon?",
+          "options": [
+            "Shigeru Miyamoto",
+            "Satoshi Tajiri",
+            "Hideo Kojima",
+            "Masahiro Sakurai"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Em que console foi lançado o primeiro Final Fantasy?",
+          "options": ["NES", "SNES", "PlayStation", "Nintendo 64"],
+          "correct": 0
+        },
+        {
+          "question": "Qual empresa desenvolveu Final Fantasy?",
+          "options": ["Capcom", "Konami", "Square", "Enix"],
+          "correct": 2
+        },
+        {
+          "question": "Em que ano foi lançado Doom?",
+          "options": ["1991", "1992", "1993", "1994"],
+          "correct": 2
+        },
+        {
+          "question": "Quem desenvolveu Doom?",
+          "options": ["Valve", "Blizzard", "id Software", "Epic Games"],
+          "correct": 2
+        },
+        {
+          "question": "Qual foi o primeiro console da Sony?",
+          "options": ["PlayStation", "PS One", "PSX", "Todas estão corretas"],
+          "correct": 0
+        },
+        {
+          "question": "Em que ano foi lançado o PlayStation original?",
+          "options": ["1993", "1994", "1995", "1996"],
+          "correct": 1
+        },
+        {
+          "question": "Qual foi o mascote original do PlayStation?",
+          "options": [
+            "Crash Bandicoot",
+            "Spyro",
+            "Parappa",
+            "Não tinha mascote oficial"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Em que ano foi lançado o Nintendo 64?",
+          "options": ["1994", "1995", "1996", "1997"],
+          "correct": 2
+        },
+        {
+          "question": "Quantos 'bits' tinha o Sega Genesis/Mega Drive?",
+          "options": ["8", "16", "32", "64"],
+          "correct": 1
+        },
+        {
+          "question": "Qual foi o primeiro jogo 3D de Mario?",
+          "options": [
+            "Super Mario 64",
+            "Super Mario Sunshine",
+            "Super Mario Galaxy",
+            "Super Mario 3D World"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Em que ano foi lançado Super Mario 64?",
+          "options": ["1995", "1996", "1997", "1998"],
+          "correct": 1
+        },
+        {
+          "question": "Qual empresa criou Donkey Kong?",
+          "options": ["Sega", "Nintendo", "Atari", "Namco"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado o primeiro Donkey Kong?",
+          "options": ["1979", "1980", "1981", "1982"],
+          "correct": 2
+        },
+        {
+          "question": "Qual foi o primeiro nome de Mario antes de ser Mario?",
+          "options": ["Jumpman", "Mr. Video", "Ossan", "Todos são corretos"],
+          "correct": 0
+        },
+        {
+          "question": "Em que jogo Mario apareceu pela primeira vez?",
+          "options": [
+            "Super Mario Bros",
+            "Mario Bros",
+            "Donkey Kong",
+            "Wrecking Crew"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome da princesa em Donkey Kong original?",
+          "options": ["Peach", "Daisy", "Pauline", "Rosalina"],
+          "correct": 2
+        },
+        {
+          "question": "Em que ano foi lançado Tetris?",
+          "options": ["1984", "1985", "1986", "1987"],
+          "correct": 0
+        },
+        {
+          "question": "Quem criou Tetris?",
+          "options": [
+            "Alexey Pajitnov",
+            "Satoshi Tajiri",
+            "Shigeru Miyamoto",
+            "Gunpei Yokoi"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "De qual país é o criador de Tetris?",
+          "options": ["Japão", "Estados Unidos", "União Soviética", "China"],
+          "correct": 2
+        },
+        {
+          "question": "Qual foi o primeiro console portátil da Nintendo?",
+          "options": ["Game Boy", "Game & Watch", "Virtual Boy", "Nintendo DS"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano foi lançado o Game Boy?",
+          "options": ["1987", "1988", "1989", "1990"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo vinha junto com o Game Boy?",
+          "options": [
+            "Super Mario Land",
+            "Tetris",
+            "Pokémon Red",
+            "The Legend of Zelda"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual empresa criou o Atari 2600?",
+          "options": ["Atari", "Magnavox", "Coleco", "Intellivision"],
+          "correct": 0
+        },
+        {
+          "question": "Em que ano aconteceu o 'crash' dos videogames?",
+          "options": ["1981", "1982", "1983", "1984"],
+          "correct": 2
+        },
+        {
+          "question": "Qual jogo é considerado um dos piores de todos os tempos e contribuiu para o crash?",
+          "options": [
+            "Pac-Man (Atari)",
+            "E.T.",
+            "Custer's Revenge",
+            "Superman 64"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual foi o primeiro console da Microsoft?",
+          "options": ["Xbox", "Xbox 360", "Xbox One", "Xbox Series"],
+          "correct": 0
+        },
+        {
+          "question": "Em que ano foi lançado o Xbox original?",
+          "options": ["2000", "2001", "2002", "2003"],
+          "correct": 1
+        },
+        {
+          "question": "Qual foi o jogo de lançamento mais famoso do Xbox?",
+          "options": [
+            "Gears of War",
+            "Fable",
+            "Halo: Combat Evolved",
+            "Forza Motorsport"
+          ],
+          "correct": 2
+        }
+      ]
+    },
+    "musica_eletronica": {
+      "emoji": "🎧",
+      "name": "Música Eletrônica & DJs",
+      "questions": [
+        {
+          "question": "Qual DJ francês usa um capacete robótico?",
+          "options": ["David Guetta", "Daft Punk", "Justice", "Madeon"],
+          "correct": 1
+        },
+        {
+          "question": "Quantos membros tinha o Daft Punk?",
+          "options": ["1", "2", "3", "4"],
+          "correct": 1
+        },
+        {
+          "question": "Em que ano o Daft Punk anunciou separação?",
+          "options": ["2019", "2020", "2021", "2022"],
+          "correct": 2
+        },
+        {
+          "question": "Qual gênero é caracterizado por BPM alto e batidas fortes?",
+          "options": ["House", "Techno", "Trance", "Dubstep"],
+          "correct": 1
+        },
+        {
+          "question": "Qual DJ holandês é conhecido por 'Animals' e 'Tremor'?",
+          "options": [
+            "Tiësto",
+            "Armin van Buuren",
+            "Martin Garrix",
+            "Afrojack"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o BPM típico do House?",
+          "options": ["100-110", "115-130", "140-150", "160-180"],
+          "correct": 1
+        },
+        {
+          "question": "Qual DJ sueco faleceu em 2018?",
+          "options": ["Avicii", "Swedish House Mafia", "Alesso", "Eric Prydz"],
+          "correct": 0
+        },
+        {
+          "question": "Qual era o nome real do Avicii?",
+          "options": [
+            "Tim Bergling",
+            "Thomas Bangalter",
+            "Adam Beyer",
+            "Axwell Hedfors"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual DJ é conhecido como 'The King of Trance'?",
+          "options": [
+            "Paul van Dyk",
+            "Tiësto",
+            "Armin van Buuren",
+            "Ferry Corsten"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual festival de música eletrônica acontece em Miami?",
+          "options": [
+            "EDC",
+            "Ultra Music Festival",
+            "Coachella",
+            "Electric Zoo"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual festival acontece em Las Vegas?",
+          "options": ["Ultra", "Tomorrowland", "EDC Las Vegas", "Creamfields"],
+          "correct": 2
+        },
+        {
+          "question": "Qual festival de música eletrônica acontece na Bélgica?",
+          "options": ["Ultra", "EDC", "Tomorrowland", "Sensation"],
+          "correct": 2
+        },
+        {
+          "question": "Qual DJ brasileiro é conhecido no psytrance?",
+          "options": ["Vintage Culture", "Alok", "Gabriel Boni", "Anna"],
+          "correct": 2
+        },
+        {
+          "question": "Qual DJ brasileiro toca techno?",
+          "options": ["Alok", "Vintage Culture", "DJ Anna", "KVSH"],
+          "correct": 2
+        },
+        {
+          "question": "Qual DJ brasileiro é mais ouvido internacionalmente?",
+          "options": ["Vintage Culture", "Alok", "Anna", "Victor Ruiz"],
+          "correct": 1
+        },
+        {
+          "question": "Qual subgênero do techno tem BPM mais lento e atmosférico?",
+          "options": [
+            "Hard Techno",
+            "Minimal Techno",
+            "Dub Techno",
+            "Acid Techno"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual cidade é considerada berço do Techno?",
+          "options": ["Berlim", "Detroit", "Amsterdam", "Chicago"],
+          "correct": 1
+        },
+        {
+          "question": "Qual cidade é considerada berço do House?",
+          "options": ["Berlim", "Detroit", "Amsterdam", "Chicago"],
+          "correct": 3
+        },
+        {
+          "question": "Qual DJ é conhecido pelo hit 'Titanium'?",
+          "options": ["Calvin Harris", "David Guetta", "Zedd", "Avicii"],
+          "correct": 1
+        },
+        {
+          "question": "Qual DJ lançou 'Wake Me Up'?",
+          "options": [
+            "Calvin Harris",
+            "David Guetta",
+            "Avicii",
+            "Martin Garrix"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do trio sueco Swedish House Mafia?",
+          "options": [
+            "Axwell, Ingrosso, Angello",
+            "Tiësto, Hardwell, Afrojack",
+            "Alesso, Avicii, Otto Knows",
+            "Eric Prydz, Axwell, Alesso"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Em que ano o Swedish House Mafia anunciou separação?",
+          "options": ["2011", "2012", "2013", "2014"],
+          "correct": 2
+        },
+        {
+          "question": "Qual DJ usa uma cabeça de rato/mouse como mascote?",
+          "options": ["Marshmello", "Deadmau5", "Daft Punk", "Rezz"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome real do Deadmau5?",
+          "options": [
+            "Joel Zimmerman",
+            "Chris Comstock",
+            "Adam Richard",
+            "Tim Bergling"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual DJ usa um capacete de marshmallow?",
+          "options": ["Deadmau5", "Marshmello", "Daft Punk", "Rezz"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome real do Marshmello?",
+          "options": [
+            "Chris Comstock",
+            "Joel Zimmerman",
+            "Thomas Bangalter",
+            "Guy-Manuel"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual DJ é conhecido por 'Don't You Worry Child'?",
+          "options": [
+            "Avicii",
+            "Alesso",
+            "Swedish House Mafia",
+            "Calvin Harris"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual gênero tem 'drops' pesados e wobble bass?",
+          "options": ["House", "Trance", "Dubstep", "Drum and Bass"],
+          "correct": 2
+        },
+        {
+          "question": "Qual DJ americano é conhecido por dubstep?",
+          "options": ["Diplo", "Skrillex", "Calvin Harris", "Zedd"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome real do Skrillex?",
+          "options": [
+            "Sonny Moore",
+            "Chris Comstock",
+            "Joel Zimmerman",
+            "Thomas Wesley"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual DJ holandês é conhecido por 'Adagio for Strings'?",
+          "options": [
+            "Armin van Buuren",
+            "Tiësto",
+            "Ferry Corsten",
+            "Paul van Dyk"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual programa de rádio semanal é apresentado por Armin van Buuren?",
+          "options": [
+            "ASOT",
+            "Group Therapy",
+            "Protocol Radio",
+            "Hardwell On Air"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "O que significa ASOT?",
+          "options": [
+            "Above & Beyond State of Trance",
+            "A State Of Trance",
+            "Armin's State Of Techno",
+            "Amsterdam State Of Trance"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual trio britânico é conhecido por 'Sun & Moon'?",
+          "options": [
+            "Above & Beyond",
+            "Swedish House Mafia",
+            "Pendulum",
+            "Knife Party"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual programa de rádio é apresentado por Above & Beyond?",
+          "options": ["ASOT", "Group Therapy", "Anjunabeats", "ABGT"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é a gravadora de Above & Beyond?",
+          "options": ["Armada", "Anjunabeats", "Protocol", "Spinnin'"],
+          "correct": 1
+        },
+        {
+          "question": "Qual DJ escocês é conhecido por 'This Is What You Came For'?",
+          "options": ["Avicii", "Calvin Harris", "Kygo", "Martin Garrix"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome real do Calvin Harris?",
+          "options": [
+            "Adam Wiles",
+            "Adam Richard",
+            "Calvin Harris mesmo",
+            "Thomas Wesley"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual DJ norueguês é conhecido por Tropical House?",
+          "options": ["Alan Walker", "Kygo", "Matoma", "Alle Farben"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome real do Kygo?",
+          "options": [
+            "Kyrre Gørvell-Dahll",
+            "Alan Walker",
+            "Thomas Wesley",
+            "Adam Wiles"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual DJ alemão-norueguês usa máscara?",
+          "options": ["Marshmello", "Alan Walker", "Deadmau5", "Rezz"],
+          "correct": 1
+        },
+        {
+          "question": "Qual DJ lançou 'Faded' e 'Alone'?",
+          "options": ["Kygo", "Martin Garrix", "Alan Walker", "Avicii"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a gravadora de Martin Garrix?",
+          "options": ["Spinnin'", "STMPD RCRDS", "Protocol", "Revealed"],
+          "correct": 1
+        },
+        {
+          "question": "Qual DJ brasileiro toca house music?",
+          "options": ["Alok", "Vintage Culture", "KVSH", "Todos os anteriores"],
+          "correct": 3
+        },
+        {
+          "question": "Qual é o gênero principal de Alok?",
+          "options": ["Techno", "House", "Trance", "Dubstep"],
+          "correct": 1
+        },
+        {
+          "question": "De onde é o DJ Vintage Culture?",
+          "options": [
+            "São Paulo",
+            "Rio de Janeiro",
+            "Goiânia",
+            "Belo Horizonte"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual festival brasileiro é focado em música eletrônica?",
+          "options": [
+            "Rock in Rio",
+            "Lollapalooza",
+            "Tomorrowland Brasil",
+            "Todas as anteriores"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Em que ano aconteceu a primeira edição do Tomorrowland Brasil?",
+          "options": ["2013", "2014", "2015", "2016"],
+          "correct": 2
+        },
+        {
+          "question": "Onde aconteceu o Tomorrowland Brasil?",
+          "options": [
+            "Rio de Janeiro",
+            "São Paulo",
+            "Itu (SP)",
+            "Florianópolis"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual gênero tem BPM mais alto?",
+          "options": [
+            "House (120-130)",
+            "Techno (120-150)",
+            "Drum and Bass (160-180)",
+            "Dubstep (140)"
+          ],
+          "correct": 2
+        }
+      ]
+    },
+    "games_personagens": {
+      "emoji": "🦸",
+      "name": "Personagens de Jogos",
+      "questions": [
+        {
+          "question": "Qual é a profissão de Mario?",
+          "options": ["Carpinteiro", "Encanador", "Médico", "Bombeiro"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome da princesa que Mario tenta salvar?",
+          "options": ["Zelda", "Peach", "Daisy", "Rosalina"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do cavalo de Link em Zelda?",
+          "options": ["Agro", "Roach", "Epona", "Spirit"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome completo de Kratos em God of War?",
+          "options": [
+            "Kratos",
+            "Kratos Espartano",
+            "Kratos o Fantasma de Esparta",
+            "Só Kratos"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual é o nome do filho de Kratos?",
+          "options": ["Deimos", "Atreus", "Baldur", "Modi"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome verdadeiro de Atreus?",
+          "options": ["Thor", "Odin", "Loki", "Baldur"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de Uncharted?",
+          "options": [
+            "Nathan Drake",
+            "Victor Sullivan",
+            "Samuel Drake",
+            "Rafe Adler"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual é a profissão de Nathan Drake?",
+          "options": [
+            "Arqueólogo",
+            "Caçador de tesouros",
+            "Ladrão",
+            "Aventureiro"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de The Last of Us?",
+          "options": ["Tommy", "Joel", "Bill", "Sam"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome da garota em The Last of Us?",
+          "options": ["Tess", "Ellie", "Riley", "Maria"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é a arma icônica de Master Chief?",
+          "options": [
+            "Assault Rifle",
+            "Battle Rifle",
+            "Energy Sword",
+            "Spartan Laser"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o nome da IA de Master Chief?",
+          "options": ["Cortana", "Roland", "Serena", "Isabel"],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o nome do protagonista de Assassin's Creed II?",
+          "options": ["Altaïr", "Ezio Auditore", "Connor", "Edward Kenway"],
+          "correct": 1
+        },
+        {
+          "question": "De onde é Ezio Auditore?",
+          "options": ["Veneza", "Roma", "Florença", "Milão"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de Red Dead Redemption 2?",
+          "options": [
+            "John Marston",
+            "Arthur Morgan",
+            "Dutch van der Linde",
+            "Micah Bell"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do cavalo padrão de Arthur Morgan?",
+          "options": [
+            "Não tem padrão",
+            "Tennessee Walker",
+            "Mustang",
+            "Arabian"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o nome do protagonista de Devil May Cry?",
+          "options": ["Nero", "Vergil", "Dante", "V"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é a arma icônica de Dante?",
+          "options": [
+            "Rebellion",
+            "Yamato",
+            "Ebony & Ivory",
+            "Devil Sword Dante"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de Bayonetta?",
+          "options": ["Jeanne", "Bayonetta", "Cereza", "Rosa"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome verdadeiro de Bayonetta?",
+          "options": ["Jeanne", "Cereza", "Rosa", "Bayonetta"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de Tomb Raider?",
+          "options": [
+            "Laura Croft",
+            "Lara Croft",
+            "Lauren Croft",
+            "Layla Croft"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é a nacionalidade de Lara Croft?",
+          "options": ["Americana", "Francesa", "Britânica", "Australiana"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de Resident Evil?",
+          "options": [
+            "Jill Valentine",
+            "Chris Redfield",
+            "Leon Kennedy",
+            "Vários"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual é o nome da organização maligna em Resident Evil?",
+          "options": [
+            "Cerberus",
+            "Umbrella Corporation",
+            "Tricell",
+            "Neo-Umbrella"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de Half-Life?",
+          "options": [
+            "Gordon Freeman",
+            "Barney Calhoun",
+            "Adrian Shephard",
+            "Alyx Vance"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual é a profissão de Gordon Freeman?",
+          "options": ["Soldado", "Físico teórico", "Engenheiro", "Cientista"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome da protagonista de Portal?",
+          "options": ["GLaDOS", "Caroline", "Chell", "Wheatley"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome da IA antagonista de Portal?",
+          "options": ["HAL 9000", "SHODAN", "GLaDOS", "AM"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de Bioshock?",
+          "options": ["Andrew Ryan", "Jack", "Atlas", "Big Daddy"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é a frase icônica de Bioshock?",
+          "options": [
+            "War never changes",
+            "Would you kindly",
+            "No gods or kings",
+            "The cake is a lie"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de Fallout 3?",
+          "options": [
+            "Lone Wanderer",
+            "Sole Survivor",
+            "Courier",
+            "Vault Dweller"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o número do Vault em Fallout 3?",
+          "options": ["101", "111", "13", "76"],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o nome do protagonista de Fallout 4?",
+          "options": [
+            "Lone Wanderer",
+            "Sole Survivor",
+            "Courier",
+            "Vault Dweller"
+          ],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do filho em Fallout 4?",
+          "options": ["Nate", "Nora", "Shaun", "Sean"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de Dark Souls?",
+          "options": [
+            "Chosen Undead",
+            "Bearer of the Curse",
+            "Ashen One",
+            "Varia conforme o jogo"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual é o nome do blacksmith em Dark Souls?",
+          "options": ["Andre", "Rickert", "Vamos", "Todos são blacksmiths"],
+          "correct": 3
+        },
+        {
+          "question": "Qual é o nome do protagonista de Bloodborne?",
+          "options": [
+            "Good Hunter",
+            "Hunter",
+            "The Hunter",
+            "Não tem nome específico"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual é o nome da boneca em Bloodborne?",
+          "options": ["Maria", "The Doll", "Lady Maria", "Plain Doll"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é o nome do protagonista de Sekiro?",
+          "options": ["Shinobi", "Wolf", "Sekiro", "Todos estão corretos"],
+          "correct": 3
+        },
+        {
+          "question": "Qual é o nome do lorde que você protege em Sekiro?",
+          "options": ["Genichiro", "Isshin", "Kuro", "Emma"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de Elden Ring?",
+          "options": [
+            "Tarnished",
+            "Elden Lord",
+            "Destined Death",
+            "Não tem nome específico"
+          ],
+          "correct": 0
+        },
+        {
+          "question": "Quem é a guia do jogador em Elden Ring?",
+          "options": ["Melina", "Ranni", "Fia", "Sellen"],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o nome do protagonista de Witcher?",
+          "options": ["Geralt de Rivia", "Vesemir", "Eskel", "Lambert"],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o apelido de Geralt?",
+          "options": [
+            "White Wolf",
+            "Lobo Branco",
+            "Butcher of Blaviken",
+            "Todos estão corretos"
+          ],
+          "correct": 3
+        },
+        {
+          "question": "Qual é o nome da filha adotiva de Geralt?",
+          "options": ["Yennefer", "Triss", "Ciri", "Shani"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do cavalo de Geralt?",
+          "options": ["Roach", "Epona", "Agro", "Spirit"],
+          "correct": 0
+        },
+        {
+          "question": "Qual é o nome do protagonista de Horizon?",
+          "options": ["Alva", "Aloy", "Varl", "Erend"],
+          "correct": 1
+        },
+        {
+          "question": "Qual é a tribo de Aloy?",
+          "options": ["Carja", "Banuk", "Nora", "Oseram"],
+          "correct": 2
+        },
+        {
+          "question": "Qual é o nome do protagonista de Spider-Man (PS4)?",
+          "options": [
+            "Miles Morales",
+            "Peter Parker",
+            "Ambos têm jogos",
+            "Otto Octavius"
+          ],
+          "correct": 2
+        },
+        {
+          "question": "Quantos anos Peter Parker tem em Spider-Man PS4?",
+          "options": ["18", "21", "23", "25"],
+          "correct": 2
+        }
+      ]
+    }
+  },
+  "settings": {
+    "timeLimit": 20,
+    "pointsCorrect": 10,
+    "pointsWrong": 0,
+    "pointsTimeout": 0
+  }
+}

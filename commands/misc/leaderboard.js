@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const Leaderboard = require('../models/Leaderboard');
+const Leaderboard = require('../../models/Leaderboard');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -13,6 +13,7 @@ module.exports = {
           { name: '🎵 Músicas Pedidas', value: 'songs' },
           { name: '⏱️ Tempo Ouvido', value: 'time' },
           { name: '🧠 Quiz Points', value: 'quiz' },
+          { name: '🎮 Jogos', value: 'games' },
           { name: '📊 Geral', value: 'general' }
         )),
   
@@ -44,6 +45,9 @@ module.exports = {
       songs: data.songs || 0,
       time: data.time || 0,
       quizPoints: data.quizPoints || 0,
+      gamePoints: data.gamePoints || 0,
+      gamesPlayed: data.gamesPlayed || 0,
+      gamesWon: data.gamesWon || 0,
       lastPlayed: data.lastPlayed || null
     }));
     
@@ -64,6 +68,10 @@ module.exports = {
       sortedUsers = users.sort((a, b) => b.quizPoints - a.quizPoints).slice(0, 10);
       title = '🧠 Top 10 - Mestres do Quiz';
       description = 'Usuários com mais acertos no Music Quiz';
+    } else if (tipo === 'games') {
+      sortedUsers = users.sort((a, b) => b.gamePoints - a.gamePoints).slice(0, 10);
+      title = '🎮 Top 10 - Mestres dos Jogos';
+      description = 'Usuários com mais pontos em jogos interativos';
     } else {
       // Ranking geral (pontuação combinada)
       sortedUsers = users
@@ -106,6 +114,9 @@ module.exports = {
           valueText = `**${formatTime(user.time)}** de audição`;
         } else if (tipo === 'quiz') {
           valueText = `**${user.quizPoints}** pontos no Quiz`;
+        } else if (tipo === 'games') {
+          const winRate = user.gamesPlayed > 0 ? Math.round((user.gamesWon / user.gamesPlayed) * 100) : 0;
+          valueText = `**${user.gamePoints}** pontos • ${user.gamesWon}/${user.gamesPlayed} vitórias (${winRate}%)`;
         } else {
           valueText = `**${user.songs}** músicas • **${formatTime(user.time)}** ouvido\n` +
                      `Pontuação: **${Math.floor(user.score)}** pts`;
@@ -135,6 +146,8 @@ module.exports = {
             othersText += `**${position}º** ${username} - ${formatTime(user.time)}\n`;
           } else if (tipo === 'quiz') {
             othersText += `**${position}º** ${username} - ${user.quizPoints} pts\n`;
+          } else if (tipo === 'games') {
+            othersText += `**${position}º** ${username} - ${user.gamePoints} pts (${user.gamesWon} vitórias)\n`;
           } else {
             othersText += `**${position}º** ${username} - ${user.songs} músicas • ${formatTime(user.time)}\n`;
           }
@@ -165,15 +178,24 @@ module.exports = {
       const userPosition = sortedUsers.findIndex(u => u.userId === interaction.user.id);
       if (userPosition !== -1) {
         const userData = sortedUsers[userPosition];
+        let positionText;
+        
+        if (tipo === 'general') {
+          positionText = `**${userPosition + 1}º lugar** • ${userData.songs} músicas • ${formatTime(userData.time)} • ${Math.floor(userData.score)} pts`;
+        } else if (tipo === 'songs') {
+          positionText = `**${userPosition + 1}º lugar** • ${userData.songs} músicas`;
+        } else if (tipo === 'time') {
+          positionText = `**${userPosition + 1}º lugar** • ${formatTime(userData.time)}`;
+        } else if (tipo === 'quiz') {
+          positionText = `**${userPosition + 1}º lugar** • ${userData.quizPoints} pts`;
+        } else if (tipo === 'games') {
+          const winRate = userData.gamesPlayed > 0 ? Math.round((userData.gamesWon / userData.gamesPlayed) * 100) : 0;
+          positionText = `**${userPosition + 1}º lugar** • ${userData.gamePoints} pts • ${winRate}% vitórias`;
+        }
+        
         embed.addFields({
           name: '🎯 Sua Posição',
-          value: tipo === 'general'
-            ? `**${userPosition + 1}º lugar** • ${userData.songs} músicas • ${formatTime(userData.time)} • ${Math.floor(userData.score)} pts`
-            : tipo === 'songs'
-            ? `**${userPosition + 1}º lugar** • ${userData.songs} músicas`
-            : tipo === 'time' 
-            ? `**${userPosition + 1}º lugar** • ${formatTime(userData.time)}`
-            : `**${userPosition + 1}º lugar** • ${userData.quizPoints} pts`,
+          value: positionText,
           inline: false
         });
       }

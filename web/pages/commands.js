@@ -34,6 +34,17 @@ const commands = [
   
   // Games
   { name: 'quiz', category: 'Games', description: 'Inicia um quiz musical', usage: '/quiz [rodadas] [playlist]', emoji: '🎮' },
+  { name: 'trivia', category: 'Games', description: 'Quiz de conhecimentos gerais', usage: '/trivia [categoria]', emoji: '🧠' },
+  { name: '8ball', category: 'Games', description: 'Faça uma pergunta à bola mágica', usage: '/8ball <pergunta>', emoji: '🎱' },
+  { name: 'coinflip', category: 'Games', description: 'Cara ou coroa!', usage: '/coinflip [escolha]', emoji: '🪙' },
+  { name: 'rps', category: 'Games', description: 'Pedra, papel e tesoura', usage: '/rps [oponente]', emoji: '✂️' },
+  { name: 'slots', category: 'Games', description: 'Jogue na máquina caça-níqueis', usage: '/slots', emoji: '🎰' },
+  { name: 'blackjack', category: 'Games', description: 'Jogue 21 contra o dealer', usage: '/blackjack', emoji: '🃏' },
+  { name: 'wordle', category: 'Games', description: 'Adivinhe a palavra de 5 letras', usage: '/wordle', emoji: '🔤' },
+  { name: 'hangman', category: 'Games', description: 'Jogo da forca', usage: '/hangman [dificuldade]', emoji: '🎯' },
+  { name: 'tictactoe', category: 'Games', description: 'Jogo da velha', usage: '/tictactoe [oponente]', emoji: '⭕' },
+  { name: 'connect4', category: 'Games', description: 'Conecte 4 peças', usage: '/connect4 <oponente>', emoji: '🔴' },
+  { name: 'reaction', category: 'Games', description: 'Teste de velocidade de reação', usage: '/reaction', emoji: '⚡' },
   
   // Estatísticas
   { name: 'leaderboard', category: 'Stats', description: 'Mostra o ranking do servidor', usage: '/leaderboard [tipo]', emoji: '🏆' },

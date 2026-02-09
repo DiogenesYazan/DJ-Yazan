@@ -10,7 +10,7 @@ const { LavalinkManager } = require('lavalink-client');
 const fs = require('fs');
 const axios = require('axios');
 const lavalinkServers = require('./lavalink-servers.json');
-const statusMessages = require('./status-messages.json');
+const statusMessages = require('./data/status-messages.json');
 
 // Importa o servidor web modular
 const { createWebServer, botStats } = require('./web/server');
@@ -50,13 +50,44 @@ mongoose.connect(process.env.MONGO_URI)
 // 🌐 INICIALIZA SERVIDOR WEB
 // ============================================
 const { playerSocket } = createWebServer(client, Leaderboard, UserFavorites, UserPlaylist);
+const path = require('path');
 
-// Carrega comandos
+// ============================================
+// 📂 CARREGA COMANDOS (RECURSIVO)
+// ============================================
+function loadCommands(dir) {
+  const commands = [];
+  const items = fs.readdirSync(dir, { withFileTypes: true });
+  
+  for (const item of items) {
+    const fullPath = path.join(dir, item.name);
+    
+    if (item.isDirectory()) {
+      // Recursivamente carrega subpastas (music/, games/, misc/)
+      commands.push(...loadCommands(fullPath));
+    } else if (item.name.endsWith('.js')) {
+      try {
+        const cmd = require(fullPath);
+        if (cmd.data && cmd.execute) {
+          commands.push(cmd);
+          console.log(`  ✔ ${cmd.data.name}`);
+        }
+      } catch (err) {
+        console.error(`  ✖ Erro ao carregar ${item.name}:`, err.message);
+      }
+    }
+  }
+  
+  return commands;
+}
+
 client.commands = new Collection();
-for (const file of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) {
-  const cmd = require(`./commands/${file}`);
+console.log('📦 Carregando comandos...');
+const allCommands = loadCommands(path.join(__dirname, 'commands'));
+for (const cmd of allCommands) {
   client.commands.set(cmd.data.name, cmd);
 }
+console.log(`✅ ${client.commands.size} comandos carregados!`);
 
 // Map para armazenar modo de loop por guilda
 client.loopModes = new Map();

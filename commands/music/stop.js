@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
-const QuizSession = require('../models/QuizSession');
-const Leaderboard = require('../models/Leaderboard');
+const QuizSession = require('../../models/QuizSession');
+const Leaderboard = require('../../models/Leaderboard');
 
 // Map compartilhado para tracking de tempo (referência do index.js)
 const trackStartTimes = global.trackStartTimes || new Map();

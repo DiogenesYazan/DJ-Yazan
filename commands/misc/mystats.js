@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const Leaderboard = require('../models/Leaderboard');
+const Leaderboard = require('../../models/Leaderboard');
 
 module.exports = {
   data: new SlashCommandBuilder()
