@@ -7,59 +7,47 @@ module.exports = {
   
   async execute(interaction) {
     const client = interaction.client;
-    
     const embed = new EmbedBuilder()
       .setColor('#FF0000')
-      .setTitle('ℹ️ Sobre o DJ Yazan')
-      .setDescription('DJ Yazan é um bot de música profissional para Discord, desenvolvido com as melhores tecnologias disponíveis.\n\nOferecemos uma experiência de alta qualidade com recursos avançados e interface intuitiva.')
+      .setTitle('🎧 DJ Yazan — O Bot Musical Definitivo!')
+      .setURL('https://dj-yazan-841149114742.herokuapp.com/')
+      .setThumbnail('https://i.imgur.com/4t8XUT5.jpeg')
+      .setDescription('DJ Yazan é um bot de música para Discord com recursos avançados, interface moderna e sistema de failover automático de servidores Lavalink — a festa nunca para!\n\nAcesse o site para adicionar o bot ao seu servidor e ver todos os comandos: [dj-yazan-841149114742.herokuapp.com](https://dj-yazan-841149114742.herokuapp.com/)')
       .addFields(
         {
-          name: '✨ Recursos Principais',
-          value: 
-            '🎵 Reprodução de música em alta qualidade\n' +
+          name: '✨ Destaques',
+          value:
+            '🎵 Música 24/7 com troca automática de servidor Lavalink se cair\n' +
+            '🧠 **/quiz**: desafie seus amigos com perguntas de cultura pop, animes, games e mais!\n' +
+            '🎲 Jogos interativos: blackjack, tictactoe, hangman, wordle, reaction, e outros\n' +
+            '🎚️ Sistema de loop (faixa/fila)\n' +
             '🎛️ Painel de controle interativo\n' +
-            '🔍 Busca avançada com seleção\n' +
-            '📋 10+ filtros de áudio profissionais\n' +
-            '🔀 Embaralhar e organizar fila\n' +
-            '🎚️ Sistema de loop (música/fila)\n' +
-            '🔒 Modo 24/7\n' +
-            '📊 Estatísticas detalhadas',
+            '🔀 Fila dinâmica e embaralhamento\n' +
+            '📊 Barra de progresso animada\n' +
+            '🎤 Letras de músicas (Genius)\n' +
+            '📈 Estatísticas e ranking de usuários',
           inline: false
         },
         {
-          name: '🛠️ Tecnologias',
-          value: 
-            '✅ Discord.js: v14.20.0\n' +
-            '✅ Lavalink Client: v2.5.6\n' +
-            '✅ Node.js: v22.11.0\n' +
-            '✅ Database: Quick.db v9.1.7',
+          name: '🌐 Links Úteis',
+          value:
+            '[➕ Adicione o bot](https://dj-yazan-841149114742.herokuapp.com/) | [GitHub](https://github.com/DiogenesYazan/DJ-Yazan) | [Imagens do bot](https://i.imgur.com/dMMcU8l.png) [1](https://i.imgur.com/KzpRtBB.png) [2](https://i.imgur.com/ED8oWkr.png) [3](https://i.imgur.com/n3MhLLD.png)',
           inline: false
         },
         {
-          name: '� Estatísticas',
-          value: 
+          name: '📊 Estatísticas',
+          value:
             `Servidores: ${client.guilds.cache.size}\n` +
             `Usuários: ${client.guilds.cache.reduce((a, g) => a + g.memberCount, 0)}\n` +
-            `Comandos: 23\n` +
+            `Comandos: 23+\n` +
             `Ping: ${client.ws.ping}ms`,
-          inline: false
-        },
-        {
-          name: '� Diferenciais',
-          value: 
-            '✅ Interface profissional e moderna\n' +
-            '✅ Botões e menus interativos\n' +
-            '✅ Suporte a playlists do YouTube\n' +
-            '✅ Filtros de áudio avançados\n' +
-            '✅ Sistema de progresso em tempo real\n' +
-            '✅ Atualizações constantes',
           inline: false
         }
       )
-      .setThumbnail(client.user.displayAvatarURL())
-      .setFooter({ text: 'Desenvolvido com ❤️ | Versão 2.0.0 • Hoje às 04:35' })
+      .setImage('https://i.imgur.com/dMMcU8l.png')
+      .setFooter({ text: 'Desenvolvido por Yazan | Sempre atualizado!' })
       .setTimestamp();
-    
+
     const row = new ActionRowBuilder()
       .addComponents(
         new ButtonBuilder()
@@ -67,16 +55,20 @@ module.exports = {
           .setStyle(ButtonStyle.Primary)
           .setCustomId('about_commands'),
         new ButtonBuilder()
-          .setLabel('Servidor de Suporte')
+          .setLabel('Site do Bot')
           .setStyle(ButtonStyle.Link)
-          .setURL('https://discord.gg/ZfF4dK2'),
+          .setURL('https://dj-yazan-841149114742.herokuapp.com/'),
         new ButtonBuilder()
-          .setLabel('📘 GitHub')
+          .setLabel('Imagens')
+          .setStyle(ButtonStyle.Link)
+          .setURL('https://i.imgur.com/dMMcU8l.png'),
+        new ButtonBuilder()
+          .setLabel('GitHub')
           .setStyle(ButtonStyle.Link)
           .setURL('https://github.com/DiogenesYazan/DJ-Yazan')
       );
-    
-    await interaction.reply({ 
+
+    await interaction.reply({
       embeds: [embed],
       components: [row]
     });

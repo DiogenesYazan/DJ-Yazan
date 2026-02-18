@@ -1,29 +1,37 @@
-# 🎧 DJ-Yazan-Lavalink Bot
 
-Este projeto é um **bot de música para Discord** escrito em Node.js, que utiliza a arquitetura **Lavalink** para reprodução de áudio ao invés de depender do FFmpeg local.
+# <img src="https://i.imgur.com/4t8XUT5.jpeg" alt="Logo DJ Yazan" width="60" style="vertical-align:middle;"/> DJ-Yazan — O Bot Musical Definitivo!
 
-<img src="https://i.imgur.com/vMKyYzv.png" alt="Exemplo embed com barra de progresso" />
+Este projeto é um **bot de música para Discord** escrito em Node.js, com foco em estabilidade, diversão e recursos avançados. Utiliza **Lavalink** para reprodução de áudio e troca automaticamente de servidor caso um caia — a festa nunca para!
+
+<img src="https://i.imgur.com/dMMcU8l.png" alt="DJ Yazan tocando música" />
 
 ## 🖼️ Descrição
 
-> Bot de música para Discord usando **Lavalink**. Toca músicas do YouTube por nome ou link, com barra de progresso em blocos (▇) atualizada a cada 15 segundos.
+DJ Yazan é um bot de música para Discord com interface moderna, comandos slash, jogos interativos e sistema de failover automático de servidores Lavalink. Toca músicas do YouTube, playlists, faz quizzes, e muito mais!
 
-## ⚙️ Recursos
+<p>
+<img src="https://i.imgur.com/KzpRtBB.png" width="350"/>
+<img src="https://i.imgur.com/ED8oWkr.png" width="350"/>
+<img src="https://i.imgur.com/n3MhLLD.png" width="350"/>
+</p>
 
-* 🎶 **Reproduzir músicas** por nome ou link (YouTube).
-* ➕ **Adicionar à fila** sem interromper a música atual.
-* 📜 **Playlist**: busca e toca até 25 faixas de um artista em sequência.
-* ⏭️ **Skip** e 🛑 **Stop** para gerenciar a reprodução.
-* ⏸️ **Pause/Resume** para pausar e retomar a reprodução.
-* 🔊 **Controle de volume** (1-200%).
-* � **Sistema de loop** (off, faixa única, fila completa).
-* �📊 **Visualização da fila** de músicas.
-* 🎵 **Now Playing** com barra de progresso detalhada.
-* 🏓 **Comando ping** para verificar latência.
-* 📊 **Barra de progresso** em blocos (▇) atualizada a cada 15 segundos.
-* 📱 **Status dinâmico** com rotação de atividades.
-* ❌ **Tratamento de erros** com mensagens claras no canal.
-* 💬 **Comandos slash** organizados na pasta `commands/`.
+## ⚙️ Recursos Principais
+
+* 🎵 **Música 24/7** — troca automática de servidor Lavalink se cair
+* 🧠 **/quiz** — desafie amigos com perguntas de cultura pop, animes, games e mais!
+* 🎲 **Jogos interativos**: blackjack, tictactoe, hangman, wordle, reaction, e outros
+* ➕ **Adicionar à fila** sem interromper a música atual
+* 📜 **Playlist**: busca e toca até 25 faixas de um artista em sequência
+* ⏭️ **Skip** e 🛑 **Stop** para gerenciar a reprodução
+* ⏸️ **Pause/Resume** para pausar e retomar a reprodução
+* 🔊 **Controle de volume** (1-200%)
+* 🔁 **Sistema de loop** (off, faixa única, fila completa)
+* 📊 **Barra de progresso animada**
+* 📱 **Status dinâmico** com rotação de atividades
+* 🎤 **Letras de músicas** (Genius)
+* 📈 **Ranking e estatísticas de usuários**
+* ❌ **Tratamento de erros** com mensagens claras no canal
+* 💬 **Comandos slash** organizados na pasta `commands/`
 
 ## 📦 Pré-requisitos
 
@@ -66,32 +74,32 @@ Este projeto é um **bot de música para Discord** escrito em Node.js, que utili
    npm start
    ```
 
-## 🕹️ Uso dos Comandos
+## 🕹️ Comandos em Destaque
 
-| Comando              | Descrição                                                      |
-| -------------------- | -------------------------------------------------------------- |
-| `/play <query>`      | Adiciona música à fila e inicia a reprodução se necessário     |
-| `/playlist <artist>` | Busca 25 músicas mais populares do artista e toca em sequência |
-| `/skip`              | Pula para a próxima faixa                                      |
-| `/stop`              | Interrompe a reprodução e limpa a fila                         |
-| `/pause`             | Pausa a música atual                                           |
-| `/volume <1-200>`    | Define o volume da reprodução (1-200%)                        |
-| `/loop <mode>`       | Alterna entre modos de loop (off/queue/track)                 |
-| `/queue`             | Mostra a fila atual de músicas                                |
-| `/nowplayed`         | Exibe informações da música atual com barra de progresso      |
-| `/ping`              | Verifica a latência do bot e conexão                          |
+| Comando              | Descrição                                                                 |
+| -------------------- | ------------------------------------------------------------------------- |
+| `/play <query>`      | Adiciona música à fila e inicia a reprodução se necessário                |
+| `/playlist <artist>` | Busca 25 músicas mais populares do artista e toca em sequência           |
+| `/quiz`              | Jogo de perguntas e respostas com ranking, temas variados e diversão!    |
+| `/skip`              | Pula para a próxima faixa                                                |
+| `/stop`              | Interrompe a reprodução e limpa a fila                                   |
+| `/pause`             | Pausa a música atual                                                    |
+| `/volume <1-200>`    | Define o volume da reprodução (1-200%)                                 |
+| `/loop <mode>`       | Alterna entre modos de loop (off/queue/track)                          |
+| `/queue`             | Mostra a fila atual de músicas                                          |
+| `/nowplayed`         | Exibe informações da música atual com barra de progresso               |
+| `/about`             | Mostra informações, links e imagens do bot                             |
+| `/ping`              | Verifica a latência do bot e conexão                                   |
 
-## 🔄 Fluxo Interno
+## 🔄 Como Funciona
 
-1. Bot inicializa e **carrega comandos** automaticamente.
-2. **Conecta ao Lavalink** e configura status dinâmico.
-3. `/play` ou `/playlist` busca faixas no YouTube.
-4. Faixas são **enfileiradas** no player Lavalink.
-5. Envia **embed** com barra de blocos (▇) atualizada a cada 15 s.
-6. **Sistema de loop** permite repetir faixas ou filas.
-7. **Controles de reprodução** (pause, skip, stop, volume).
-8. Limpa temporizadores no fim da música/fila.
-9. Exibe mensagens de erro e status no canal.
+1. Bot inicializa e carrega comandos automaticamente.
+2. Conecta ao(s) servidor(es) Lavalink. Se um cair, troca automaticamente para outro disponível.
+3. `/play`, `/playlist` ou `/quiz` buscam faixas, perguntas e interagem com os usuários.
+4. Faixas são enfileiradas no player Lavalink.
+5. Barra de progresso animada e atualizada a cada 15s.
+6. Sistema de loop, ranking, jogos e quizzes.
+7. Mensagens de erro e status sempre claras no canal.
 
 ## 📁 Estrutura do Projeto
 
@@ -116,16 +124,15 @@ Este projeto é um **bot de música para Discord** escrito em Node.js, que utili
 └── README.md         # Documentação do projeto
 ```
 
-## 📦 Dependências
+## 📦 Principais Tecnologias
 
-O projeto utiliza as seguintes bibliotecas principais:
-
-- **discord.js** v14.20.0 - SDK oficial do Discord para Node.js
-- **lavalink-client** v2.5.6 - Cliente para conectar com servidor Lavalink
-- **yt-search** v2.13.1 - Busca de vídeos no YouTube
-- **ytdl-core** v4.11.5 - Download de informações de vídeos do YouTube
-- **string-progressbar** v1.0.4 - Criação de barras de progresso
-- **dotenv** v16.5.0 - Carregamento de variáveis de ambiente
+- **discord.js** v14.20.0 — SDK oficial do Discord para Node.js
+- **lavalink-client** v2.5.6 — Cliente para conectar com servidor Lavalink
+- **yt-search** v2.13.1 — Busca de vídeos no YouTube
+- **ytdl-core** v4.11.5 — Download de informações de vídeos do YouTube
+- **string-progressbar** v1.0.4 — Criação de barras de progresso
+- **dotenv** v16.5.0 — Carregamento de variáveis de ambiente
+- **MongoDB** — Armazenamento de dados e ranking
 
 ## 🤝 Contribuições
 
@@ -136,13 +143,11 @@ O projeto utiliza as seguintes bibliotecas principais:
 
 ## 🚀 Deploy
 
-O projeto está configurado para deploy no **Heroku** com o arquivo `Procfile` incluído:
+O projeto está pronto para deploy no **Heroku** (Procfile incluso) ou qualquer serviço Node.js.
 
 ```
 worker: node index.js
 ```
-
-Para fazer deploy:
 
 1. Crie um app no Heroku
 2. Configure as variáveis de ambiente no painel do Heroku
@@ -161,6 +166,15 @@ Para fazer deploy:
 - Visualização em blocos (▇) para melhor experiência
 - Exibição de tempo atual e total da música
 
+### Quiz Interativo
+- Comando `/quiz` com perguntas de cultura pop, animes, games, esportes e mais
+- Ranking de acertos por usuário
+- Diversão garantida para toda a guilda
+
+### Failover Automático de Lavalink
+- Se um servidor cair, o bot troca automaticamente para outro disponível
+- A música nunca para!
+
 ### Status Dinâmico
 O bot alterna entre diferentes status a cada 30 segundos:
 - ♬ tocando música
@@ -170,4 +184,9 @@ O bot alterna entre diferentes status a cada 30 segundos:
 
 ---
 
-> Projeto desenvolvido por **Yazan**. 👨‍💻
+<p align="center">
+<b>Site do bot:</b> <a href="https://dj-yazan-841149114742.herokuapp.com/">dj-yazan-841149114742.herokuapp.com</a><br>
+<b>Adicione ao seu servidor e veja todos os comandos!</b>
+</p>
+
+> Projeto desenvolvido por **Diogenes Yazan**. 👨‍💻
