@@ -301,12 +301,9 @@ function createWebServer(client, LeaderboardModel, UserFavoritesModel, UserPlayl
     }
   });
   
-  // Redirect para invite do bot
+  // Redirect para invite do bot (Discord App Discovery)
   app.get('/invite', (req, res) => {
-    const clientId = process.env.CLIENT_ID;
-    const permissions = '3147776'; // Permissões necessárias
-    const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=${permissions}&scope=bot%20applications.commands`;
-    res.redirect(inviteUrl);
+    res.redirect('https://discord.com/discovery/applications/1110368033291120703');
   });
   
   // Health check
