@@ -287,7 +287,7 @@ function getLandingPage(stats) {
          Qualidade premium, comandos intuitivos e uma experiência musical incomparável.</p>
       
       <div class="hero-buttons">
-        <a href="/invite" class="btn btn-discord btn-large">
+        <a href="https://discord.com/discovery/applications/1110368033291120703" target="_blank" rel="noopener noreferrer" class="btn btn-discord btn-large">
           <i class="fab fa-discord"></i>
           Adicionar ao Discord
         </a>

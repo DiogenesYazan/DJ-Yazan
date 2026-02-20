@@ -306,7 +306,7 @@ function getNavbar(activePage = '') {
         <a href="/commands" ${activePage === 'commands' ? 'class="active"' : ''}>Comandos</a>
         <a href="/leaderboard" ${activePage === 'leaderboard' ? 'class="active"' : ''}>Ranking</a>
         <a href="/dashboard" ${activePage === 'dashboard' ? 'class="active"' : ''}>Dashboard</a>
-        <a href="/invite" class="btn-primary">Adicionar Bot</a>
+        <a href="https://discord.com/discovery/applications/1110368033291120703" target="_blank" rel="noopener noreferrer" class="btn-primary">Adicionar Bot</a>
       </div>
     </nav>
   `;
@@ -330,7 +330,7 @@ function getFooter() {
         <a href="${theme.githubUrl}" target="_blank" title="GitHub">
           <i class="fab fa-github"></i>
         </a>
-        <a href="/invite" title="Discord">
+        <a href="https://discord.com/discovery/applications/1110368033291120703" target="_blank" rel="noopener noreferrer" title="Discord">
           <i class="fab fa-discord"></i>
         </a>
       </div>
