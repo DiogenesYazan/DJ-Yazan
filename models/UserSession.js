@@ -20,18 +20,7 @@ const userSessionSchema = new mongoose.Schema({
   email: { 
     type: String 
   },
-  accessToken: { 
-    type: String, 
-    required: true 
-  },
-  refreshToken: { 
-    type: String, 
-    required: true 
-  },
-  tokenExpires: { 
-    type: Date, 
-    required: true 
-  },
+
   guilds: [{ 
     id: String, 
     name: String, 
@@ -48,10 +37,7 @@ const userSessionSchema = new mongoose.Schema({
   collection: 'user_sessions'
 });
 
-// Método para verificar se token expirou
-userSessionSchema.methods.isTokenExpired = function() {
-  return new Date() >= this.tokenExpires;
-};
+
 
 // Método para obter URL do avatar
 userSessionSchema.methods.getAvatarUrl = function(size = 128) {

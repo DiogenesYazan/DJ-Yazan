@@ -36,9 +36,6 @@ function createAuthRouter(client) {
           globalName: profile.global_name,
           avatar: profile.avatar,
           email: profile.email,
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-          tokenExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 dias
           guilds: guilds,
           lastLogin: new Date()
         },

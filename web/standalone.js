@@ -137,8 +137,6 @@ async function startStandaloneServer() {
           discriminator: profile.discriminator || '0',
           avatar: profile.avatar,
           guilds: guilds,
-          accessToken,
-          refreshToken,
           lastLogin: new Date()
         },
         { upsert: true, new: true }
