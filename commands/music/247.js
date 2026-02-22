@@ -16,9 +16,28 @@ module.exports = {
     if (!config) {
       config = new GuildConfig({ guildId });
     }
+    const voiceChannel = interaction.member.voice.channel;
     
     // Alterna o modo
-    config.alwaysOn = !config.alwaysOn;
+    const newState = !config.alwaysOn;
+    
+    if (newState && !voiceChannel) {
+      return interaction.reply({ 
+        content: '❌ Você precisa estar em um canal de voz para ativar o modo 24/7!', 
+        ephemeral: true 
+      });
+    }
+
+    config.alwaysOn = newState;
+    
+    if (newState) {
+      config.textChannelId = interaction.channel.id;
+      config.voiceChannelId = voiceChannel.id;
+    } else {
+      config.textChannelId = null;
+      config.voiceChannelId = null;
+    }
+
     await config.save();
     
     const newMode = config.alwaysOn;

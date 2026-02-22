@@ -22,8 +22,8 @@ module.exports = {
       return interaction.reply({ content: '❌ Nenhuma música tocando.', ephemeral: true });
     }
 
-    // Armazena o modo para o uso em trackEnd
-    interaction.client.loopModes.set(interaction.guildId, mode);
+    // Usa a função nativa do Lavalink para loop
+    player.setRepeatMode(mode);
 
     interaction.reply({ content: `🔁 Loop agora está em **${mode}**`, ephemeral: true });
   }

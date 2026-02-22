@@ -1,6 +1,6 @@
 {
   "description": "Mensagens de status do bot DJ Yazan - Rotação automática com informações sobre o bot",
-  "rotationIntervalMs": 25000,
+  "rotationIntervalMs": 45000,
   "statuses": [
     {
       "text": "♬ tocando música",

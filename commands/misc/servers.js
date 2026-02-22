@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
 
 // ID do dono do bot - único usuário que pode usar este comando
 const OWNER_ID = '413096238142062592';
@@ -9,7 +9,6 @@ module.exports = {
     .setDescription('📡 Lista os servidores do bot'),
 
   async execute(interaction) {
-    // Verifica se o usuário é o dono
     if (interaction.user.id !== OWNER_ID) {
       return interaction.reply({
         content: '❌ Você não tem permissão para usar este comando.',
@@ -17,58 +16,90 @@ module.exports = {
       });
     }
 
-    const client = interaction.client;
-    const guilds = client.guilds.cache;
-
-    // Ordena por número de membros (maior primeiro)
+    const guilds = interaction.client.guilds.cache;
     const sortedGuilds = [...guilds.values()].sort((a, b) => b.memberCount - a.memberCount);
-
-    // Monta a lista de servidores (pagina se for muito grande)
     const totalMembers = sortedGuilds.reduce((acc, g) => acc + g.memberCount, 0);
-    const pageSize = 15;
+    
+    // Configuração de Paginação
+    const pageSize = 10;
     const pages = [];
 
     for (let i = 0; i < sortedGuilds.length; i += pageSize) {
-      const page = sortedGuilds.slice(i, i + pageSize);
-      const list = page.map((g, idx) => {
-        const num = i + idx + 1;
-        return `**${num}.** ${g.name}\n` +
-               `   👥 ${g.memberCount.toLocaleString()} membros • 🆔 \`${g.id}\``;
-      }).join('\n\n');
-      pages.push(list);
+      const pageGuilds = sortedGuilds.slice(i, i + pageSize);
+      const embed = new EmbedBuilder()
+        .setColor('#5865F2')
+        .setTitle('📡 Servidores do DJ Yazan')
+        .setThumbnail(interaction.client.user.displayAvatarURL())
+        .setDescription(`**Total:** ${guilds.size} servidores • ${totalMembers.toLocaleString()} membros\n\n` + 
+          pageGuilds.map((g, idx) => {
+            const num = i + idx + 1;
+            return `**${num}.** ${g.name}\n` +
+                   `   👥 ${g.memberCount.toLocaleString()} membros • 🆔 \`${g.id}\``;
+          }).join('\n\n')
+        )
+        .setFooter({ text: `Página ${Math.floor(i/pageSize) + 1}/${Math.ceil(sortedGuilds.length/pageSize)} • Comando exclusivo do dono` })
+        .setTimestamp();
+        
+      pages.push(embed);
     }
 
-    const embed = new EmbedBuilder()
-      .setColor('#5865F2')
-      .setTitle('📡 Servidores do DJ Yazan')
-      .setDescription(
-        `**Total:** ${guilds.size} servidores • ${totalMembers.toLocaleString()} membros\n\n` +
-        pages[0]
-      )
-      .setFooter({
-        text: pages.length > 1
-          ? `Página 1/${pages.length} • Comando exclusivo do dono`
-          : 'Comando exclusivo do dono'
-      })
-      .setTimestamp();
+    if (pages.length === 0) {
+      return interaction.reply({ content: '❌ Nenhum servidor encontrado.', ephemeral: true });
+    }
 
-    // Resposta ephemeral para que só o dono veja
-    await interaction.reply({
-      embeds: [embed],
-      ephemeral: true
+    let currentPage = 0;
+
+    const row = new ActionRowBuilder()
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('prev_page')
+          .setLabel('⬅️ Anterior')
+          .setStyle(ButtonStyle.Primary)
+          .setDisabled(currentPage === 0),
+        new ButtonBuilder()
+           .setCustomId('next_page')
+           .setLabel('Próxima ➡️')
+           .setStyle(ButtonStyle.Primary)
+           .setDisabled(currentPage === pages.length - 1)
+      );
+
+    const message = await interaction.reply({
+      embeds: [pages[currentPage]],
+      components: pages.length > 1 ? [row] : [],
+      ephemeral: true,
+      fetchReply: true
     });
 
-    // Se houver mais páginas, envia como follow-ups
-    for (let p = 1; p < pages.length; p++) {
-      const pageEmbed = new EmbedBuilder()
-        .setColor('#5865F2')
-        .setDescription(pages[p])
-        .setFooter({ text: `Página ${p + 1}/${pages.length}` });
+    if (pages.length <= 1) return;
 
-      await interaction.followUp({
-        embeds: [pageEmbed],
-        ephemeral: true
+    // Criar collector (mesmo ephemeral interagindo com ephemeral require timeout)
+    const collector = message.createMessageComponentCollector({
+      componentType: ComponentType.Button,
+      time: 60000 * 5 // 5 minutos ativos
+    });
+
+    collector.on('collect', async i => {
+      // Garantir que quem apertou o botão é o dono
+      if (i.user.id !== OWNER_ID) return;
+
+      if (i.customId === 'prev_page') {
+        currentPage--;
+      } else if (i.customId === 'next_page') {
+        currentPage++;
+      }
+
+      row.components[0].setDisabled(currentPage === 0);
+      row.components[1].setDisabled(currentPage === pages.length - 1);
+
+      await i.update({
+        embeds: [pages[currentPage]],
+        components: [row]
       });
-    }
+    });
+
+    collector.on('end', async () => {
+      row.components.forEach(c => c.setDisabled(true));
+      await interaction.editReply({ components: [row] }).catch(() => {});
+    });
   }
 };

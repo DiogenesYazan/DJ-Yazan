@@ -89,8 +89,7 @@ for (const cmd of allCommands) {
 }
 console.log(`✅ ${client.commands.size} comandos carregados!`);
 
-// Map para armazenar modo de loop por guilda
-client.loopModes = new Map();
+// Map para armazenar modo de loop por guilda removido pois usamos native repeatMode
 // Map para armazenar estado do Quiz por guilda
 client.quizStates = new Map();
 
@@ -207,8 +206,8 @@ function mkEmbedBlocks(track, player) {
     ? `[${nextTrack.info.title.slice(0, 40)}${nextTrack.info.title.length > 40 ? '...' : ''}](${nextTrack.info.uri})`
     : 'Nenhuma';
   
-  // Loop mode
-  const loopMode = player.guildId ? (client.loopModes?.get(player.guildId) || 'off') : 'off';
+  // Loop mode (nativo do Lavalink)
+  const loopMode = player.repeatMode || 'off';
   const loopIcons = { off: '➡️', track: '🔂', queue: '🔁' };
   const loopText = { off: 'Desativado', track: 'Música', queue: 'Fila' };
   
@@ -222,7 +221,7 @@ function mkEmbedBlocks(track, player) {
   const embed = new EmbedBuilder()
     .setAuthor({ 
       name: `${statusIcon} ${statusText}`, 
-      iconURL: 'https://cdn.discordapp.com/emojis/1055188868453359616.gif' // Ícone animado opcional
+      iconURL: player.paused ? client.user.displayAvatarURL() : 'https://cdn.pixabay.com/animation/2023/10/22/03/31/03-31-40-761_512.gif'
     })
     .setTitle(track.info.title)
     .setURL(track.info.uri)
@@ -351,6 +350,44 @@ client.once('clientReady', () => {
     id: client.user.id,
     username: client.user.username
   });
+
+  // ============================================
+  // 🔄 AUTO-RECONNECT 24/7
+  // ============================================
+  async function autoReconnect247() {
+    try {
+      const configs = await GuildConfig.find({ alwaysOn: true });
+      console.log(`[24/7] Encontrados ${configs.length} servidores configurados para modo 24/7.`);
+      
+      for (const config of configs) {
+        if (config.voiceChannelId && config.textChannelId) {
+          const guild = client.guilds.cache.get(config.guildId);
+          if (guild) {
+            const voiceChannel = guild.channels.cache.get(config.voiceChannelId);
+            if (voiceChannel) {
+              const player = client.lavalink.createPlayer({
+                guildId: config.guildId,
+                textChannelId: config.textChannelId,
+                voiceChannelId: config.voiceChannelId,
+                selfDeaf: true,
+                selfMute: false,
+                volume: config.defaultVolume || 100
+              });
+              await player.connect();
+              console.log(`[24/7] Reconectado no servidor: ${guild.name} (${guild.id})`);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error('[24/7] Erro ao auto-reconectar:', err);
+    }
+  }
+
+  // Espera o LavalinkManager estar pronto antes de conectar os players
+  setTimeout(autoReconnect247, 5000);
+
+
 
   // ============================================
   // 📊 ATUALIZAÇÃO DE STATS PARA O SITE
@@ -551,6 +588,9 @@ client.lavalink.on('trackStart', async (player, track) => {
     await updateLeaderboard(player.guildId, track.requester.id, 'song');
   }
   
+  // Limpa intervalo anterior se existir para evitar vazamento (bug do bot atualizar depois que a música acaba)
+  stopIv(player.guildId);
+
   // Atualizar barra de progresso a cada 5 segundos
   const iv = setInterval(async () => {
     if (!player.queue.current) {
@@ -604,15 +644,9 @@ client.lavalink.on('trackEnd', (player, track, payload) => {
     }
   }
   
-  const mode = client.loopModes.get(player.guildId) || 'off';
+  const mode = player.repeatMode || 'off';
 
-  if (mode === 'track') {
-    // Loop na música atual
-    player.queue.unshift(track);
-  } else if (mode === 'queue') {
-    // Loop na fila - adiciona no final
-    player.queue.add(track);
-  } else {
+  if (mode === 'off') {
     // Sem loop - limpa o intervalo
     stopIv(player.guildId);
   }
@@ -620,7 +654,7 @@ client.lavalink.on('trackEnd', (player, track, payload) => {
 
 // Ações ao terminar a fila
 client.lavalink.on('queueEnd', async (player) => {
-  const mode = client.loopModes.get(player.guildId) || 'off';
+  const mode = player.repeatMode || 'off';
   
   // === WEBSOCKET: Emite evento de queue end ===
   if (playerSocket) {
