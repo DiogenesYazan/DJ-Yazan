@@ -44,7 +44,7 @@ module.exports = {
       : 'Nenhuma';
     
     // Loop mode
-    const loopMode = interaction.client.loopModes?.get(interaction.guild.id) || 'off';
+    const loopMode = player.repeatMode || 'off';
     const loopIcons = { off: '➡️', track: '🔂', queue: '🔁' };
     const loopText = { off: 'Desativado', track: 'Música', queue: 'Fila' };
     

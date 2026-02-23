@@ -96,7 +96,7 @@ function createPlayerSocket(server, client) {
           author: player.queue.tracks[0].info.author
         } : null
       },
-      loop: client.loopModes?.get(player.guildId) || 'off'
+      loop: player.repeatMode || 'off'
     };
   }
 

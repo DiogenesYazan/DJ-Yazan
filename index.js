@@ -859,10 +859,10 @@ client.on('interactionCreate', async i => {
           break;
 
         case 'controller_loop':
-          const currentMode = client.loopModes.get(i.guild.id) || 'off';
+          const currentMode = player.repeatMode || 'off';
           const modes = ['off', 'track', 'queue'];
           const nextMode = modes[(modes.indexOf(currentMode) + 1) % modes.length];
-          client.loopModes.set(i.guild.id, nextMode);
+          player.setRepeatMode(nextMode);
           await i.reply({ content: `🔁 Loop: **${nextMode}**`, ephemeral: true });
           break;
 

@@ -20,7 +20,7 @@ module.exports = {
     // Memória
     const memoryUsage = process.memoryUsage();
     const memoryMB = (memoryUsage.heapUsed / 1024 / 1024).toFixed(2);
-    const memoryTotal = (memoryUsage.heapTotal / 1024 / 1024).toFixed(2);
+    const osTotalMem = (os.totalmem() / 1024 / 1024).toFixed(2);
     
     // Players ativos
     const players = Array.from(client.lavalink.players.values());
@@ -76,7 +76,7 @@ Nós Lavalink: ${connectedNodes}/${nodes.length}
           value: `\`\`\`
 OS: ${platform} ${arch}
 Node.js: ${nodeVersion}
-Memória: ${memoryMB}MB / ${memoryTotal}MB
+Memória: ${memoryMB}MB / ${osTotalMem}MB
 CPU: ${cpuPercent}ms
 \`\`\``, 
           inline: false 
