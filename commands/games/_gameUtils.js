@@ -33,7 +33,7 @@ async function updateGameScore(guildId, userId, points, won = false) {
     await Leaderboard.findOneAndUpdate(
       { guildId, userId, month: monthKey },
       update,
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     );
     
     return true;

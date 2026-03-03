@@ -68,7 +68,7 @@ botStatsSchema.statics.updateStats = async function(data) {
       ...data,
       lastUpdated: new Date()
     },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   );
 };
 

@@ -39,7 +39,7 @@ function createAuthRouter(client) {
           guilds: guilds,
           lastLogin: new Date()
         },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
       );
       
       return done(null, session);

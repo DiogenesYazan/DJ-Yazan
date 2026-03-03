@@ -6,7 +6,7 @@ const express = require('express');
 const https = require('https');
 const http = require('http');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const { MongoStore } = require('connect-mongo');
 const passport = require('passport');
 
 // Páginas
@@ -121,7 +121,7 @@ function createWebServer(client, LeaderboardModel, UserFavoritesModel, UserPlayl
     secret: process.env.SESSION_SECRET || 'dj-yazan-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
+    store: new MongoStore({
       mongoUrl: process.env.MONGO_URI,
       ttl: 7 * 24 * 60 * 60 // 7 dias
     }),

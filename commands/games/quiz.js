@@ -388,7 +388,7 @@ async function updateDbScore(guildId, userId, points) {
     await Leaderboard.findOneAndUpdate(
       { guildId, userId, month: monthKey },
       { $inc: { quizPoints: points } },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     );
   } catch (e) {
     console.error('Erro ao salvar quizPoints:', e);

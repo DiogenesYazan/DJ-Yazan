@@ -8,7 +8,7 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const { MongoStore } = require('connect-mongo');
 const passport = require('passport');
 const mongoose = require('mongoose');
 
@@ -82,7 +82,7 @@ async function startStandaloneServer() {
     secret: process.env.SESSION_SECRET || 'dj-yazan-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
+    store: new MongoStore({
       mongoUrl: process.env.MONGO_URI,
       ttl: 7 * 24 * 60 * 60
     }),
@@ -139,7 +139,7 @@ async function startStandaloneServer() {
           guilds: guilds,
           lastLogin: new Date()
         },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
       );
 
       return done(null, {

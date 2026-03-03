@@ -999,7 +999,7 @@ async function updateLeaderboard(guildId, userId, type, value = 1) {
     await Leaderboard.findOneAndUpdate(
       { guildId, userId, month: monthKey },
       update,
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     );
     
   } catch (error) {
