@@ -559,6 +559,72 @@ client.lavalink.nodeManager.on('destroy', (node) => {
   console.log(`🗑️ Nó Lavalink destruído: ${serverInfo?.name || node.id}`);
 });
 
+// === Eventos de Erro do Player (debug) ===
+
+// Erro ao carregar/tocar uma track
+client.lavalink.on('trackError', (player, track, payload) => {
+  console.error(`❌ [trackError] Guild: ${player.guildId}`);
+  console.error(`   Track: ${track?.info?.title || 'desconhecida'}`);
+  console.error(`   Erro: ${payload?.exception?.message || payload?.message || JSON.stringify(payload)}`);
+  console.error(`   Severidade: ${payload?.exception?.severity || 'N/A'}`);
+  console.error(`   Causa: ${payload?.exception?.cause || 'N/A'}`);
+  
+  const ch = client.channels.cache.get(player.textChannelId);
+  if (ch) {
+    ch.send(`⚠️ Erro ao tocar **${track?.info?.title || 'música'}**: ${payload?.exception?.message || 'Erro desconhecido'}. Tentando próxima...`).catch(() => {});
+  }
+});
+
+// Track travou (não recebendo frames)
+client.lavalink.on('trackStuck', (player, track, payload) => {
+  console.error(`⚠️ [trackStuck] Guild: ${player.guildId}`);
+  console.error(`   Track: ${track?.info?.title || 'desconhecida'}`);
+  console.error(`   Threshold: ${payload?.thresholdMs || 'N/A'}ms`);
+  
+  const ch = client.channels.cache.get(player.textChannelId);
+  if (ch) {
+    ch.send(`⚠️ Música **${track?.info?.title || ''}** travou! Pulando para a próxima...`).catch(() => {});
+  }
+  
+  // Tenta pular para a próxima
+  try {
+    if (player.queue.tracks.length > 0) {
+      player.skip();
+    } else {
+      player.stopPlaying(false, false);
+    }
+  } catch (e) {
+    console.error('   Erro ao tentar pular track travada:', e.message);
+  }
+});
+
+// Erro geral do player (ex: problemas de voz/DAVE)
+client.lavalink.on('playerError', (player, error) => {
+  console.error(`❌ [playerError] Guild: ${player.guildId}`);
+  console.error(`   Erro:`, error?.message || error);
+});
+
+// Socket close (desconexão de voz)
+client.lavalink.on('playerSocketClosed', (player, payload) => {
+  console.error(`🔌 [playerSocketClosed] Guild: ${player.guildId}`);
+  console.error(`   Code: ${payload?.code}, Reason: ${payload?.reason}, byRemote: ${payload?.byRemote}`);
+  
+  // Se foi desconectado pelo Discord (ex: DAVE handshake falhou), tenta reconectar
+  if (payload?.byRemote) {
+    console.log(`   🔄 Tentando reconectar voz...`);
+    setTimeout(async () => {
+      try {
+        if (player.voiceChannelId) {
+          await player.connect();
+          console.log(`   ✅ Reconectado à voz com sucesso`);
+        }
+      } catch (e) {
+        console.error(`   ❌ Falha ao reconectar:`, e.message);
+      }
+    }, 2000);
+  }
+});
+
 // === Eventos do Player (música) ===
 
 // Barra de progresso ao iniciar faixa
