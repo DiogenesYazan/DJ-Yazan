@@ -22,11 +22,10 @@ const userFavoritesSchema = new mongoose.Schema({
 });
 
 // Limite de 100 favoritos por usuário
-userFavoritesSchema.pre('save', function(next) {
+userFavoritesSchema.pre('save', function() {
   if (this.tracks.length > 100) {
     this.tracks = this.tracks.slice(-100); // Mantém os 100 mais recentes
   }
-  next();
 });
 
 module.exports = mongoose.model('UserFavorites', userFavoritesSchema);

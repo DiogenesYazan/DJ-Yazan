@@ -37,11 +37,10 @@ const userPlaylistSchema = new mongoose.Schema({
 userPlaylistSchema.index({ userId: 1, name: 1 }, { unique: true });
 
 // Limite de 200 músicas por playlist
-userPlaylistSchema.pre('save', function(next) {
+userPlaylistSchema.pre('save', function() {
   if (this.tracks.length > 200) {
     this.tracks = this.tracks.slice(0, 200);
   }
-  next();
 });
 
 // Limite de 25 playlists por usuário (verificado no comando)
