@@ -426,23 +426,21 @@ client.once('clientReady', () => {
   if (APP_URL) {
     console.log(`🔄 Keep-alive ativado para: ${APP_URL}`);
     
-    // Ping a cada 25 minutos (Heroku dorme após 30 min de inatividade)
-    const KEEP_ALIVE_INTERVAL = 25 * 60 * 1000; // 25 minutos
+    // Ping a cada 14 minutos (Heroku Eco dorme após 30 min de inatividade)
+    const KEEP_ALIVE_INTERVAL = 14 * 60 * 1000; // 14 minutos
     
     async function keepAlive() {
       try {
-        const response = await axios.get(APP_URL, { timeout: 10000 });
-        console.log(`💓 Keep-alive ping: ${response.status} OK`);
+        const response = await axios.get(`${APP_URL}/health`, { timeout: 15000 });
+        console.log(`💓 Keep-alive ping: ${response.status} OK - ${new Date().toLocaleTimeString('pt-BR')}`);
       } catch (error) {
         console.log(`⚠️ Keep-alive ping falhou: ${error.message}`);
       }
     }
     
-    // Primeiro ping após 5 minutos, depois a cada 25 minutos
-    setTimeout(() => {
-      keepAlive();
-      setInterval(keepAlive, KEEP_ALIVE_INTERVAL);
-    }, 5 * 60 * 1000);
+    // Primeiro ping imediato, depois a cada 14 minutos
+    keepAlive();
+    setInterval(keepAlive, KEEP_ALIVE_INTERVAL);
   } else {
     console.log('⚠️ APP_URL não configurada - Keep-alive desativado');
     console.log('   Configure APP_URL no Heroku para evitar sleep dos dynos');

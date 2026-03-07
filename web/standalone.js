@@ -355,6 +355,38 @@ async function startStandaloneServer() {
     res.json({ status: 'ok', mode: 'standalone', timestamp: new Date().toISOString() });
   });
 
+  // ============================================
+  // 🔄 KEEP-ALIVE: Evita que Eco Dynos entrem em idle
+  // ============================================
+  // Eco Dynos do Heroku dormem após 30 min sem tráfego web.
+  // Este self-ping mantém o web dyno (e consequentemente o worker) acordado.
+  function startSelfPing() {
+    const APP_URL = process.env.APP_URL;
+    if (!APP_URL) {
+      console.log('⚠️ APP_URL não definida - self-ping desativado');
+      return;
+    }
+
+    const PING_INTERVAL = 14 * 60 * 1000; // 14 minutos (bem abaixo dos 30 min)
+    const protocol = APP_URL.startsWith('https') ? require('https') : require('http');
+
+    function ping() {
+      protocol.get(`${APP_URL}/health`, (res) => {
+        console.log(`💓 Self-ping: ${res.statusCode} OK - ${new Date().toLocaleTimeString('pt-BR')}`);
+      }).on('error', (err) => {
+        console.log(`⚠️ Self-ping falhou: ${err.message}`);
+      });
+    }
+
+    // Primeiro ping após 1 minuto, depois a cada 14 minutos
+    setTimeout(() => {
+      ping();
+      setInterval(ping, PING_INTERVAL);
+    }, 60 * 1000);
+
+    console.log('🔄 Self-ping keep-alive ativado (a cada 14 min)');
+  }
+
   // ========== START SERVER ==========
 
   server.listen(PORT, () => {
@@ -364,6 +396,9 @@ async function startStandaloneServer() {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
     console.log(`🔗 URL: ${process.env.APP_URL || `http://localhost:${PORT}`}`);
     console.log('============================================');
+
+    // Inicia self-ping após o servidor estar rodando
+    startSelfPing();
   });
 }
 
